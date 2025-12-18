@@ -1,0 +1,53 @@
+# Node (React frontend)
+frontend/node_modules/
+frontend/.env
+frontend/.DS_Store
+frontend/dist/
+frontend/build/
+
+# Python (backend + streamlit)
+__pycache__/
+*.py[cod]
+*.env
+*.sqlite3
+*.db
+*.log
+*.pot
+*.pyc
+*.pyo
+*.pyd
+*.mypy_cache/
+*.coverage
+*.egg-info/
+*.eggs/
+*.pytest_cache/
+*.vscode/
+*.idea/
+
+# Virtual environments
+venv/
+env/
+backend/venv/
+streamlit/venv/
+
+# Streamlit config and cache
+.streamlit/config.toml
+.streamlit/secrets.toml
+.streamlit/cache/
+.streamlit/state/
+
+# OS-specific
+.DS_Store
+Thumbs.db
+
+# VSCode
+.vscode/
+
+# Logs and temp
+*.log
+*.tmp
+*.bak
+
+# JWT tokens or sensitive files
+token.txt
+credentials.json

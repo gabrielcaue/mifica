@@ -1,0 +1,23 @@
+[
+  {
+    "id": 1,
+    "nome": "Gabriel",
+    "email": "gabriel@mifica.com",
+    "reputacao": 85,
+    "conquistas": ["Primeira transação", "Perfil completo", "Conquista de confiança"]
+  },
+  {
+    "id": 2,
+    "nome": "Ana",
+    "email": "ana@mifica.com",
+    "reputacao": 72,
+    "conquistas": ["Primeira transação"]
+  },
+  {
+    "id": 3,
+    "nome": "Carlos",
+    "email": "carlos@mifica.com",
+    "reputacao": 90,
+    "conquistas": ["Perfil completo", "Conquista de confiança", "Top 10"]
+  }
+]
