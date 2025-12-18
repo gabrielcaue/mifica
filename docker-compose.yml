@@ -1,0 +1,55 @@
+services:
+  traefik:
+    image: traefik:v2.10
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--entrypoints.web.address=:80"
+    ports:
+      - "80:80"
+      - "8080:8080"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+
+  mysql:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: 11090806
+      MYSQL_DATABASE: mifica
+      MYSQL_USER: mifica
+      MYSQL_PASSWORD: 11090806
+    ports:
+      - "3307:3306"
+
+  mifica-backend:
+    build: ./mifica-backend
+    depends_on:
+      - mysql
+    volumes:
+      - ~/.m2:/root/.m2
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.backend.rule=PathPrefix(`/api`)"
+      - "traefik.http.services.backend.loadbalancer.server.port=8080"
+
+  mifica-frontend:
+    build: ./mifica-frontend
+    volumes:
+      - ./mifica-frontend/node_modules:/app/node_modules
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.frontend.rule=PathPrefix(`/`)"
+      - "traefik.http.services.frontend.loadbalancer.server.port=80"
+
+  mifica-streamlit:
+    build: ./mifica-streamlit
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.streamlit.rule=PathPrefix(`/streamlit`)"
+      - "traefik.http.services.streamlit.loadbalancer.server.port=8501"
+      - "traefik.http.routers.streamlit.entrypoints=web"
+    command: >
+      streamlit run app.py
+      --server.baseUrlPath=streamlit
+      --server.enableCORS=false
+      --server.enableXsrfProtection=false
