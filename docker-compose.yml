@@ -20,11 +20,14 @@ services:
       MYSQL_PASSWORD: 11090806
     ports:
       - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
 
   mifica-backend:
     build: ./mifica-backend
     depends_on:
       - mysql
+      - kafka   # backend só sobe depois que Kafka estiver pronto
     volumes:
       - ~/.m2:/root/.m2
     labels:
@@ -32,10 +35,10 @@ services:
       - "traefik.http.routers.backend.rule=PathPrefix(`/api`)"
       - "traefik.http.services.backend.loadbalancer.server.port=8080"
 
+  # Em desenvolvimento, rode o frontend localmente com npm run dev
+  # Em produção, use este serviço
   mifica-frontend:
     build: ./mifica-frontend
-    volumes:
-      - ./mifica-frontend/node_modules:/app/node_modules
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.frontend.rule=PathPrefix(`/`)"
@@ -53,3 +56,24 @@ services:
       --server.baseUrlPath=streamlit
       --server.enableCORS=false
       --server.enableXsrfProtection=false
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.5.0
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+
+  kafka:
+    image: confluentinc/cp-kafka:7.5.0
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+
+volumes:
+  mysql_data:

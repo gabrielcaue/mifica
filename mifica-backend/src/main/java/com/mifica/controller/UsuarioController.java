@@ -15,17 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.mifica.dto.EstatisticasDTO;
 import com.mifica.dto.LoginDTO;
@@ -35,6 +25,7 @@ import com.mifica.entity.Usuario;
 import com.mifica.repository.UsuarioRepository;
 import com.mifica.service.UsuarioService;
 import com.mifica.util.JwtUtil;
+import com.mifica.service.GamificationEventProducer; 
 
 @RestController
 @RequestMapping("/api/usuarios")
@@ -267,6 +258,17 @@ public ResponseEntity<?> atualizarSenha(
     }
 }
 
+    private final GamificationEventProducer producer;
 
+    public UsuarioController(GamificationEventProducer producer) {
+        this.producer = producer;
+    }
+
+    @PostMapping("/{id}/points")
+    public ResponseEntity<String> addPoints(@PathVariable Long userId, @RequestParam int points) {
+    producer.publishEvent(userId, points);
+    return ResponseEntity.ok("📤 Evento de pontos enviado para usuário " + userId);
+}
 
 }
+
