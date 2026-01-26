@@ -82,14 +82,14 @@ A arquitetura é modular e baseada em microsserviços:
 
 ## 📦 Próximos passos
 
-- ☁️ Deploy em Google Cloud Platform (GCP)  
-- 🌐 CI/CD com GitHub Actions  
 - 📊 Observabilidade com Prometheus + Grafana  
 - 🔐 Autenticação avançada com Keycloak  
 - ⚡ Cache distribuído com Redis (ranking em tempo real para gamificação)  
 - 🔍 Busca inteligente e analytics com ElasticSearch  
 - 🧵 Orquestração com Kubernetes (GKE, EKS, AKS)  
 - 🔄 Service Mesh com Istio para controle de tráfego entre microsserviços
+- 🌐 CI/CD com GitHub Actions  
+
 
 
 
