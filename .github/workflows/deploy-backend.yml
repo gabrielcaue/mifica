@@ -1,0 +1,35 @@
+name: Deploy Backend to Railway
+
+on:
+  push:
+    branches:
+      - master
+      - main
+    paths:
+      - 'mifica-backend/**'
+      - '.github/workflows/deploy-backend.yml'
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Build with Maven
+        working-directory: ./mifica-backend
+        run: mvn clean package -DskipTests -q
+
+      - name: Deploy to Railway
+        uses: railwayapp/railway-action@v1
+        with:
+          token: ${{ secrets.RAILWAY_TOKEN }}
+          service: mifica-backend

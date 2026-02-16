@@ -1,0 +1,27 @@
+# Multi-stage build para otimizar imagem
+FROM maven:3.9-eclipse-temurin-21 AS builder
+
+WORKDIR /app
+
+# Copy pom.xml e baixa dependências
+COPY pom.xml .
+RUN mvn dependency:go-offline -B
+
+# Copy código e faz build
+COPY src src
+RUN mvn clean package -DskipTests -q
+
+# Imagem final enxuta
+FROM eclipse-temurin:21-jre-alpine
+
+WORKDIR /app
+
+# Copy JAR da build anterior
+COPY --from=builder /app/target/backend-*.jar app.jar
+
+# Variáveis de ambiente padrão
+ENV JAVA_OPTS="-XX:+UseG1GC -XX:MaxRAMPercentage=75 -XX:MinRAMPercentage=50"
+
+EXPOSE 8080
+
+CMD ["java", "-jar", "app.jar", "--spring.profiles.active=prod"]
