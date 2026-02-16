@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from './context/AuthContext';
 
 // Páginas
@@ -100,9 +100,5 @@ export default function App() {
     );
   }
 
-  return (
-    <Router>
-      <RotasProtegidas />
-    </Router>
-  );
+  return <RotasProtegidas />;
 }
