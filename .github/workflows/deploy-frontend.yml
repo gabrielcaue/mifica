@@ -30,10 +30,12 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: './mifica-frontend/package-lock.json'
 
       - name: Install dependencies
         working-directory: ./mifica-frontend
-        run: npm install --legacy-peer-deps
+        run: npm ci --legacy-peer-deps
 
       - name: Build
         working-directory: ./mifica-frontend
