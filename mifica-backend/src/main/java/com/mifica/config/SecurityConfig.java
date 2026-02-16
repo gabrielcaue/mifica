@@ -28,22 +28,20 @@ public class SecurityConfig {
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .csrf(AbstractHttpConfigurer::disable)
             .authorizeHttpRequests(auth -> auth
-                // Endpoints públicos (não exigem autenticação)
                 .requestMatchers(
                     "/api/usuarios/login",
                     "/api/usuarios/cadastro",
                     "/api/usuarios/cadastro-admin",
                     "/api/blockchain/**",
                     "/swagger-ui/**",
-                    "/v3/api-docs/**"
+                    "/v3/api-docs/**",
+                    "/actuator/**"   // 🔑 liberar actuator
                 ).permitAll()
-
-                // Endpoints protegidos (precisam de login e role)
                 .requestMatchers("/api/transacoes/**").hasAnyRole("USER", "ADMIN")
-
-                // Qualquer outro endpoint exige autenticação
+                .requestMatchers("/api/admin/**").hasRole("ADMIN")
                 .anyRequest().authenticated()
             )
+
             .addFilterBefore(jwtFiltro, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
@@ -52,12 +50,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-
-        // 🔧 ALTERADO: permitir o frontend servido pelo Traefik (porta 80)
         configuration.setAllowedOrigins(List.of("http://localhost")); 
-        // Se quiser liberar também HTTPS em produção:
-        // configuration.setAllowedOrigins(List.of("http://localhost", "https://seu-dominio.com"));
-
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);

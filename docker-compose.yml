@@ -27,16 +27,16 @@ services:
     build: ./mifica-backend
     depends_on:
       - mysql
-      - kafka   # backend só sobe depois que Kafka estiver pronto
+      - kafka
+    environment:
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9093
     volumes:
       - ~/.m2:/root/.m2
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.backend.rule=PathPrefix(`/api`)"
+      - "traefik.http.routers.backend.rule=PathPrefix(`/`)"
       - "traefik.http.services.backend.loadbalancer.server.port=8080"
 
-  # Em desenvolvimento, rode o frontend localmente com npm run dev
-  # Em produção, use este serviço
   mifica-frontend:
     build: ./mifica-frontend
     labels:
@@ -62,6 +62,9 @@ services:
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
+      KAFKA_OPTS: -Djava.security.auth.login.config=/etc/zookeeper/zookeeper_jaas.conf
+    volumes:
+      - ./zookeeper_jaas.conf:/etc/zookeeper/zookeeper_jaas.conf
 
   kafka:
     image: confluentinc/cp-kafka:7.5.0
@@ -70,10 +73,30 @@ services:
     ports:
       - "9092:9092"
     environment:
-      KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_BROKER_ID: "1"
+      KAFKA_ZOOKEEPER_CONNECT: "zookeeper:2181"
+
+      # Listeners e advertised para acesso interno e externo
+      KAFKA_LISTENERS: SASL_PLAINTEXT://0.0.0.0:9092
+      KAFKA_ADVERTISED_LISTENERS: SASL_PLAINTEXT://localhost:9092,SASL_PLAINTEXT://kafka:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: "SASL_PLAINTEXT:SASL_PLAINTEXT"
+      KAFKA_INTER_BROKER_LISTENER_NAME: "SASL_PLAINTEXT"
+
+      # SASL/PLAIN habilitado
+      KAFKA_SASL_ENABLED_MECHANISMS: "PLAIN"
+      KAFKA_SASL_MECHANISM_INTER_BROKER_PROTOCOL: "PLAIN"
+      KAFKA_SUPER_USERS: "User:admin"
+
+      # JAAS config
+      KAFKA_OPTS: "-Djava.security.auth.login.config=/etc/kafka/kafka_server_jaas.conf"
+
+      # Para o backend Spring
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+
+    volumes:
+      - ./kafka_server_jaas.conf:/etc/kafka/kafka_server_jaas.conf
+      - ./sasl.properties:/etc/kafka/secrets/sasl.properties
+
 
 volumes:
   mysql_data:

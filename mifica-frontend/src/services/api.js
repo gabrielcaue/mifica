@@ -1,9 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  // 🔧 ALTERADO: antes era "http://localhost:8080/api"
-  // agora basta "/api" porque o Traefik já roteia para o backend
-  baseURL: '/api'
+  baseURL: 'http://localhost/api',
 });
 
 // Interceptor único para adicionar token e Content-Type

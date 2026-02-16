@@ -1,7 +1,7 @@
 #!/bin/zsh
 
-echo "🚀 Subindo containers do backend, banco e streamlit..."
-docker compose up -d mysql mifica-backend mifica-streamlit
+echo "🚀 Subindo containers do Zookeeper, Kafka, banco, backend, Traefik e Streamlit..."
+docker compose up -d zookeeper kafka mysql mifica-backend mifica-streamlit traefik
 
 echo "🌱 Iniciando frontend localmente com Vite..."
 cd mifica-frontend || { echo "❌ Pasta mifica-frontend não encontrada"; exit 1; }

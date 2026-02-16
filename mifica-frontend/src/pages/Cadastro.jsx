@@ -1,7 +1,7 @@
 // src/pages/Cadastro.jsx
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import api from '../services/api';
+import api from '../services/api';   // ✅ cliente axios configurado
 import logo from '../assets/logo.png';
 
 export default function Cadastro() {
@@ -13,19 +13,16 @@ export default function Cadastro() {
   const handleCadastro = async (e) => {
     e.preventDefault();
     try {
-      // 🔧 ALTERADO: antes estava "/api/usuarios/cadastro"
-      // agora basta "/usuarios/cadastro" porque o baseURL já é "/api"
-      const response = await api.post('/usuarios/cadastro', {
-        nome,
-        email,
-        senha,
-      });
+      const dados = { nome, email, senha };
 
-      console.log('Cadastro realizado:', response.data);
-      navigate('/login');
+      // ✅ chamada usando baseURL já configurada em api.js
+      const response = await api.post('/usuarios/cadastro', dados);
+
+      console.log("Cadastro realizado:", response.data);
+      navigate("/login");
     } catch (error) {
-      console.error('Erro ao cadastrar:', error);
-      alert('Erro ao cadastrar usuário');
+      console.error("Erro ao cadastrar:", error);
+      alert("Erro ao cadastrar usuário");
     }
   };
 

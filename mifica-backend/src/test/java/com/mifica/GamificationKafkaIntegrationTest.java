@@ -6,14 +6,14 @@ import com.mifica.entity.User;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.kafka.test.context.EmbeddedKafka;
-import org.springframework.test.annotation.DirtiesContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest
-@EmbeddedKafka(partitions = 1, topics = { "gamification-events" }, brokerProperties = { "listeners=PLAINTEXT://localhost:9092", "port=9092" })
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+@SpringBootTest(properties = {
+    "spring.kafka.bootstrap-servers=localhost:9092",
+    "spring.kafka.consumer.group-id=test-group",
+    "spring.kafka.consumer.auto-offset-reset=earliest"
+})
 public class GamificationKafkaIntegrationTest {
 
     @Autowired

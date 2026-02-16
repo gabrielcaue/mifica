@@ -270,5 +270,6 @@ public ResponseEntity<?> atualizarSenha(
     return ResponseEntity.ok("📤 Evento de pontos enviado para usuário " + userId);
 }
 
+
 }
 
