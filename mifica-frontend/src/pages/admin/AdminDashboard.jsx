@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import axios from 'axios';
+import api from '../../services/api';
 
 export default function AdminDashboard() {
   const [usuarios, setUsuarios] = useState([]);
@@ -10,21 +10,21 @@ export default function AdminDashboard() {
     const token = localStorage.getItem('token');
 
     // 🔹 Buscar usuários
-    axios.get('http://localhost:8080/api/admin/usuarios', {
+    api.get('/admin/usuarios', {
       headers: { Authorization: `Bearer ${token}` }
     })
     .then(response => setUsuarios(response.data))
     .catch(error => console.error('Erro ao buscar usuários:', error));
 
     // 🔹 Buscar perfil do usuário logado
-    axios.get('http://localhost:8080/api/usuarios/perfil', {
+    api.get('/usuarios/perfil', {
       headers: { Authorization: `Bearer ${token}` }
     })
     .then(response => setUsuarioLogado(response.data))
     .catch(error => console.error('Erro ao buscar perfil:', error));
 
     // 🔹 Verificar se está em modo dev
-    axios.get('http://localhost:8080/api/config/dev-mode')
+    api.get('/config/dev-mode')
     .then(res => {
       if (res.data === true) {
         alert('⚠️ Você está em modo de desenvolvimento. Algumas permissões estão liberadas.');
@@ -34,7 +34,7 @@ export default function AdminDashboard() {
 
   const promover = (id) => {
     const token = localStorage.getItem('token');
-    axios.put(`http://localhost:8080/api/admin/promover/${id}`, {}, {
+    api.put(`/admin/promover/${id}`, {}, {
       headers: { Authorization: `Bearer ${token}` }
     })
     .then(() => alert('Usuário promovido!'))
@@ -43,7 +43,7 @@ export default function AdminDashboard() {
 
   const rebaixar = (id) => {
     const token = localStorage.getItem('token');
-    axios.put(`http://localhost:8080/api/admin/rebaixar/${id}`, {}, {
+    api.put(`/admin/rebaixar/${id}`, {}, {
       headers: { Authorization: `Bearer ${token}` }
     })
     .then(() => alert('Usuário rebaixado!'))

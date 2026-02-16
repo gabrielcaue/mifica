@@ -47,7 +47,7 @@ export default function Topo() {
           {/* Botão para admins */}
           {user?.role === 'admin' && (
             <a
-              href="http://localhost:8501"
+              href={import.meta.env.VITE_STREAMLIT_URL || "http://localhost:8501"}
               target="_blank"
               rel="noopener noreferrer"
               className="px-4 py-2 border border-green-600 rounded text-green-300 hover:bg-green-700 transition"
