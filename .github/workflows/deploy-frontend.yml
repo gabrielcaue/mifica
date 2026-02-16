@@ -29,13 +29,11 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
-          cache: 'npm'
-          cache-dependency-path: 'mifica-frontend/package-lock.json'
+          node-version: '20'
 
       - name: Install dependencies
         working-directory: ./mifica-frontend
-        run: npm ci
+        run: npm install --legacy-peer-deps
 
       - name: Build
         working-directory: ./mifica-frontend
@@ -46,3 +44,4 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./mifica-frontend/dist
+          force_orphan: true
