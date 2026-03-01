@@ -29,7 +29,7 @@ jobs:
         run: mvn clean package -DskipTests -q
 
       - name: Deploy to Railway
-        uses: railwayapp/railway-action@v1
+        uses: railwayapp/railway-action@v4
         with:
           token: ${{ secrets.RAILWAY_TOKEN }}
           service: mifica-backend

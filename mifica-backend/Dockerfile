@@ -10,7 +10,9 @@ RUN mvn dependency:go-offline
 COPY src ./src
 COPY .mvn .mvn
 COPY mvnw .
-RUN ./mvnw clean package -DskipTests
+
+# Dá permissão de execução ao mvnw e roda o build
+RUN chmod +x mvnw && ./mvnw clean package -DskipTests
 
 # Etapa 2: imagem final leve
 FROM eclipse-temurin:21-jdk
