@@ -1,3 +1,5 @@
+https://gabrielcaue.github.io/mifica/#/login
+
 # 🧠 Mifica — Plataforma Modular
 
 Eu desenvolvi o Mifica como uma plataforma que integra reputação, gamificação e transações via blockchain, com foco em escalabilidade, segurança e extensibilidade. O projeto é dividido em módulos independentes que se comunicam via API e eventos assíncronos.
@@ -90,6 +92,6 @@ A arquitetura é modular e baseada em microsserviços:
 - 🔄 Service Mesh com Istio para controle de tráfego entre microsserviços
 - 🌐 CI/CD com GitHub Actions  
 
-
+### Em manutenção Kubernetes‼️🚨
 
 
