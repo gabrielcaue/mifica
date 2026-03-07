@@ -14,6 +14,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.lang.NonNull;
 
 @Component
 public class JwtFiltro extends OncePerRequestFilter {
@@ -25,7 +26,7 @@ public class JwtFiltro extends OncePerRequestFilter {
     }
 
     @Override
-    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+    protected boolean shouldNotFilter(@NonNull HttpServletRequest request) throws ServletException {
         String path = request.getRequestURI();
             System.out.println("JwtFiltro: shouldNotFilter path = " + path);
             
@@ -40,9 +41,9 @@ public class JwtFiltro extends OncePerRequestFilter {
 }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request,
-                                    HttpServletResponse response,
-                                    FilterChain filterChain)
+    protected void doFilterInternal(@NonNull HttpServletRequest request,
+                                    @NonNull HttpServletResponse response,
+                                    @NonNull FilterChain filterChain)
                                     throws ServletException, IOException {
 
         String authHeader = request.getHeader("Authorization");

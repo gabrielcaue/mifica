@@ -11,12 +11,13 @@ import java.util.Map;
 @RequestMapping("/api/secure")
 public class SecureController {
 
-    private static final String SENHA_CORRETA = "AdminKafka2026!";
+    @Value("${admin.kafka.senha}")
+    private String senhaCorreta;
 
     @PostMapping("/conteudo")
     public ResponseEntity<String> getConteudo(@RequestBody Map<String, String> body) {
         String senha = body.get("senha");
-        if (!SENHA_CORRETA.equals(senha)) {
+        if (!senhaCorreta.equals(senha)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                                  .body("Senha incorreta. Acesso negado.");
         }

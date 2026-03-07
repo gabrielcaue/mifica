@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,7 +71,7 @@ public class UsuarioService {
     }
 
     public Optional<UsuarioDTO> buscarPorId(Long id) {
-        return usuarioRepository.findById(id).map(this::converterParaDTO);
+        return usuarioRepository.findById(Objects.requireNonNull(id)).map(this::converterParaDTO);
     }
 
     public Usuario buscarPorEmail(String email) {
@@ -189,11 +190,11 @@ public class UsuarioService {
     }
 
     public void salvar(Usuario usuario) {
-        usuarioRepository.save(usuario);
+        usuarioRepository.save(Objects.requireNonNull(usuario));
     }
 
     public void excluir(Usuario usuario) {
-        usuarioRepository.delete(usuario);
+        usuarioRepository.delete(Objects.requireNonNull(usuario));
     }
 
     public void deletarPorEmail(String email) {
@@ -231,7 +232,7 @@ public class UsuarioService {
     }
 
     public Optional<UsuarioDTO> atualizar(Long id, UsuarioDTO dto) {
-        Optional<Usuario> optionalUsuario = usuarioRepository.findById(id);
+        Optional<Usuario> optionalUsuario = usuarioRepository.findById(Objects.requireNonNull(id));
         if (optionalUsuario.isEmpty()) return Optional.empty();
 
         Usuario usuario = optionalUsuario.get();
@@ -255,7 +256,7 @@ public class UsuarioService {
     }
 
 public UsuarioDTO atualizarUsuario(Long id, UsuarioDTO dto) {
-    Usuario usuario = usuarioRepository.findById(id)
+    Usuario usuario = usuarioRepository.findById(Objects.requireNonNull(id))
         .orElseThrow(() -> new RuntimeException("Usuário não encontrado."));
 
     usuario.setNome(dto.getNome());
@@ -277,11 +278,11 @@ public UsuarioDTO atualizarUsuario(Long id, UsuarioDTO dto) {
     }
 
     public boolean existePorId(Long id) {
-    return usuarioRepository.existsById(id);
+    return usuarioRepository.existsById(Objects.requireNonNull(id));
     }
 
     public Usuario buscarUsuarioPorId(Long id) {
-    return usuarioRepository.findById(id)
+    return usuarioRepository.findById(Objects.requireNonNull(id))
         .orElseThrow(() -> new RuntimeException("Usuário não encontrado."));
     }
 
@@ -299,7 +300,7 @@ public UsuarioDTO atualizarUsuario(Long id, UsuarioDTO dto) {
     }
 
     public void alterarPapel(Long id, Role novoPapel) {
-    Usuario usuario = usuarioRepository.findById(id)
+    Usuario usuario = usuarioRepository.findById(Objects.requireNonNull(id))
         .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
     usuario.setRole(novoPapel);
     usuarioRepository.save(usuario);
@@ -307,7 +308,7 @@ public UsuarioDTO atualizarUsuario(Long id, UsuarioDTO dto) {
 
         // 🔧 Novo método para atualizar senha
 public boolean atualizarSenha(Long id, String senhaAtual, String senhaNova) {
-    Usuario usuario = usuarioRepository.findById(id)
+    Usuario usuario = usuarioRepository.findById(Objects.requireNonNull(id))
         .orElseThrow(() -> new RuntimeException("Usuário não encontrado."));
 
     if (!passwordEncoder.matches(senhaAtual, usuario.getSenha())) {

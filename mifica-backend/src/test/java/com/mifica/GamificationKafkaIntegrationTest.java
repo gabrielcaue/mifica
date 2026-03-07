@@ -38,7 +38,7 @@ public class GamificationKafkaIntegrationTest {
         Thread.sleep(2000);
 
         // Assert: verifica se pontos foram atualizados
-        User updatedUser = userRepository.findById(user.getId()).orElseThrow();
+        User updatedUser = userRepository.findById(java.util.Objects.requireNonNull(user.getId())).orElseThrow();
         assertThat(updatedUser.getPoints()).isEqualTo(50);
         assertThat(updatedUser.getLevel()).isEqualTo(1); // ainda não atingiu 100 pontos
     }

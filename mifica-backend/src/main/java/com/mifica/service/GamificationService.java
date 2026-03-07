@@ -17,7 +17,7 @@ public class GamificationService {
     }
 
     public void addPoints(Long userId, int points) {
-        User user = userRepository.findById(userId).orElseThrow();
+        User user = userRepository.findById(java.util.Objects.requireNonNull(userId)).orElseThrow();
         user.setPoints(user.getPoints() + points);
 
         // Exemplo de regra: ao atingir 100 pontos, sobe de nível e ganha badge

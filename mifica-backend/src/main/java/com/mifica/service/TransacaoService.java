@@ -34,7 +34,7 @@ public class TransacaoService {
     }
 
     public void deletarPorId(Long id) {
-        transacaoRepository.deleteById(id);
+        transacaoRepository.deleteById(java.util.Objects.requireNonNull(id));
     }
     
 }
