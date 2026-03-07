@@ -1,5 +1,6 @@
 package com.mifica.controller;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -10,7 +11,7 @@ import java.util.Map;
 @RequestMapping("/api/secure")
 public class SecureController {
 
-    private static final String SENHA_CORRETA = "AdminKafka2025!";
+    private static final String SENHA_CORRETA = "AdminKafka2026!";
 
     @PostMapping("/conteudo")
     public ResponseEntity<String> getConteudo(@RequestBody Map<String, String> body) {

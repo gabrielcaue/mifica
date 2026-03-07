@@ -1,92 +1,80 @@
-# 🧠 Mifica — Plataforma Modular
+# ⚙️ Mifica Backend — Spring Boot 3 + Java 21
 
-Eu desenvolvi o Mifica como uma plataforma que integra reputação, gamificação e transações via blockchain, com foco em escalabilidade, segurança e extensibilidade. O projeto é dividido em módulos independentes que se comunicam via API e eventos assíncronos.
+> ⚠️ **Status: Em manutenção** — Refatoração de infraestrutura e segurança em andamento.
 
----
+API REST do projeto Mifica. Responsável por toda a lógica de reputação, gamificação, autenticação JWT e integração com Kafka.
 
-## 🚀 Funcionalidades principais
+## Stack
 
-✅ Backend em Spring Boot com API REST  
-✅ Sistema de reputação e conquistas desbloqueáveis  
-✅ Integração com Kafka para eventos assíncronos  
-✅ Frontend em React com login, cadastro e dashboard  
-✅ Painel administrativo em Streamlit para análises  
-✅ Persistência de dados com MySQL  
-✅ Autenticação via JWT e controle de acesso por roles  
-✅ Documentação automática com Swagger
+- **Java 21** + **Spring Boot 3.5**
+- **Spring Security** + JWT customizado
+- **Spring Data JPA** + Hibernate + MySQL
+- **Apache Kafka** (producer/consumer para gamificação)
+- **Swagger/OpenAPI** para documentação
+- **Docker** com multi-stage build
+- **Railway** para deploy em produção
 
----
+## Variáveis de Ambiente (obrigatórias)
 
-## 📁 Estrutura do Projeto
-
-- `backend/` → # API REST em Spring Boot
-- `frontend/` → # Aplicação React
-- `streamlit/` → # Painel administrativo e visualizações
-- `kafka/` → # Configuração e eventos assíncronos
-- `docker-compose.yml` → # Orquestração dos serviços
-- `start-dev.sh` → # Script para ambiente local
-- `docs/` → # Documentação adicional
-
-
----
-
-## 🗄️ Banco de Dados
-
-O projeto utiliza **MySQL** como banco principal.  
-Configuração no `application.properties`:
-
-```properties
-spring.datasource.url=jdbc:mysql://localhost:3306/mifica
-spring.datasource.username=mifica
-spring.datasource.password=mifica123
-spring.jpa.hibernate.ddl-auto=update
-spring.jpa.show-sql=true
-spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQL8Dialect
+```env
+JWT_SECRET=...
+ADMIN_PASSWORD=...
+ADMIN_KAFKA_PASSWORD=...
+MYSQLHOST=...
+MYSQLPORT=...
+MYSQLDATABASE=...
+MYSQLUSER=...
+MYSQLPASSWORD=...
+KAFKA_BOOTSTRAP_SERVERS=...
+KAFKA_SECURITY_PROTOCOL=...
+KAFKA_SASL_MECHANISM=...
+KAFKA_USERNAME=...
+KAFKA_PASSWORD=...
+CORS_ALLOWED_ORIGIN_PATTERNS=*
 ```
 
-## 🧪 Como rodar localmente
+> Zero credenciais no código. Tudo por variáveis de ambiente (12-Factor App).
+
+## Páginas do Frontend (GitHub Pages)
+
+> **Base:** `https://gabrielcaue.github.io/mifica/`
+
+| Página | URL | Acesso |
+|---|---|---|
+| Login | [/#/login](https://gabrielcaue.github.io/mifica/#/login) | Público |
+| Cadastro | [/#/cadastro](https://gabrielcaue.github.io/mifica/#/cadastro) | Público |
+| Cadastro Admin | [/#/cadastro-admin](https://gabrielcaue.github.io/mifica/#/cadastro-admin) | 🔒 Via senha de acesso |
+| Dashboard | [/#/dashboard](https://gabrielcaue.github.io/mifica/#/dashboard) | 🔒 Autenticado |
+| Perfil | [/#/perfil](https://gabrielcaue.github.io/mifica/#/perfil) | 🔒 Autenticado |
+| Configurações | [/#/configuracoes](https://gabrielcaue.github.io/mifica/#/configuracoes) | 🔒 Autenticado |
+| Painel Admin | [/#/admin](https://gabrielcaue.github.io/mifica/#/admin) | 🔒 ADMIN only |
+
+## Endpoints da API (Backend — Railway)
+
+> **Base:** `https://mifica-production.up.railway.app`
+
+| Método | Rota | Descrição | Acesso |
+|---|---|---|---|
+| POST | `/api/usuarios/cadastro` | Cadastro de usuário | Público |
+| POST | `/api/usuarios/login` | Login (retorna JWT) | Público |
+| GET | `/api/blockchain/**` | Consulta blockchain | Público |
+| GET | `/actuator/**` | Health check / Actuator | Público |
+| GET | `/swagger-ui/index.html` | Documentação interativa da API | Público |
+| GET | `/v3/api-docs` | OpenAPI spec (JSON) | Público |
+| GET | `/api/usuarios/**` | CRUD de usuários | 🔒 USER / ADMIN |
+| POST | `/api/transacoes/**` | Transações | 🔒 Autenticado |
+| POST | `/api/contratos/**` | Contratos | 🔒 Autenticado |
+| POST | `/api/desafios/**` | Desafios | 🔒 Autenticado |
+| POST | `/api/admin/**` | Operações administrativas | 🔒 ADMIN only |
+
+## Como Rodar
 
 ```bash
-# Clone o repositório
-git clone https://github.com/gabrielcaue/mifica.git
-
-# Acesse o diretório
-cd mifica
-
-# Suba os containers
+# Via Docker Compose (na raiz do projeto)
 ./start-dev.sh
+
+# Ou via Maven
+./mvnw spring-boot:run
 ```
 
-O backend ficará disponível em http://localhost:8080, o frontend em http://localhost:5173 e o painel Streamlit em http://localhost:8501.
-
-## 🐳 Deploy com Docker Compose
-
-```bash
-# Subir os serviços
-docker-compose up --build
-
-# Derrubar os serviços
-docker-compose down
-```
-
-## 🏗️ Arquitetura
-
-A arquitetura é modular e baseada em microsserviços:
-
-- **Backend (Spring Boot)** → lógica de reputação, gamificação e blockchain
-- **Kafka** → eventos assíncronos para comunicação entre módulos
-- **Frontend (React)** → interface de usuário
-- **Streamlit** → painel administrativo e análises
-- **MySQL** → persistência de dados
-- **Docker Compose** → orquestração local dos serviços
-
-## 📦 Próximos passos
-
-- 📊 Observabilidade com Prometheus + Grafana  
-- 🔐 Autenticação avançada com Keycloak  
-- ⚡ Cache distribuído com Redis (ranking em tempo real para gamificação)  
-- 🔍 Busca inteligente e analytics com ElasticSearch  
-- 🧵 Orquestração com Kubernetes (GKE, EKS, AKS)  
-- 🔄 Service Mesh com Istio para controle de tráfego entre microsserviços
-- 🌐 CI/CD com GitHub Actions  
-
+Veja o [README principal](../README.md) e o [Guia de Deploy](../DEPLOYMENT_RAILWAY.md) para mais detalhes.

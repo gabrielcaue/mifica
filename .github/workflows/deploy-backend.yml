@@ -28,8 +28,10 @@ jobs:
         working-directory: ./mifica-backend
         run: mvn clean package -DskipTests -q
 
+      - name: Install Railway CLI
+        run: npm install -g @railway/cli
+
       - name: Deploy to Railway
-        uses: railwayapp/railway-action@v4
-        with:
-          token: ${{ secrets.RAILWAY_TOKEN }}
-          service: mifica-backend
+        run: railway up --service mifica-backend
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}

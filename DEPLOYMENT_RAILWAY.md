@@ -20,42 +20,105 @@
    - **Port**: `8080`
    - **Ambiente**: Production
 
-#### PostgreSQL (Banco de Dados)
-1. Click em "New Service" → "Database" → "PostgreSQL"
-2. Railway cria automaticamente com variáveis:
-   - `DATABASE_URL`
-   - `DATABASE_USER`
-   - `DATABASE_PASSWORD`
+#### MySQL (Banco de Dados)
+1. Click em "New Service" → "Database" → "MySQL"
+2. Railway cria automaticamente variáveis como:
+   - `MYSQLHOST`
+   - `MYSQLPORT`
+   - `MYSQLDATABASE`
+   - `MYSQLUSER`
+   - `MYSQLPASSWORD`
 
-#### Kafka (Opcional, para testes)
-Se quiser usar Kafka em produção:
-- Considere usar **Upstash Kafka** (https://upstash.com) - gratuito para testes
-- Ou adicionar como serviço Railway adicional
+#### Kafka (opcional, recomendado para gamificação/eventos)
+Use um provedor de Kafka gerenciado (ex.: Upstash) e configure no backend:
+- `KAFKA_BOOTSTRAP_SERVERS`
+- `KAFKA_SECURITY_PROTOCOL`
+- `KAFKA_SASL_MECHANISM`
+- `KAFKA_USERNAME`
+- `KAFKA_PASSWORD`
+- `ADMIN_KAFKA_PASSWORD`
 
-### 4. Variáveis de Ambiente
+### 4. Configurar Variáveis de Ambiente no Railway
 
-No Railway dashboard, adicione:
+#### 📋 Passo a passo:
 
-```env
-# JWT
-JWT_SECRET=sua-chave-secreta-super-segura-aqui
+1. **Acesse seu projeto no Railway**
+   - Entre em https://railway.app/dashboard
+   - Clique no seu projeto (mifica ou o nome que você deu)
 
-# Admin
-ADMIN_PASSWORD=SenhaAdmin2025!
+2. **Selecione o serviço backend**
+   - No dashboard do projeto, clique no card do **mifica-backend**
 
-# Kafka (se usar Upstash ou outro)
-KAFKA_BOOTSTRAP_SERVERS=kafka.upstash.io:9092
-KAFKA_PASSWORD=seu-token-kafka
+3. **Abra a aba Variables**
+   - No menu superior, clique em **"Variables"** (ícone de chave 🔑)
 
-# CORS (para GitHub Pages)
-CORS_ALLOWED_ORIGINS=https://gabrielcaue.github.io
-```
+4. **Adicione as variáveis obrigatórias uma por uma:**
 
-### 5. Variáveis do Banco (Auto)
-Railway cria automaticamente:
-- `DATABASE_URL` → `postgresql://user:pass@host:5432/db`
-- `DATABASE_USER`
-- `DATABASE_PASSWORD`
+   Clique em **"+ New Variable"** e adicione:
+
+   **JWT / Admin:**
+   ```
+   JWT_SECRET = (gerar - veja abaixo como criar)
+   ADMIN_PASSWORD = SenhaAdmin2026!
+   ADMIN_KAFKA_PASSWORD = senha-especial-admin-kafka
+   ```
+
+   **🔐 Como gerar o JWT_SECRET:**
+   
+   Você precisa criar uma chave secreta forte e aleatória. Escolha uma opção:
+   
+   **Opção 1 - No terminal (Mac/Linux):**
+   ```bash
+   openssl rand -base64 64
+   ```
+   
+   **Opção 2 - No navegador (qualquer sistema):**
+   - Acesse: https://randomkeygen.com/
+   - Copie uma chave da seção "Fort Knox Passwords" (256-bit)
+   
+   **Opção 3 - Node.js:**
+   ```bash
+   node -e "console.log(require('crypto').randomBytes(64).toString('base64'))"
+   ```
+   
+   **Opção 4 - Python:**
+   ```bash
+   python3 -c "import secrets; print(secrets.token_urlsafe(64))"
+   ```
+   
+   > ⚠️ **Importante:** Guarde essa chave em local seguro! Ela é usada para assinar os tokens JWT. Se perder, todos os usuários terão que fazer login novamente.
+
+   **MySQL (copie do serviço MySQL):**
+   
+   As variáveis de MySQL já existem no serviço de banco. Você pode:
+   - Opção 1: Deixar o Railway linkar automaticamente (Reference Variables)
+   - Opção 2: Copiar manualmente do serviço MySQL:
+   ```
+   MYSQLHOST = (copiar do serviço MySQL)
+   MYSQLPORT = (copiar do serviço MySQL)
+   MYSQLDATABASE = (copiar do serviço MySQL)
+   MYSQLUSER = (copiar do serviço MySQL)
+   MYSQLPASSWORD = (copiar do serviço MySQL)
+   ```
+
+   **Kafka (se usar Upstash ou outro provedor):**
+   ```
+   KAFKA_BOOTSTRAP_SERVERS = seu-kafka-bootstrap-servers
+   KAFKA_SECURITY_PROTOCOL = SASL_SSL
+   KAFKA_SASL_MECHANISM = PLAIN
+   KAFKA_USERNAME = seu-kafka-username
+   KAFKA_PASSWORD = seu-kafka-password
+   ```
+
+   **CORS:**
+   ```
+   CORS_ALLOWED_ORIGIN_PATTERNS = *
+   ```
+
+5. **Salvar e aguardar redeploy**
+   - Railway redeploya automaticamente após adicionar variáveis
+   - Acompanhe os logs na aba **"Deployments"**
+
 
 ### 6. Deploy Automático
 Seu workflow GitHub Actions pushará automaticamente para Railway:
@@ -75,7 +138,7 @@ VITE_API_URL=https://mifica-backend-prod.railway.app
 ## 📊 O que Impressiona Recrutadores
 
 ✅ **Backend em produção 24/7**  
-✅ **Database PostgreSQL profissional**  
+✅ **Database MySQL profissional**  
 ✅ **CI/CD automático com GitHub Actions**  
 ✅ **Logs e monitoramento no Railway**  
 ✅ **Variáveis de ambiente seguras**  

@@ -5,11 +5,9 @@ import { useAuth } from './context/AuthContext';
 import Login from './pages/Login.jsx';
 import Cadastro from './pages/Cadastro.jsx';
 import CadastroAdmin from './pages/CadastroAdmin.jsx';
-import AcessoAdmin from './pages/AcessoAdmin.jsx';
 import Dashboard from './pages/Dashboard';
 import Perfil from './pages/Perfil.jsx';
 import Configuracao from './pages/Configuracoes.jsx';
-import RotaCadastroAdmin from './pages/RotaCadastroAdmin.jsx';
 
 // Componentes
 import RotaAdmin from './components/RotaAdmin.jsx';
@@ -34,14 +32,7 @@ function RotasProtegidas() {
       <Route path="/" element={<Navigate to="/login" />} />
       <Route path="/login" element={<Login />} />
       <Route path="/cadastro" element={<Cadastro />} />
-      <Route
-        path="/cadastro-admin"
-        element={
-          <RotaCadastroAdmin>
-            <CadastroAdmin />
-          </RotaCadastroAdmin>
-        }
-      />
+      <Route path="/cadastro-admin" element={<CadastroAdmin />} />
       <Route
         path="/dashboard"
         element={
@@ -64,7 +55,6 @@ function RotasProtegidas() {
           )
         }
       />
-      <Route path="/acesso-admin" element={<AcessoAdmin />} />
       <Route
         path="/perfil"
         element={
