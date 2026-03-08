@@ -3,23 +3,30 @@ package com.mifica.redis;
 import com.mifica.service.GamificationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ConcurrentLinkedDeque;
 
 /**
  * Subscriber Redis Pub/Sub para eventos de gamificação.
  * Processa mensagens do canal "gamification-events" e delega ao GamificationService.
  *
- * A senha admin.redis.senha é usada para proteger o endpoint REST de acesso
- * ao conteúdo do consumer (via SecureController), não para filtrar mensagens
- * no subscriber — o Pub/Sub do Redis já é protegido pela autenticação do próprio Redis.
+ * As últimas mensagens recebidas ficam armazenadas em memória e só podem ser
+ * visualizadas via SecureController mediante a senha correta (admin.redis.senha).
  */
 @Component
 public class GamificationSubscriber {
 
     private static final Logger log = LoggerFactory.getLogger(GamificationSubscriber.class);
+    private static final int MAX_MENSAGENS = 50;
+    private static final DateTimeFormatter FMT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     private final GamificationService gamificationService;
+    private final ConcurrentLinkedDeque<String> mensagensRecebidas = new ConcurrentLinkedDeque<>();
 
     public GamificationSubscriber(GamificationService gamificationService) {
         this.gamificationService = gamificationService;
@@ -33,6 +40,13 @@ public class GamificationSubscriber {
     public void onMessage(String message) {
         log.info("📥 Evento de gamificação recebido: {}", message);
 
+        // Armazena com timestamp para visualização protegida por senha
+        String registro = "[" + LocalDateTime.now().format(FMT) + "] " + message;
+        mensagensRecebidas.addFirst(registro);
+        while (mensagensRecebidas.size() > MAX_MENSAGENS) {
+            mensagensRecebidas.removeLast();
+        }
+
         try {
             // Parse: "User:123 Points:50"
             String[] parts = message.split(" ");
@@ -44,5 +58,20 @@ public class GamificationSubscriber {
         } catch (Exception e) {
             log.error("❌ Erro ao processar evento de gamificação: {}", message, e);
         }
+    }
+
+    /**
+     * Retorna as últimas mensagens recebidas (máx. 50).
+     * Somente deve ser chamado após validação de senha (via SecureController).
+     */
+    public List<String> getMensagens() {
+        return new ArrayList<>(mensagensRecebidas);
+    }
+
+    /**
+     * Retorna quantas mensagens estão armazenadas.
+     */
+    public int getTotal() {
+        return mensagensRecebidas.size();
     }
 }
