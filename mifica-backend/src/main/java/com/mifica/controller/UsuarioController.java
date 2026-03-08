@@ -27,6 +27,13 @@ import com.mifica.service.UsuarioService;
 import com.mifica.util.JwtUtil;
 import com.mifica.redis.GamificationPublisher;
 
+/**
+ * Controller principal de usuários — gerencia cadastro, login, perfil,
+ * gamificação, reputação, conquistas e operações administrativas.
+ *
+ * Todos os endpoints começam com /api/usuarios.
+ * Autenticação via JWT no header Authorization: Bearer {token}.
+ */
 @RestController
 @RequestMapping("/api/usuarios")
 public class UsuarioController {
@@ -56,6 +63,11 @@ public class UsuarioController {
     }
 
     // 🔧 Cadastro de usuário comum
+    /**
+     * Cadastro público de usuário.
+     * Verifica duplicidade de email antes de criar a conta.
+     * Senha é criptografada com BCrypt no UsuarioService.
+     */
     @PostMapping("/cadastro")
     public ResponseEntity<?> cadastrarUsuario(@RequestBody UsuarioDTO dto) {
         if (usuarioService.emailJaExiste(dto.getEmail())) {
@@ -66,6 +78,10 @@ public class UsuarioController {
     }
 
     // 🔧 Cadastro de administrador
+    /**
+     * Cadastro de administrador (protegido por senha de acesso).
+     * Cria usuário com role ADMIN e reputação inicial de 100.
+     */
     @PostMapping("/cadastro-admin")
     public ResponseEntity<?> cadastrarAdmin(@RequestBody Map<String, Object> payload) {
         Usuario novoAdmin = new Usuario();
@@ -86,6 +102,10 @@ public class UsuarioController {
     }
 
  // 🔧 Login com JWT via POST (frontend/app)
+    /**
+     * Autenticação de usuário — valida credenciais e retorna token JWT.
+     * O frontend armazena o token e envia no header Authorization.
+     */
     @PostMapping("/login")
     public ResponseEntity<?> loginPost(@RequestBody LoginDTO dto) {
         boolean valido = usuarioService.validarLogin(dto.getEmail(), dto.getSenha());
@@ -94,8 +114,10 @@ public class UsuarioController {
         }
 
         Usuario usuario = usuarioService.buscarPorEmail(dto.getEmail());
+        // Gera token JWT assinado com HMAC-SHA256 contendo email e role
         String token = jwtUtil.gerarToken(usuario.getEmail());
 
+        // Retorna token + dados do usuário para o frontend armazenar
         Map<String, Object> resposta = new HashMap<>();
         resposta.put("token", token);
         resposta.put("id", usuario.getId());
@@ -122,6 +144,10 @@ public class UsuarioController {
     }
 
     // 🔧 Perfil do usuário autenticado
+    /**
+     * Retorna o perfil do usuário autenticado.
+     * Extrai o email do token JWT e busca os dados no banco.
+     */
     @GetMapping("/perfil")
     public ResponseEntity<?> perfil(@RequestHeader("Authorization") String token) {
         try {
@@ -265,8 +291,13 @@ public ResponseEntity<?> atualizarSenha(
         this.publisher = publisher;
     }
 
+    /**
+     * Publica evento de pontuação no Redis Pub/Sub.
+     * O GamificationSubscriber recebe e processa os pontos de forma assíncrona.
+     */
     @PostMapping("/{id}/points")
     public ResponseEntity<String> addPoints(@PathVariable Long userId, @RequestParam int points) {
+        // Publica mensagem no canal Redis — processada assincronamente pelo subscriber
         publisher.publishEvent(userId, points);
         return ResponseEntity.ok("📤 Evento de pontos enviado via Redis para usuário " + userId);
     }

@@ -11,6 +11,15 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Controller de acesso protegido por senha.
+ * Permite visualizar as mensagens recebidas pelo subscriber Redis Pub/Sub
+ * somente mediante a senha correta (admin.redis.senha).
+ *
+ * Endpoint: POST /api/secure/conteudo
+ * Body: { "senha": "..." }
+ * Retorno: { total, canal, mensagens[] }
+ */
 @RestController
 @RequestMapping("/api/secure")
 public class SecureController {

@@ -16,6 +16,14 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.lang.NonNull;
 
+/**
+ * Filtro JWT customizado que intercepta cada requisição HTTP.
+ * Extrai o token do header Authorization, valida a assinatura HMAC-SHA256,
+ * e injeta o usuário autenticado no SecurityContext do Spring Security.
+ *
+ * Executa uma única vez por requisição (OncePerRequestFilter).
+ * Rotas públicas (login, Swagger, blockchain) são ignoradas via shouldNotFilter.
+ */
 @Component
 public class JwtFiltro extends OncePerRequestFilter {
 
@@ -25,12 +33,13 @@ public class JwtFiltro extends OncePerRequestFilter {
         this.jwtService = jwtService;
     }
 
+    /**
+     * Define quais rotas NÃO passam pelo filtro JWT (endpoints públicos).
+     * Essas rotas são acessíveis sem token de autenticação.
+     */
     @Override
     protected boolean shouldNotFilter(@NonNull HttpServletRequest request) throws ServletException {
         String path = request.getRequestURI();
-            System.out.println("JwtFiltro: shouldNotFilter path = " + path);
-            
-        // Endpoints públicos não passam pelo filtro JWT
     return path.equals("/") ||
            path.equals("/api/usuarios/login") ||
            path.equals("/api/usuarios/criar") ||
@@ -40,31 +49,41 @@ public class JwtFiltro extends OncePerRequestFilter {
            path.startsWith("/api/blockchain");
 }
 
+    /**
+     * Intercepta a requisição, extrai e valida o token JWT.
+     * Se válido, injeta email + role no SecurityContext para que
+     * o Spring Security autorize o acesso aos endpoints protegidos.
+     */
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request,
                                     @NonNull HttpServletResponse response,
                                     @NonNull FilterChain filterChain)
                                     throws ServletException, IOException {
 
+        // Extrai o header Authorization: Bearer <token>
         String authHeader = request.getHeader("Authorization");
 
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            // Remove o prefixo "Bearer " para obter apenas o token JWT
             String token = authHeader.substring(7);
 
             try {
+                // Valida assinatura HMAC-SHA256 e extrai os claims (payload)
                 Claims claims = jwtService.validarToken(token);
                 String email = claims.getSubject();
                 String role = claims.get("role", String.class);
 
                 if (email != null && role != null) {
+                    // Cria a authority com prefixo ROLE_ para o Spring Security
                     SimpleGrantedAuthority authority = new SimpleGrantedAuthority("ROLE_" + role);
+                    // Injeta o usuário autenticado no contexto de segurança
                     UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
                             email, null, List.of(authority)
                     );
                     SecurityContextHolder.getContext().setAuthentication(auth);
                 }
             } catch (Exception e) {
-                // Token inválido ou expirado — ignora e segue sem autenticação
+                // Token inválido ou expirado — segue sem autenticação (retornará 403)
             }
         }
 

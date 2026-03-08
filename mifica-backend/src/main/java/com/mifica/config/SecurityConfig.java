@@ -19,6 +19,14 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import com.mifica.util.JwtFiltro;
 
+/**
+ * Configuração central de segurança da aplicação.
+ * Define a cadeia de filtros HTTP (SecurityFilterChain), política CORS,
+ * endpoints públicos vs. protegidos, e integração com o filtro JWT customizado.
+ *
+ * Padrão: Stateless — não mantém sessão no servidor, toda autenticação
+ * é feita via token JWT no header Authorization.
+ */
 @Configuration
 public class SecurityConfig {
 
@@ -28,13 +36,24 @@ public class SecurityConfig {
     @Value("${app.cors.allowed-origin-patterns:*}")
     private String allowedOriginPatterns;
 
+    /**
+     * Monta a cadeia de segurança HTTP do Spring Security.
+     * - CORS habilitado com configuração customizada
+     * - CSRF desabilitado (API REST stateless, sem cookies de sessão)
+     * - Endpoints públicos: login, cadastro, blockchain, Swagger, Actuator
+     * - Filtro JWT inserido antes do UsernamePasswordAuthenticationFilter
+     */
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
+            // Configura CORS para permitir requisições do frontend (GitHub Pages)
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+            // Desabilita CSRF — desnecessário em APIs REST stateless com JWT
             .csrf(AbstractHttpConfigurer::disable)
             .authorizeHttpRequests(auth -> auth
+                // Libera preflight OPTIONS para qualquer rota (exigido pelo CORS)
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                // Endpoints públicos — acessíveis sem autenticação
                 .requestMatchers(
                     "/api/usuarios/login",
                     "/api/usuarios/cadastro",
@@ -53,9 +72,15 @@ public class SecurityConfig {
         return http.build();
     }
 
+    /**
+     * Configura a política CORS da aplicação.
+     * Origins permitidos são lidos da variável de ambiente CORS_ALLOWED_ORIGIN_PATTERNS,
+     * permitindo configuração diferente entre dev (localhost) e prod (GitHub Pages).
+     */
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
+        // Lê origins da variável de ambiente, separados por vírgula
         configuration.setAllowedOriginPatterns(
             Arrays.stream(allowedOriginPatterns.split(","))
                 .map(String::trim)
@@ -65,6 +90,7 @@ public class SecurityConfig {
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(false);
+        // Expõe o header Authorization para o frontend acessar o token JWT
         configuration.setExposedHeaders(List.of("Authorization"));
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
@@ -72,6 +98,7 @@ public class SecurityConfig {
         return source;
     }
 
+    /** Encoder BCrypt para criptografia de senhas (fator de custo padrão: 10). */
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();

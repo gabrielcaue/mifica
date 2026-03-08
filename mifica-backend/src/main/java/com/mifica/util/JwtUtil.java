@@ -17,6 +17,14 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 
+/**
+ * Utilitário JWT usado pelos controllers para gerar e extrair dados de tokens.
+ * Complementa o JwtService — este é injetado nos controllers via @Autowired,
+ * enquanto o JwtService é usado internamente pelo JwtFiltro.
+ *
+ * Tokens gerados aqui expiram em 24 horas e incluem a role do usuário
+ * para controle de acesso no frontend e backend.
+ */
 @Component
 public class JwtUtil {
 
@@ -26,12 +34,18 @@ public class JwtUtil {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
-    private static final long EXPIRATION_TIME = 86400000; // 24h
+    /** Tempo de expiração do token: 24 horas (em milissegundos). */
+    private static final long EXPIRATION_TIME = 86400000;
 
+    /** Gera a chave HMAC-SHA256 a partir do secret para assinar tokens. */
     private Key getSigningKey() {
         return Keys.hmacShaKeyFor(secretKey.getBytes());
     }
 
+    /**
+     * Gera token JWT para o usuário identificado pelo email.
+     * Busca o usuário no banco para incluir a role no token.
+     */
     // Gera token com email como subject e role como claim
     public String gerarToken(String email) {
         Optional<Usuario> usuarioOpt = usuarioRepository.findByEmail(email);

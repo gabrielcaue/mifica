@@ -40,7 +40,8 @@ public class GamificationSubscriber {
     public void onMessage(String message) {
         log.info("📥 Evento de gamificação recebido: {}", message);
 
-        // Armazena com timestamp para visualização protegida por senha
+        // Armazena a mensagem com timestamp no buffer circular (máx. 50)
+        // Essas mensagens só podem ser visualizadas via SecureController com senha
         String registro = "[" + LocalDateTime.now().format(FMT) + "] " + message;
         mensagensRecebidas.addFirst(registro);
         while (mensagensRecebidas.size() > MAX_MENSAGENS) {
@@ -48,11 +49,12 @@ public class GamificationSubscriber {
         }
 
         try {
-            // Parse: "User:123 Points:50"
+            // Faz o parse da mensagem no formato "User:{id} Points:{pontos}"
             String[] parts = message.split(" ");
             Long userId = Long.parseLong(parts[0].split(":")[1]);
             int points = Integer.parseInt(parts[1].split(":")[1]);
 
+            // Delega ao GamificationService para persistir pontos e verificar badges
             gamificationService.addPoints(userId, points);
             log.info("✅ Pontos processados: userId={}, points={}", userId, points);
         } catch (Exception e) {

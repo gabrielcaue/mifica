@@ -8,12 +8,18 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Serviço de blockchain — registra e consulta transações na blockchain.
+ * Persiste transações com hash, remetente, destinatário e valor no banco de dados.
+ * Converte entre entidade JPA e DTO para expor via API REST.
+ */
 @Service
 public class BlockchainService {
 
     @Autowired
     private TransacaoBlockchainRepository transacaoRepo;
 
+    /** Registra uma nova transação blockchain com timestamp automático. */
     public TransacaoBlockchainDTO registrarTransacao(TransacaoBlockchainDTO dto) {
         TransacaoBlockchain transacao = new TransacaoBlockchain();
         transacao.setHashTransacao(dto.getHashTransacao());

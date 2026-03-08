@@ -18,6 +18,13 @@ import com.mifica.entity.SolicitacaoCredito;
 import com.mifica.entity.Usuario;
 import com.mifica.repository.UsuarioRepository;
 
+/**
+ * Serviço principal de usuários — gerencia CRUD, autenticação,
+ * reputação, conquistas, recompensas e alteração de senha.
+ *
+ * Senhas são criptografadas com BCrypt antes de persistir.
+ * Todas as operações de banco são feitas via Spring Data JPA (UsuarioRepository).
+ */
 @Service
 public class UsuarioService {
 
@@ -51,6 +58,10 @@ public class UsuarioService {
     }
 
     // ✅ Novo método para login
+    /**
+     * Valida credenciais de login.
+     * Compara senha digitada com hash BCrypt armazenado no banco.
+     */
     public boolean validarLogin(String email, String senhaDigitada) {
         Usuario usuario = buscarPorEmail(email);
         if (usuario == null) throw new RuntimeException("Usuário não encontrado");

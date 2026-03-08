@@ -6,6 +6,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
+/**
+ * Publisher Redis Pub/Sub — publica eventos de gamificação no canal "gamification-events".
+ *
+ * Responsabilidade: receber chamadas dos controllers e publicar mensagens
+ * no canal Redis para processamento assíncrono pelo GamificationSubscriber.
+ *
+ * Fluxo: Controller → Publisher → Redis Canal → Subscriber → GamificationService
+ */
 @Service
 public class GamificationPublisher {
 
@@ -17,8 +25,17 @@ public class GamificationPublisher {
         this.redisTemplate = redisTemplate;
     }
 
+    /**
+     * Publica um evento de pontos no canal Redis Pub/Sub.
+     * O GamificationSubscriber receberá a mensagem e processará os pontos.
+     *
+     * @param userId ID do usuário que receberá os pontos
+     * @param points quantidade de pontos a adicionar
+     */
     public void publishEvent(Long userId, int points) {
+        // Formato padronizado: "User:{id} Points:{pontos}" — parseado pelo subscriber
         String message = "User:" + userId + " Points:" + points;
+        // convertAndSend publica a mensagem no canal Redis (fire-and-forget)
         redisTemplate.convertAndSend(RedisConfig.GAMIFICATION_CHANNEL, message);
         log.info("📤 Evento publicado no Redis: {}", message);
     }
