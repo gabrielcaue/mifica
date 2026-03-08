@@ -29,14 +29,13 @@
    - `MYSQLUSER`
    - `MYSQLPASSWORD`
 
-#### Kafka (opcional, recomendado para gamificação/eventos)
-Use um provedor de Kafka gerenciado (ex.: Upstash) e configure no backend:
-- `KAFKA_BOOTSTRAP_SERVERS`
-- `KAFKA_SECURITY_PROTOCOL`
-- `KAFKA_SASL_MECHANISM`
-- `KAFKA_USERNAME`
-- `KAFKA_PASSWORD`
-- `ADMIN_KAFKA_PASSWORD`
+#### Redis (Upstash — para gamificação/eventos)
+Crie uma conta gratuita no [Upstash](https://upstash.com) e configure no backend:
+- `REDIS_HOST`
+- `REDIS_PORT`
+- `REDIS_PASSWORD`
+- `REDIS_SSL` (true para Upstash)
+- `ADMIN_REDIS_PASSWORD`
 
 ### 4. Configurar Variáveis de Ambiente no Railway
 
@@ -60,7 +59,7 @@ Use um provedor de Kafka gerenciado (ex.: Upstash) e configure no backend:
    ```
    JWT_SECRET = (gerar - veja abaixo como criar)
    ADMIN_PASSWORD = SenhaAdmin2026!
-   ADMIN_KAFKA_PASSWORD = senha-especial-admin-kafka
+   ADMIN_REDIS_PASSWORD = senha-especial-admin-redis
    ```
 
    **🔐 Como gerar o JWT_SECRET:**
@@ -101,13 +100,12 @@ Use um provedor de Kafka gerenciado (ex.: Upstash) e configure no backend:
    MYSQLPASSWORD = (copiar do serviço MySQL)
    ```
 
-   **Kafka (se usar Upstash ou outro provedor):**
+   **Redis (Upstash):**
    ```
-   KAFKA_BOOTSTRAP_SERVERS = seu-kafka-bootstrap-servers
-   KAFKA_SECURITY_PROTOCOL = SASL_SSL
-   KAFKA_SASL_MECHANISM = PLAIN
-   KAFKA_USERNAME = seu-kafka-username
-   KAFKA_PASSWORD = seu-kafka-password
+   REDIS_HOST = seu-redis-host.upstash.io
+   REDIS_PORT = 6379
+   REDIS_PASSWORD = seu-redis-password
+   REDIS_SSL = true
    ```
 
    **CORS:**

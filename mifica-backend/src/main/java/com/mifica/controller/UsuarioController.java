@@ -25,7 +25,7 @@ import com.mifica.entity.Usuario;
 import com.mifica.repository.UsuarioRepository;
 import com.mifica.service.UsuarioService;
 import com.mifica.util.JwtUtil;
-import com.mifica.service.GamificationEventProducer; 
+import com.mifica.redis.GamificationPublisher;
 
 @RestController
 @RequestMapping("/api/usuarios")
@@ -258,17 +258,18 @@ public ResponseEntity<?> atualizarSenha(
     }
 }
 
-    private final GamificationEventProducer producer;
+    private final GamificationPublisher publisher;
 
-    public UsuarioController(GamificationEventProducer producer) {
-        this.producer = producer;
+    @Autowired
+    public UsuarioController(GamificationPublisher publisher) {
+        this.publisher = publisher;
     }
 
     @PostMapping("/{id}/points")
     public ResponseEntity<String> addPoints(@PathVariable Long userId, @RequestParam int points) {
-    producer.publishEvent(userId, points);
-    return ResponseEntity.ok("📤 Evento de pontos enviado para usuário " + userId);
-}
+        publisher.publishEvent(userId, points);
+        return ResponseEntity.ok("📤 Evento de pontos enviado via Redis para usuário " + userId);
+    }
 
 
 }

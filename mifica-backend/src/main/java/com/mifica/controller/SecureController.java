@@ -11,7 +11,7 @@ import java.util.Map;
 @RequestMapping("/api/secure")
 public class SecureController {
 
-    @Value("${admin.kafka.senha}")
+    @Value("${admin.redis.senha}")
     private String senhaCorreta;
 
     @PostMapping("/conteudo")
@@ -21,6 +21,6 @@ public class SecureController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                                  .body("Senha incorreta. Acesso negado.");
         }
-        return ResponseEntity.ok("Conteúdo protegido: dados do producer/consumer...");
+        return ResponseEntity.ok("Conteúdo protegido: dados do Redis Pub/Sub consumer...");
     }
 }

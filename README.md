@@ -1,6 +1,6 @@
 # 🧠 Mifica — Plataforma Modular de Reputação, Gamificação e Blockchain
 
-> ⚠️ **Status: Em manutenção** — Estou refatorando a infraestrutura de produção, migrando Kafka para modo KRaft (sem Zookeeper), ajustando segurança de CORS e configurando variáveis de ambiente seguras no Railway. Algumas funcionalidades podem estar temporariamente indisponíveis.
+> ✅ **Status: Online** — Infraestrutura migrada de Kafka para Redis Pub/Sub (Upstash), segurança CORS configurada e variáveis de ambiente seguras no Railway.
 
 ---
 
@@ -16,7 +16,7 @@
 
 ## Sobre o Projeto
 
-Desenvolvi o Mifica como uma plataforma modular que integra **reputação**, **gamificação** e **transações via blockchain**, com foco em escalabilidade, segurança e extensibilidade. O projeto é dividido em módulos independentes que se comunicam via API REST e eventos assíncronos com Kafka.
+Desenvolvi o Mifica como uma plataforma modular que integra **reputação**, **gamificação** e **transações via blockchain**, com foco em escalabilidade, segurança e extensibilidade. O projeto é dividido em módulos independentes que se comunicam via API REST e eventos assíncronos com Redis Pub/Sub.
 
 Meu objetivo foi construir uma aplicação que demonstrasse domínio real sobre o ciclo completo de um produto de software: desde a modelagem de domínio e arquitetura de microsserviços até o deploy em produção com CI/CD automatizado.
 
@@ -29,7 +29,7 @@ Meu objetivo foi construir uma aplicação que demonstrasse domínio real sobre 
 ✅ Autenticação JWT com controle de acesso por roles (USER / ADMIN)  
 ✅ Sistema de reputação com cálculo dinâmico e conquistas desbloqueáveis  
 ✅ Gamificação com missões diárias, recompensas e pontuação  
-✅ Integração com Apache Kafka para eventos assíncronos (gamificação em tempo real)  
+✅ Integração com Redis Pub/Sub para eventos assíncronos (gamificação em tempo real)  
 ✅ Persistência com MySQL + Hibernate/JPA  
 ✅ Documentação automática da API com Swagger/OpenAPI  
 ✅ Spring Security com filtros customizados e CORS configurável  
@@ -43,7 +43,7 @@ Meu objetivo foi construir uma aplicação que demonstrasse domínio real sobre 
 ### Infraestrutura & DevOps
 ✅ **Docker** — Multi-stage builds otimizados para backend e frontend  
 ✅ **Docker Compose** — Orquestração local de todos os serviços  
-✅ **Apache Kafka (KRaft)** — Mensageria assíncrona sem Zookeeper  
+✅ **Redis Pub/Sub (Upstash)** — Mensageria assíncrona para eventos de gamificação  
 ✅ **CI/CD com GitHub Actions** — Pipeline automatizado de build e deploy  
 ✅ **Railway** — Backend e MySQL em produção com HTTPS automático  
 ✅ **GitHub Pages** — Frontend estático com deploy contínuo  
@@ -60,17 +60,15 @@ Meu objetivo foi construir uma aplicação que demonstrasse domínio real sobre 
 
 ### Março/2026
 
-- **Migrei o Kafka de Zookeeper para modo KRaft** — Eliminei a dependência do Zookeeper, simplificando a stack e seguindo a direção oficial do Apache Kafka. O cluster agora opera em modo combinado (controller + broker) com a imagem `bitnami/kafka:3.7`.
+- **Migrei de Apache Kafka para Redis Pub/Sub** — Substituí toda a infraestrutura de Kafka (KRaft) por Redis Pub/Sub com Upstash como provedor gerenciado. A migração simplificou a stack, reduziu custos e manteve a comunicação assíncrona para eventos de gamificação.
 
 - **Refatorei toda a configuração de segurança (CORS/Security)** — Unifiquei a configuração CORS no Spring Security com `allowedOriginPatterns` configurável por variável de ambiente, liberação explícita de preflight `OPTIONS`, e endpoints públicos para cadastro e login acessíveis por qualquer pessoa.
 
-- **Eliminei credenciais hardcoded do repositório** — Todas as senhas, tokens e secrets agora são lidas exclusivamente por variáveis de ambiente (`JWT_SECRET`, `MYSQLPASSWORD`, `KAFKA_PASSWORD`, etc.), seguindo o princípio 12-Factor App.
+- **Eliminei credenciais hardcoded do repositório** — Todas as senhas, tokens e secrets agora são lidas exclusivamente por variáveis de ambiente (`JWT_SECRET`, `MYSQLPASSWORD`, `REDIS_PASSWORD`, etc.), seguindo o princípio 12-Factor App.
 
 - **Corrigi inconsistências do perfil de produção** — Removi dialeto PostgreSQL incorreto que estava no `application-prod.properties` (o banco é MySQL), ajustei `ddl-auto` para `update`, e eliminei `context-path` duplicado que gerava `/api/api/`.
 
 - **Atualizei o pipeline CI/CD** — Substituí a action deprecada `railwayapp/railway-action@v4` pela Railway CLI oficial, garantindo deploys funcionais via GitHub Actions.
-
-- **Limpei arquivos legados** — Removi `kafka_server_jaas.conf`, `zookeeper_jaas.conf` e `sasl.properties` que não são mais necessários após a migração para KRaft.
 
 ---
 
@@ -86,13 +84,13 @@ Meu objetivo foi construir uma aplicação que demonstrasse domínio real sobre 
                     ┌─────────────┼─────────────┐
                     ▼             ▼             ▼
              ┌───────────┐ ┌───────────┐ ┌───────────┐
-             │  MySQL    │ │  Kafka    │ │  Traefik  │
-             │  Railway  │ │  KRaft    │ │  Proxy    │
+             │  MySQL    │ │  Redis    │ │  Traefik  │
+             │  Railway  │ │  Upstash  │ │  Proxy    │
              └───────────┘ └───────────┘ └───────────┘
 ```
 
 - **Backend (Spring Boot 3 / Java 21)** → Lógica de negócio, reputação, gamificação e blockchain
-- **Kafka (KRaft, sem Zookeeper)** → Eventos assíncronos para gamificação em tempo real
+- **Redis Pub/Sub (Upstash)** → Eventos assíncronos para gamificação em tempo real
 - **Frontend (React + Vite)** → Interface do usuário com SPA
 - **Streamlit (Python)** → Painel administrativo e visualizações de dados
 - **MySQL** → Persistência de dados em produção (Railway)
@@ -106,7 +104,7 @@ Meu objetivo foi construir uma aplicação que demonstrasse domínio real sobre 
 ```
 mifica/
 ├── mifica-backend/        # API REST — Spring Boot 3, Java 21
-│   ├── src/main/java/     # Controllers, Services, Entities, Kafka
+│   ├── src/main/java/     # Controllers, Services, Entities, Redis Pub/Sub
 │   ├── src/main/resources/ # application.properties, application-prod.properties
 │   ├── Dockerfile          # Build local
 │   └── Dockerfile.prod     # Build produção (multi-stage)
@@ -115,7 +113,7 @@ mifica/
 │   └── .env.production    # URL da API em produção
 ├── mifica-streamlit/      # Dashboard — Python, Streamlit
 ├── .github/workflows/     # CI/CD — GitHub Actions
-├── docker-compose.yml     # Orquestração local (MySQL, Kafka KRaft, Traefik)
+├── docker-compose.yml     # Orquestração local (MySQL, Redis, Traefik)
 ├── start-dev.sh           # Script para subir ambiente de desenvolvimento
 └── DEPLOYMENT_RAILWAY.md  # Guia completo de deploy no Railway
 ```
@@ -129,7 +127,7 @@ mifica/
 git clone https://github.com/gabrielcaue/mifica.git
 cd mifica
 
-# Suba os containers (Kafka KRaft + MySQL + Backend + Streamlit + Traefik)
+# Suba os containers (Redis + MySQL + Backend + Streamlit + Traefik)
 ./start-dev.sh
 ```
 
@@ -147,7 +145,7 @@ cd mifica
 | Tecnologia | Uso no Projeto | Status |
 |---|---|---|
 | **Java 21 + Spring Boot 3** | API REST, Security, JPA | ✅ Produção |
-| **Apache Kafka (KRaft)** | Eventos assíncronos de gamificação | ✅ Implementado |
+| **Redis Pub/Sub (Upstash)** | Eventos assíncronos de gamificação | ✅ Produção |
 | **Docker + Multi-stage Build** | Containers otimizados | ✅ Produção |
 | **CI/CD (GitHub Actions)** | Deploy automático backend + frontend | ✅ Produção |
 | **MySQL** | Persistência relacional | ✅ Produção (Railway) |
@@ -166,9 +164,6 @@ cd mifica
 - **📊 Prometheus + Grafana (Observabilidade)**  
   Monitoramento de métricas do backend (latência, throughput, erros, uso de recursos). Qualquer sistema em produção precisa de observabilidade — é o primeiro sinal de maturidade operacional.
 
-- **⚡ Redis (Cache Distribuído + Ranking)**  
-  Cache de sessões, ranking de gamificação em tempo real com Sorted Sets, e rate limiting. Redis é onipresente em arquiteturas modernas e resolve problemas reais de performance.
-
 - **🧵 Kubernetes (GKE / EKS / AKS)**  
   Orquestração de containers com auto-scaling, rolling updates e self-healing. Migrar de Docker Compose para K8s demonstra capacidade de operar em escala real.
 
@@ -185,11 +180,11 @@ cd mifica
 
 ## 💡 Por que Este Projeto se Destaca
 
-1. **Não é um CRUD genérico** — Tem Kafka, gamificação, blockchain e eventos assíncronos
+1. **Não é um CRUD genérico** — Tem Redis Pub/Sub, gamificação, blockchain e eventos assíncronos
 2. **Está em produção** — Backend no Railway, frontend no GitHub Pages, CI/CD rodando
 3. **Segue boas práticas** — 12-Factor, variáveis de ambiente, multi-stage Docker
-4. **Arquitetura real** — Microsserviços com mensageria, não monolito simples
-5. **Full-stack completo** — Java + React + Python + DevOps + Cloud
+4. **Arquitetura real** — Serviços com mensageria assíncrona, não monolito simples
+5. **Completo** — Java + React + Python + DevOps + Cloud
 
 ---
 
