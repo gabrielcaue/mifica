@@ -35,8 +35,13 @@ public class GamificationPublisher {
     public void publishEvent(Long userId, int points) {
         // Formato padronizado: "User:{id} Points:{pontos}" — parseado pelo subscriber
         String message = "User:" + userId + " Points:" + points;
-        // convertAndSend publica a mensagem no canal Redis (fire-and-forget)
-        redisTemplate.convertAndSend(RedisConfig.GAMIFICATION_CHANNEL, message);
-        log.info("📤 Evento publicado no Redis: {}", message);
+        try {
+            // convertAndSend publica a mensagem no canal Redis (fire-and-forget)
+            redisTemplate.convertAndSend(RedisConfig.GAMIFICATION_CHANNEL, message);
+            log.info("📤 Evento publicado no Redis: {}", message);
+        } catch (Exception e) {
+            // Redis indisponível não deve impedir operações do usuário
+            log.warn("⚠️ Falha ao publicar evento no Redis (operação do usuário não afetada): {}", e.getMessage());
+        }
     }
 }

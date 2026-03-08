@@ -1,6 +1,8 @@
 package com.mifica.config;
 
 import com.mifica.redis.GamificationSubscriber;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
@@ -50,12 +52,30 @@ public class RedisConfig {
      * Conecta-se ao Redis, se inscreve no canal e despacha mensagens para o adapter.
      * Equivale ao @KafkaListener do Kafka, mas para Redis Pub/Sub.
      */
+    /**
+     * Container resiliente: se o Redis estiver indisponível no startup,
+     * a aplicação inicia normalmente — apenas o Pub/Sub fica inativo.
+     * Isso evita crash loops no Railway quando o Upstash estiver temporariamente fora.
+     */
     @Bean
     public RedisMessageListenerContainer redisMessageListenerContainer(
             @NonNull RedisConnectionFactory connectionFactory,
             @NonNull MessageListenerAdapter gamificationListenerAdapter,
             @NonNull ChannelTopic gamificationTopic) {
-        RedisMessageListenerContainer container = new RedisMessageListenerContainer();
+
+        final Logger log = LoggerFactory.getLogger(RedisConfig.class);
+
+        RedisMessageListenerContainer container = new RedisMessageListenerContainer() {
+            @Override
+            public void start() {
+                try {
+                    super.start();
+                    log.info("✅ Redis Pub/Sub conectado com sucesso no canal '{}'", GAMIFICATION_CHANNEL);
+                } catch (Exception e) {
+                    log.warn("⚠️ Redis Pub/Sub indisponível — app continua sem listener: {}", e.getMessage());
+                }
+            }
+        };
         // Conecta ao Redis (host/port/password definidos em application.properties)
         container.setConnectionFactory(connectionFactory);
         // Registra o listener no canal de gamificação
