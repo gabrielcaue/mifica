@@ -8,6 +8,7 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.data.redis.listener.adapter.MessageListenerAdapter;
+import org.springframework.lang.NonNull;
 
 @Configuration
 public class RedisConfig {
@@ -15,7 +16,7 @@ public class RedisConfig {
     public static final String GAMIFICATION_CHANNEL = "gamification-events";
 
     @Bean
-    public StringRedisTemplate stringRedisTemplate(RedisConnectionFactory connectionFactory) {
+    public StringRedisTemplate stringRedisTemplate(@NonNull RedisConnectionFactory connectionFactory) {
         return new StringRedisTemplate(connectionFactory);
     }
 
@@ -25,15 +26,15 @@ public class RedisConfig {
     }
 
     @Bean
-    public MessageListenerAdapter gamificationListenerAdapter(GamificationSubscriber subscriber) {
+    public MessageListenerAdapter gamificationListenerAdapter(@NonNull GamificationSubscriber subscriber) {
         return new MessageListenerAdapter(subscriber, "onMessage");
     }
 
     @Bean
     public RedisMessageListenerContainer redisMessageListenerContainer(
-            RedisConnectionFactory connectionFactory,
-            MessageListenerAdapter gamificationListenerAdapter,
-            ChannelTopic gamificationTopic) {
+            @NonNull RedisConnectionFactory connectionFactory,
+            @NonNull MessageListenerAdapter gamificationListenerAdapter,
+            @NonNull ChannelTopic gamificationTopic) {
         RedisMessageListenerContainer container = new RedisMessageListenerContainer();
         container.setConnectionFactory(connectionFactory);
         container.addMessageListener(gamificationListenerAdapter, gamificationTopic);
