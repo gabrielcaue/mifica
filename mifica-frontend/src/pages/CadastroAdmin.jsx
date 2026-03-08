@@ -15,8 +15,60 @@ export default function CadastroAdmin() {
   const [senha, setSenha] = useState('');
   const [telefone, setTelefone] = useState('');
   const [dataNascimento, setDataNascimento] = useState('');
+  const [erroData, setErroData] = useState('');
   const [role, setRole] = useState('USER');
   const navigate = useNavigate();
+
+  // Formata automaticamente a digitação para DD/MM/AAAA
+  const handleDataChange = (e) => {
+    let valor = e.target.value.replace(/\D/g, ''); // remove tudo que não é número
+    if (valor.length > 8) valor = valor.slice(0, 8);
+
+    // Insere as barras automaticamente
+    if (valor.length >= 5) {
+      valor = valor.slice(0, 2) + '/' + valor.slice(2, 4) + '/' + valor.slice(4);
+    } else if (valor.length >= 3) {
+      valor = valor.slice(0, 2) + '/' + valor.slice(2);
+    }
+
+    setDataNascimento(valor);
+    setErroData('');
+  };
+
+  // Valida se a data é real e se a pessoa tem pelo menos 16 anos
+  const validarData = (dataBR) => {
+    const partes = dataBR.split('/');
+    if (partes.length !== 3) return 'Formato inválido. Use DD/MM/AAAA.';
+
+    const dia = parseInt(partes[0], 10);
+    const mes = parseInt(partes[1], 10);
+    const ano = parseInt(partes[2], 10);
+
+    if (isNaN(dia) || isNaN(mes) || isNaN(ano)) return 'Data contém valores inválidos.';
+    if (dia < 1 || dia > 31) return 'Dia inválido (1 a 31).';
+    if (mes < 1 || mes > 12) return 'Mês inválido (1 a 12).';
+
+    const anoAtual = new Date().getFullYear();
+    if (ano < 1900 || ano > anoAtual) return `Ano inválido (1900 a ${anoAtual}).`;
+
+    // Verifica se a data realmente existe (ex: 31/02 não existe)
+    const dataObj = new Date(ano, mes - 1, dia);
+    if (dataObj.getDate() !== dia || dataObj.getMonth() !== mes - 1 || dataObj.getFullYear() !== ano) {
+      return 'Data inexistente (ex: 31/02 não existe).';
+    }
+
+    // Verifica idade mínima de 16 anos
+    const hoje = new Date();
+    let idade = hoje.getFullYear() - ano;
+    const mesAtual = hoje.getMonth() + 1;
+    const diaAtual = hoje.getDate();
+    if (mesAtual < mes || (mesAtual === mes && diaAtual < dia)) {
+      idade--;
+    }
+    if (idade < 16) return 'É necessário ter pelo menos 16 anos.';
+
+    return '';
+  };
 
   const formatarDataParaISO = (dataBR) => {
     const [dia, mes, ano] = dataBR.split('/');
@@ -25,6 +77,14 @@ export default function CadastroAdmin() {
 
   const handleCadastro = async (e) => {
     e.preventDefault();
+
+    // Valida data antes de enviar
+    const erro = validarData(dataNascimento);
+    if (erro) {
+      setErroData(erro);
+      return;
+    }
+
     try {
       const dataFormatada = formatarDataParaISO(dataNascimento);
 
@@ -136,14 +196,24 @@ export default function CadastroAdmin() {
             required
             className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
           />
-          <input
-            type="text"
-            placeholder="Data de nascimento (dd/MM/yyyy)"
-            value={dataNascimento}
-            onChange={e => setDataNascimento(e.target.value)}
-            required
-            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-          />
+          <div>
+            <input
+              type="text"
+              placeholder="Data de nascimento (DD/MM/AAAA)"
+              value={dataNascimento}
+              onChange={handleDataChange}
+              maxLength={10}
+              required
+              className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 ${
+                erroData
+                  ? 'border-red-500 focus:ring-red-500'
+                  : 'border-gray-300 focus:ring-indigo-500'
+              }`}
+            />
+            {erroData && (
+              <p className="text-red-500 text-sm mt-1">{erroData}</p>
+            )}
+          </div>
           <select
             value={role}
             onChange={e => setRole(e.target.value)}
