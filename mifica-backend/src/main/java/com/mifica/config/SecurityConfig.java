@@ -57,6 +57,7 @@ public class SecurityConfig {
                 .requestMatchers(
                     "/api/usuarios/login",
                     "/api/usuarios/cadastro",
+                    "/api/usuarios/cadastro-admin",
                     "/api/blockchain/**",
                     "/swagger-ui/**",
                     "/v3/api-docs/**",

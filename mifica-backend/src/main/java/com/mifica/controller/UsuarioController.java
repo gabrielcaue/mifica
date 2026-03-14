@@ -84,6 +84,11 @@ public class UsuarioController {
      */
     @PostMapping("/cadastro-admin")
     public ResponseEntity<?> cadastrarAdmin(@RequestBody Map<String, Object> payload) {
+        String senhaAcesso = (String) payload.get("senhaAcesso");
+        if (senhaAcesso == null || !senhaAcesso.equals(senhaCadastroAdmin)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Senha de acesso inválida.");
+        }
+
         Usuario novoAdmin = new Usuario();
         novoAdmin.setNome((String) payload.get("nome"));
         novoAdmin.setEmail((String) payload.get("email"));

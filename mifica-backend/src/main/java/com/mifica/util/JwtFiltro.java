@@ -42,6 +42,8 @@ public class JwtFiltro extends OncePerRequestFilter {
         String path = request.getRequestURI();
     return path.equals("/") ||
            path.equals("/api/usuarios/login") ||
+            path.equals("/api/usuarios/cadastro") ||
+            path.equals("/api/usuarios/cadastro-admin") ||
            path.equals("/api/usuarios/criar") ||
            path.startsWith("/swagger-ui") ||
            path.startsWith("/v3/api-docs") ||
