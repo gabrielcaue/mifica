@@ -8,8 +8,6 @@ export default function CadastroAdmin() {
   const [senhaAcesso, setSenhaAcesso] = useState('');
   const [autenticado, setAutenticado] = useState(false);
 
-  const senhaAdminCorreta = import.meta.env.VITE_SENHA_ADMIN;
-
   const [nome, setNome] = useState('');
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
@@ -108,7 +106,8 @@ export default function CadastroAdmin() {
       navigate('/login');
     } catch (err) {
       console.error('Erro ao cadastrar administrador:', err);
-      alert('Erro ao cadastrar administrador');
+      const msg = err?.response?.data || 'Erro ao cadastrar administrador';
+      alert(typeof msg === 'string' ? msg : 'Erro ao cadastrar administrador');
     }
   };
 
@@ -122,12 +121,14 @@ export default function CadastroAdmin() {
             <p className="text-sm text-gray-300 text-center">Digite a senha para acessar o cadastro de administrador</p>
           </div>
 <form
-  onSubmit={(e) => {
+  onSubmit={async (e) => {
     e.preventDefault();
-    if (senhaAcesso === senhaAdminCorreta) {
+    try {
+      await api.post('/usuarios/validar-acesso-admin', { senhaAcesso });
       setAutenticado(true);
-    } else {
-      alert("Senha incorreta");
+    } catch (err) {
+      const msg = err?.response?.data || 'Senha incorreta';
+      alert(typeof msg === 'string' ? msg : 'Senha incorreta');
     }
   }}
 >

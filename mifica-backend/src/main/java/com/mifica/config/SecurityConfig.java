@@ -58,6 +58,7 @@ public class SecurityConfig {
                     "/api/usuarios/login",
                     "/api/usuarios/cadastro",
                     "/api/usuarios/cadastro-admin",
+                    "/api/usuarios/validar-acesso-admin",
                     "/api/blockchain/**",
                     "/swagger-ui/**",
                     "/v3/api-docs/**",

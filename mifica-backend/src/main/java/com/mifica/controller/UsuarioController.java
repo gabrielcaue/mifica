@@ -56,6 +56,15 @@ public class UsuarioController {
     @Value("${admin.cadastro.senha}")
     private String senhaCadastroAdmin;
 
+    @PostMapping("/validar-acesso-admin")
+    public ResponseEntity<?> validarAcessoAdmin(@RequestBody Map<String, String> payload) {
+        String senhaAcesso = payload.get("senhaAcesso");
+        if (senhaAcesso == null || !senhaAcesso.trim().equals(senhaCadastroAdmin.trim())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Senha de acesso inválida.");
+        }
+        return ResponseEntity.ok("Acesso autorizado.");
+    }
+
     // 🔧 Teste Swagger
     @GetMapping("/teste-swagger")
     public ResponseEntity<String> testarSwagger() {
@@ -85,7 +94,7 @@ public class UsuarioController {
     @PostMapping("/cadastro-admin")
     public ResponseEntity<?> cadastrarAdmin(@RequestBody Map<String, Object> payload) {
         String senhaAcesso = (String) payload.get("senhaAcesso");
-        if (senhaAcesso == null || !senhaAcesso.equals(senhaCadastroAdmin)) {
+        if (senhaAcesso == null || !senhaAcesso.trim().equals(senhaCadastroAdmin.trim())) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Senha de acesso inválida.");
         }
 
