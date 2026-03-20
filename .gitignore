@@ -1,0 +1,12 @@
+# Root-level local artifacts and secrets
+node_modules/
+
+# Build artifacts
+**/target/
+
+# Legacy local TLS/ZooKeeper certs (not used by Redis setup)
+certs/
+*.pem
+*.csr
+*.p12
+*.jks

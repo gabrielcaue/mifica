@@ -131,9 +131,14 @@ public class UsuarioController {
             return ResponseEntity.ok("Este e-mail já está verificado.");
         }
 
-        String token = emailVerificationService.gerarToken(usuario);
-        emailService.enviarEmailVerificacao(usuario.getEmail(), usuario.getNome(), token);
-        return ResponseEntity.ok("Novo e-mail de confirmação enviado.");
+        try {
+            String token = emailVerificationService.gerarToken(usuario);
+            emailService.enviarEmailVerificacao(usuario.getEmail(), usuario.getNome(), token);
+            return ResponseEntity.ok("Novo e-mail de confirmação enviado.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Não foi possível reenviar a confirmação agora. Tente novamente em instantes.");
+        }
     }
 
     // 🔧 Cadastro de administrador

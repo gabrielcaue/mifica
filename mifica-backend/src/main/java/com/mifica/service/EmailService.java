@@ -1,12 +1,17 @@
 package com.mifica.service;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Service
 public class EmailService {
+
+    private static final Logger log = LoggerFactory.getLogger(EmailService.class);
 
     private final JavaMailSender mailSender;
 
@@ -35,6 +40,15 @@ public class EmailService {
             "Se você não criou conta no Mifica, ignore este e-mail."
         );
 
-        mailSender.send(message);
+        try {
+            mailSender.send(message);
+            log.info("📧 E-mail de confirmação enviado para {}", destino);
+        } catch (MailException e) {
+            log.error("❌ Falha SMTP ao enviar e-mail para {} (from={}): {}", destino, mailFrom, e.getMessage(), e);
+            throw e;
+        } catch (Exception e) {
+            log.error("❌ Erro inesperado ao enviar e-mail para {} (from={}): {}", destino, mailFrom, e.getMessage(), e);
+            throw e;
+        }
     }
 }
