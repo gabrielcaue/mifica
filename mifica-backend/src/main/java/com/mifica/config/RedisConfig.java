@@ -55,7 +55,7 @@ public class RedisConfig {
     /**
      * Container resiliente: se o Redis estiver indisponível no startup,
      * a aplicação inicia normalmente — apenas o Pub/Sub fica inativo.
-     * Isso evita crash loops no Railway quando o Upstash estiver temporariamente fora.
+    * Isso evita crash loops no PaaS quando o Upstash estiver temporariamente fora.
      */
     @Bean
     public RedisMessageListenerContainer redisMessageListenerContainer(

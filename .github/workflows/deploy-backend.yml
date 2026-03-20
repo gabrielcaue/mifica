@@ -1,4 +1,4 @@
-name: Deploy Backend to Railway
+name: Backend CI (Render Auto Deploy)
 
 on:
   push:
@@ -11,7 +11,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -27,11 +27,3 @@ jobs:
       - name: Build with Maven
         working-directory: ./mifica-backend
         run: mvn clean package -DskipTests -q
-
-      - name: Install Railway CLI
-        run: npm install -g @railway/cli
-
-      - name: Deploy to Railway
-        run: railway up --service mifica-backend
-        env:
-          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}

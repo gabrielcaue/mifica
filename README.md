@@ -1,6 +1,6 @@
 # 🧠 Mifica — Plataforma Modular de Reputação, Gamificação e Blockchain
 
-> ✅ **Status: Online** — Infraestrutura migrada de Kafka para Redis Pub/Sub (Upstash), segurança CORS configurada e variáveis de ambiente seguras no Railway.
+> ✅ **Status: Online** — Infraestrutura migrada de Kafka para Redis Pub/Sub (Upstash), segurança CORS configurada e variáveis de ambiente seguras no Render.
 
 ---
 
@@ -9,7 +9,7 @@
 | Serviço | URL |
 |---|---|
 | 🌐 **Frontend (GitHub Pages)** | [gabrielcaue.github.io/mifica](https://gabrielcaue.github.io/mifica/) |
-| ⚙️ **Backend API (Railway)** | [mifica-production.up.railway.app](https://mifica-production.up.railway.app) |
+| ⚙️ **Backend API (Render)** | [mifica-backend.onrender.com](https://mifica-backend.onrender.com) |
 | 📦 **Repositório** | [github.com/gabrielcaue/mifica](https://github.com/gabrielcaue/mifica) |
 
 ---
@@ -45,7 +45,7 @@ Meu objetivo foi construir uma aplicação que demonstrasse domínio real sobre 
 ✅ **Docker Compose** — Orquestração local de todos os serviços  
 ✅ **Redis Pub/Sub (Upstash)** — Mensageria assíncrona para eventos de gamificação  
 ✅ **CI/CD com GitHub Actions** — Pipeline automatizado de build e deploy  
-✅ **Railway** — Backend e MySQL em produção com HTTPS automático  
+✅ **Render** — Backend em produção com HTTPS automático  
 ✅ **GitHub Pages** — Frontend estático com deploy contínuo  
 ✅ **Variáveis de ambiente** — Zero credenciais no código (12-Factor App)  
 ✅ **Traefik** — Reverse proxy e load balancer no ambiente local  
@@ -68,7 +68,7 @@ Meu objetivo foi construir uma aplicação que demonstrasse domínio real sobre 
 
 - **Corrigi inconsistências do perfil de produção** — Removi dialeto PostgreSQL incorreto que estava no `application-prod.properties` (o banco é MySQL), ajustei `ddl-auto` para `update`, e eliminei `context-path` duplicado que gerava `/api/api/`.
 
-- **Atualizei o pipeline CI/CD** — Substituí a action deprecada `railwayapp/railway-action@v4` pela Railway CLI oficial, garantindo deploys funcionais via GitHub Actions.
+- **Atualizei o pipeline CI/CD** — Mantive pipeline de build no GitHub Actions e deploy automático via integração nativa do Render.
 
 ---
 
@@ -78,14 +78,14 @@ Meu objetivo foi construir uma aplicação que demonstrasse domínio real sobre 
 ┌──────────────────┐     ┌──────────────────┐     ┌──────────────────┐
 │   Frontend       │     │   Backend        │     │   Streamlit      │
 │   React + Vite   │────▶│   Spring Boot 3  │◀────│   Python         │
-│   GitHub Pages   │     │   Railway        │     │   Dashboard      │
+│   GitHub Pages   │     │   Render         │     │   Dashboard      │
 └──────────────────┘     └────────┬─────────┘     └──────────────────┘
                                   │
                     ┌─────────────┼─────────────┐
                     ▼             ▼             ▼
              ┌───────────┐ ┌───────────┐ ┌───────────┐
-             │  MySQL    │ │  Redis    │ │  Traefik  │
-             │  Railway  │ │  Upstash  │ │  Proxy    │
+             │  Database │ │  Redis    │ │  Traefik  │
+             │  Render   │ │  Upstash  │ │  Proxy    │
              └───────────┘ └───────────┘ └───────────┘
 ```
 
@@ -93,9 +93,9 @@ Meu objetivo foi construir uma aplicação que demonstrasse domínio real sobre 
 - **Redis Pub/Sub (Upstash)** → Eventos assíncronos para gamificação em tempo real
 - **Frontend (React + Vite)** → Interface do usuário com SPA
 - **Streamlit (Python)** → Painel administrativo e visualizações de dados
-- **MySQL** → Persistência de dados em produção (Railway)
+- **Database (Render)** → Persistência de dados em produção
 - **Docker Compose + Traefik** → Orquestração e roteamento local
-- **GitHub Actions** → CI/CD automatizado para backend (Railway) e frontend (GitHub Pages)
+- **GitHub Actions + Render** → CI de backend e deploy automático em produção
 
 ---
 
@@ -115,7 +115,7 @@ mifica/
 ├── .github/workflows/     # CI/CD — GitHub Actions
 ├── docker-compose.yml     # Orquestração local (MySQL, Redis, Traefik)
 ├── start-dev.sh           # Script para subir ambiente de desenvolvimento
-└── DEPLOYMENT_RAILWAY.md  # Guia completo de deploy no Railway
+└── DEPLOYMENT_RAILWAY.md  # Guia legado de deploy (Railway)
 ```
 
 ---
@@ -148,11 +148,11 @@ cd mifica
 | **Redis Pub/Sub (Upstash)** | Eventos assíncronos de gamificação | ✅ Produção |
 | **Docker + Multi-stage Build** | Containers otimizados | ✅ Produção |
 | **CI/CD (GitHub Actions)** | Deploy automático backend + frontend | ✅ Produção |
-| **MySQL** | Persistência relacional | ✅ Produção (Railway) |
+| **Database (Render)** | Persistência relacional | ✅ Produção |
 | **JWT + Spring Security** | Autenticação e autorização por roles | ✅ Produção |
 | **React + Vite + TailwindCSS** | Frontend SPA responsivo | ✅ Produção (GitHub Pages) |
 | **Swagger/OpenAPI** | Documentação automática da API | ✅ Implementado |
-| **Railway** | PaaS para backend + banco em nuvem | ✅ Produção |
+| **Render** | PaaS para backend em nuvem | ✅ Produção |
 | **Traefik** | Reverse proxy / load balancer | ✅ Dev local |
 | **Streamlit** | Dashboard administrativo Python | ✅ Implementado |
 | **12-Factor App** | Configuração por variáveis de ambiente | ✅ Produção |
@@ -181,7 +181,7 @@ cd mifica
 ## 💡 Por que Este Projeto se Destaca
 
 1. **Não é um CRUD genérico** — Tem Redis Pub/Sub, gamificação, blockchain e eventos assíncronos
-2. **Está em produção** — Backend no Railway, frontend no GitHub Pages, CI/CD rodando
+2. **Está em produção** — Backend no Render, frontend no GitHub Pages, CI/CD rodando
 3. **Segue boas práticas** — 12-Factor, variáveis de ambiente, multi-stage Docker
 4. **Arquitetura real** — Serviços com mensageria assíncrona, não monolito simples
 5. **Completo** — Java + React + Python + DevOps + Cloud
