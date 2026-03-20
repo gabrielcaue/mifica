@@ -10,6 +10,7 @@ import TransacoesList from '../components/TransacoesList';
 export default function Dashboard() {
   const { usuario, logout } = useAuth();
   const navigate = useNavigate();
+  const streamlitPath = `${import.meta.env.BASE_URL}streamlit`;
 
   const [transacoes, setTransacoes] = useState([]);
   const [totalValor, setTotalValor] = useState(0);
@@ -71,9 +72,7 @@ export default function Dashboard() {
             {/* Botão exclusivo para admins */}
             {usuario.role === 'ROLE_ADMIN' && (
               <button
-                  // 🔧 ALTERADO: antes era "http://localhost:8501"
-                  // agora usamos "/streamlit" para passar pelo Traefik
-                onClick={() => window.open('/streamlit', '_blank')}                
+                onClick={() => window.open(streamlitPath, '_blank')}
                 className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition mt-6"
               >
                 Acessar Painel Administrativo

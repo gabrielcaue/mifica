@@ -8,6 +8,7 @@ export default function Cadastro() {
   const [nome, setNome] = useState('');
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
+  const [mensagem, setMensagem] = useState('');
   const navigate = useNavigate();
 
   const handleCadastro = async (e) => {
@@ -19,10 +20,15 @@ export default function Cadastro() {
       const response = await api.post('/usuarios/cadastro', dados);
 
       console.log("Cadastro realizado:", response.data);
-      navigate("/login");
+      const msg = response?.data?.mensagem || 'Cadastro realizado! Verifique seu e-mail para ativar a conta.';
+      setMensagem(msg);
+      setNome('');
+      setEmail('');
+      setSenha('');
     } catch (error) {
       console.error("Erro ao cadastrar:", error);
-      alert("Erro ao cadastrar usuário");
+      const msg = error?.response?.data || "Erro ao cadastrar usuário";
+      alert(typeof msg === 'string' ? msg : "Erro ao cadastrar usuário");
     }
   };
 
@@ -39,6 +45,11 @@ export default function Cadastro() {
         </div>
 
         <div className="space-y-4">
+          {mensagem && (
+            <p className="text-sm text-green-700 bg-green-100 border border-green-300 rounded-md px-3 py-2">
+              {mensagem}
+            </p>
+          )}
           <input
             type="text"
             placeholder="Nome completo"
@@ -70,6 +81,14 @@ export default function Cadastro() {
           className="mt-6 w-full bg-blue-600 text-white py-2 rounded-md font-semibold hover:bg-blue-700 transition"
         >
           Cadastrar
+        </button>
+
+        <button
+          type="button"
+          onClick={() => navigate('/login')}
+          className="mt-3 w-full bg-gray-100 text-gray-700 py-2 rounded-md font-semibold hover:bg-gray-200 transition"
+        >
+          Ir para login
         </button>
       </form>
     </div>

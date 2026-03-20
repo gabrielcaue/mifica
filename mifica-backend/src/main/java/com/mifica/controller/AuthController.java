@@ -32,6 +32,14 @@ public class AuthController {
     public ResponseEntity<?> login(@RequestBody LoginRequestDTO loginRequest) {
         Usuario usuario = usuarioService.buscarPorEmail(loginRequest.getEmail());
 
+        if (usuario != null && !Boolean.TRUE.equals(usuario.getEnabled())) {
+            return ResponseEntity.status(401).body("Conta ainda não ativada. Verifique seu e-mail para liberar o acesso.");
+        }
+
+        if (usuario != null && !Boolean.TRUE.equals(usuario.getEmailVerificado())) {
+            return ResponseEntity.status(401).body("E-mail não verificado. Confirme seu e-mail antes de entrar.");
+        }
+
         if (usuario == null || !passwordEncoder.matches(loginRequest.getSenha(), usuario.getSenha())) {
             return ResponseEntity.status(401).body("Credenciais inválidas");
         }

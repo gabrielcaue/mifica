@@ -21,6 +21,12 @@ public class Usuario {
     @Column(nullable = false)
     private String senha;
 
+    @Column(nullable = false)
+    private Boolean enabled = Boolean.TRUE;
+
+    @Column(nullable = false)
+    private Boolean emailVerificado = Boolean.TRUE;
+
     private int reputacao = 50;
 
     private String nivel;
@@ -85,6 +91,22 @@ public class Usuario {
 
     public void setSenha(String senha) {
         this.senha = senha;
+    }
+
+    public Boolean getEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(Boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    public Boolean getEmailVerificado() {
+        return emailVerificado;
+    }
+
+    public void setEmailVerificado(Boolean emailVerificado) {
+        this.emailVerificado = emailVerificado;
     }
 
     public int getReputacao() {

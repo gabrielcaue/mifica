@@ -23,6 +23,8 @@ import com.mifica.dto.UsuarioDTO;
 import com.mifica.entity.Role;
 import com.mifica.entity.Usuario;
 import com.mifica.repository.UsuarioRepository;
+import com.mifica.service.EmailService;
+import com.mifica.service.EmailVerificationService;
 import com.mifica.service.UsuarioService;
 import com.mifica.util.JwtUtil;
 import com.mifica.redis.GamificationPublisher;
@@ -52,6 +54,12 @@ public class UsuarioController {
 
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
+
+    @Autowired
+    private EmailVerificationService emailVerificationService;
+
+    @Autowired
+    private EmailService emailService;
 
     @Value("${admin.cadastro.senha}")
     private String senhaCadastroAdmin;
@@ -83,7 +91,49 @@ public class UsuarioController {
             return ResponseEntity.badRequest().body("Email já cadastrado.");
         }
         UsuarioDTO novo = usuarioService.criar(dto);
-        return ResponseEntity.ok(novo);
+
+        Usuario usuarioCriado = usuarioService.buscarPorEmail(dto.getEmail());
+
+        try {
+            String token = emailVerificationService.gerarToken(usuarioCriado);
+            emailService.enviarEmailVerificacao(usuarioCriado.getEmail(), usuarioCriado.getNome(), token);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Conta criada, mas não foi possível enviar o e-mail de confirmação. Use reenviar confirmação.");
+        }
+
+        Map<String, Object> resposta = new HashMap<>();
+        resposta.put("id", novo.getId());
+        resposta.put("email", novo.getEmail());
+        resposta.put("mensagem", "Cadastro realizado! Verifique seu e-mail para ativar a conta.");
+        return ResponseEntity.ok(resposta);
+    }
+
+    @GetMapping("/verificar-email")
+    public ResponseEntity<String> verificarEmail(@RequestParam("token") String token) {
+        String erro = emailVerificationService.verificarToken(token);
+        if (erro != null) {
+            return ResponseEntity.badRequest().body(erro);
+        }
+        return ResponseEntity.ok("✅ E-mail verificado com sucesso! Agora você já pode fazer login.");
+    }
+
+    @PostMapping("/reenviar-confirmacao")
+    public ResponseEntity<String> reenviarConfirmacao(@RequestBody Map<String, String> payload) {
+        String email = payload.get("email");
+        Usuario usuario = usuarioService.buscarPorEmail(email);
+
+        if (usuario == null) {
+            return ResponseEntity.ok("Se o e-mail existir, enviaremos uma nova confirmação.");
+        }
+
+        if (Boolean.TRUE.equals(usuario.getEmailVerificado())) {
+            return ResponseEntity.ok("Este e-mail já está verificado.");
+        }
+
+        String token = emailVerificationService.gerarToken(usuario);
+        emailService.enviarEmailVerificacao(usuario.getEmail(), usuario.getNome(), token);
+        return ResponseEntity.ok("Novo e-mail de confirmação enviado.");
     }
 
     // 🔧 Cadastro de administrador
@@ -102,6 +152,8 @@ public class UsuarioController {
         novoAdmin.setNome((String) payload.get("nome"));
         novoAdmin.setEmail((String) payload.get("email"));
         novoAdmin.setSenha(passwordEncoder.encode((String) payload.get("senha")));
+        novoAdmin.setEnabled(Boolean.TRUE);
+        novoAdmin.setEmailVerificado(Boolean.TRUE);
         novoAdmin.setRole(Role.ROLE_ADMIN);
         novoAdmin.setReputacao(100);
         novoAdmin.setConquistas(new ArrayList<>());
@@ -122,24 +174,28 @@ public class UsuarioController {
      */
     @PostMapping("/login")
     public ResponseEntity<?> loginPost(@RequestBody LoginDTO dto) {
-        boolean valido = usuarioService.validarLogin(dto.getEmail(), dto.getSenha());
-        if (!valido) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciais inválidas.");
+        try {
+            boolean valido = usuarioService.validarLogin(dto.getEmail(), dto.getSenha());
+            if (!valido) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciais inválidas.");
+            }
+
+            Usuario usuario = usuarioService.buscarPorEmail(dto.getEmail());
+            // Gera token JWT assinado com HMAC-SHA256 contendo email e role
+            String token = jwtUtil.gerarToken(usuario.getEmail());
+
+            // Retorna token + dados do usuário para o frontend armazenar
+            Map<String, Object> resposta = new HashMap<>();
+            resposta.put("token", token);
+            resposta.put("id", usuario.getId());
+            resposta.put("nome", usuario.getNome());
+            resposta.put("reputacao", usuario.getReputacao());
+            resposta.put("conquistas", usuario.getConquistas());
+
+            return ResponseEntity.ok(resposta);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         }
-
-        Usuario usuario = usuarioService.buscarPorEmail(dto.getEmail());
-        // Gera token JWT assinado com HMAC-SHA256 contendo email e role
-        String token = jwtUtil.gerarToken(usuario.getEmail());
-
-        // Retorna token + dados do usuário para o frontend armazenar
-        Map<String, Object> resposta = new HashMap<>();
-        resposta.put("token", token);
-        resposta.put("id", usuario.getId());
-        resposta.put("nome", usuario.getNome());
-        resposta.put("reputacao", usuario.getReputacao());
-        resposta.put("conquistas", usuario.getConquistas());
-
-        return ResponseEntity.ok(resposta);
     }
 
     // 🔧 Listar todos (ADMIN)
