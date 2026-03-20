@@ -114,8 +114,7 @@ mifica/
 ├── mifica-streamlit/      # Dashboard — Python, Streamlit
 ├── .github/workflows/     # CI/CD — GitHub Actions
 ├── docker-compose.yml     # Orquestração local (MySQL, Redis, Traefik)
-├── start-dev.sh           # Script para subir ambiente de desenvolvimento
-└── DEPLOYMENT_RAILWAY.md  # Guia legado de deploy (Railway)
+└── start-dev.sh           # Script para subir ambiente de desenvolvimento
 ```
 
 ---
