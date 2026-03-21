@@ -72,8 +72,8 @@ export default function Login() {
         >
           <div className="flex flex-col items-center mb-7 md:mb-8">
             <img src={logo} alt="Logo Mifica" className="w-28 md:w-32 mb-3 md:mb-4 drop-shadow-lg" />
-            <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight text-blue-700">Seu sistema está pronto para evoluir</h2>
-            <p className="text-xs md:text-sm text-gray-500 text-center">Acesse sua conta para continuar</p>
+            <h2 className="text-2xl md:text-4xl font-extrabold tracking-tight text-blue-700 whitespace-nowrap">Seu sistema está pronto para evoluir</h2>
+            <p className="text-sm md:text-base text-gray-500 text-center">Acesse sua conta para continuar</p>
           </div>
 
           <div className="space-y-3 md:space-y-4">
