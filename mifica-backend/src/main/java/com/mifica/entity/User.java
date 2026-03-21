@@ -3,6 +3,7 @@ package com.mifica.entity;
 import jakarta.persistence.*;
 
 @Entity
+@Table(name = "gamification_users")
 public class User {
 
     @Id

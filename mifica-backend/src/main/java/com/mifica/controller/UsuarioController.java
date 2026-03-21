@@ -10,6 +10,7 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -87,10 +88,35 @@ public class UsuarioController {
      */
     @PostMapping("/cadastro")
     public ResponseEntity<?> cadastrarUsuario(@RequestBody UsuarioDTO dto) {
+        if (dto.getEmail() != null) {
+            dto.setEmail(dto.getEmail().trim().toLowerCase());
+        }
+
         if (usuarioService.emailJaExiste(dto.getEmail())) {
+            Usuario existente = usuarioService.buscarPorEmail(dto.getEmail());
+
+            if (existente != null && !Boolean.TRUE.equals(existente.getEmailVerificado())) {
+                try {
+                    String token = emailVerificationService.gerarToken(existente);
+                    emailService.enviarEmailVerificacao(existente.getEmail(), existente.getNome(), token);
+                    return ResponseEntity.ok(Map.of(
+                            "email", existente.getEmail(),
+                            "mensagem", "Conta já existe e ainda não foi verificada. Enviamos um novo e-mail de confirmação."
+                    ));
+                } catch (Exception e) {
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                            .body("Conta já existe, mas não foi possível reenviar o e-mail de confirmação agora.");
+                }
+            }
+
             return ResponseEntity.badRequest().body("Email já cadastrado.");
         }
-        UsuarioDTO novo = usuarioService.criar(dto);
+        UsuarioDTO novo;
+        try {
+            novo = usuarioService.criar(dto);
+        } catch (DataIntegrityViolationException e) {
+            return ResponseEntity.badRequest().body("Email já cadastrado.");
+        }
 
         Usuario usuarioCriado = usuarioService.buscarPorEmail(dto.getEmail());
 

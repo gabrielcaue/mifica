@@ -40,19 +40,19 @@ public class JwtFiltro extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(@NonNull HttpServletRequest request) throws ServletException {
         String path = request.getRequestURI();
-    return path.equals("/") ||
-           path.equals("/api/usuarios/login") ||
-            path.equals("/api/usuarios/cadastro") ||
-            path.equals("/api/usuarios/cadastro-admin") ||
-            path.equals("/api/usuarios/validar-acesso-admin") ||
-               path.equals("/api/usuarios/verificar-email") ||
-               path.equals("/api/usuarios/reenviar-confirmacao") ||
-           path.equals("/api/usuarios/criar") ||
-           path.startsWith("/swagger-ui") ||
-           path.startsWith("/v3/api-docs") ||
-           path.startsWith("/api/auth") ||
-           path.startsWith("/api/blockchain");
-}
+        return path.equals("/") ||
+                path.startsWith("/api/usuarios/login") ||
+                path.startsWith("/api/usuarios/cadastro") ||
+                path.startsWith("/api/usuarios/cadastro-admin") ||
+                path.startsWith("/api/usuarios/validar-acesso-admin") ||
+                path.startsWith("/api/usuarios/verificar-email") ||
+                path.startsWith("/api/usuarios/reenviar-confirmacao") ||
+                path.equals("/api/usuarios/criar") ||
+                path.startsWith("/swagger-ui") ||
+                path.startsWith("/v3/api-docs") ||
+                path.startsWith("/api/auth") ||
+                path.startsWith("/api/blockchain");
+    }
 
     /**
      * Intercepta a requisição, extrai e valida o token JWT.
