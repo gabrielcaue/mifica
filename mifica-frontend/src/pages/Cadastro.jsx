@@ -55,10 +55,10 @@ export default function Cadastro() {
           onSubmit={handleCadastro}
           className="bg-white rounded-xl shadow-lg p-6 md:p-8 w-full max-w-md border border-gray-200"
         >
-        <div className="flex flex-col items-center mb-4 md:mb-6">
-          <img src={logo} alt="Logo Mifica" className="w-12 md:w-14 mb-2 md:mb-3" />
-          <h2 className="text-xl md:text-2xl font-bold text-gray-800">Cadastro Mifica</h2>
-          <p className="text-xs md:text-sm text-gray-500 text-center">Crie sua conta para começar</p>
+        <div className="flex flex-col items-center mb-7 md:mb-8">
+          <img src={logo} alt="Logo Mifica" className="w-28 md:w-32 mb-3 md:mb-4 drop-shadow-lg" />
+          <h2 className="text-3xl md:text-5xl font-extrabold tracking-tight text-blue-700">Software que transforma</h2>
+          <p className="text-sm md:text-base text-gray-500 text-center">Crie sua conta para começar</p>
         </div>
 
         <div className="space-y-3 md:space-y-4">
