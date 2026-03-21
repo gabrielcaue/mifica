@@ -2,12 +2,15 @@ import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
+import useMediaQuery from '../hooks/useMediaQuery';
+import MobileMenuCadastro from '../components/MobileMenuCadastro';
 import logo from '../assets/logo.png';
 import { jwtDecode } from 'jwt-decode';
 
 export default function Login() {
   const [token, setToken] = useState('');
   const { login } = useAuth();
+  const { isMobile } = useMediaQuery();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -59,53 +62,65 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 px-4">
-      <form
-        onSubmit={handleLogin}
-        className="bg-white rounded-xl shadow-lg p-8 w-full max-w-md border border-gray-200"
-      >
-        <div className="flex flex-col items-center mb-6">
-          <img src={logo} alt="Logo Mifica" className="w-14 mb-3" />
-          <h2 className="text-2xl font-bold text-gray-800">Login Mifica</h2>
-          <p className="text-sm text-gray-500">Acesse sua conta para continuar</p>
-        </div>
+    <>
+      <MobileMenuCadastro />
 
-        <div className="space-y-4">
-          <input
-            type="email"
-            name="email" // ✅ necessário para FormData
-            placeholder="Email"
-            required
-            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-          <input
-            type="password"
-            name="senha" // ✅ necessário para FormData
-            placeholder="Senha"
-            required
-            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-        </div>
-
-        <button
-          type="submit"
-          className="mt-6 w-full bg-blue-600 text-white py-2 rounded-md font-semibold hover:bg-blue-700 transition"
+      <div className={`min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 px-3 md:px-4 ${isMobile ? 'py-8' : 'py-4'}`}>
+        <form
+          onSubmit={handleLogin}
+          className="bg-white rounded-xl shadow-lg p-6 md:p-8 w-full max-w-md border border-gray-200"
         >
-          Entrar
-        </button>
+          <div className="flex flex-col items-center mb-4 md:mb-6">
+            <img src={logo} alt="Logo Mifica" className="w-12 md:w-14 mb-2 md:mb-3" />
+            <h2 className="text-xl md:text-2xl font-bold text-gray-800">Login Mifica</h2>
+            <p className="text-xs md:text-sm text-gray-500 text-center">Acesse sua conta para continuar</p>
+          </div>
 
-        {token && (
-          <div className="mt-6">
-            <h3 className="text-sm font-semibold mb-2">Token JWT:</h3>
-            <textarea
-              value={token}
-              readOnly
-              rows={4}
-              className="w-full border rounded p-2 text-xs"
+          <div className="space-y-3 md:space-y-4">
+            <input
+              type="email"
+              name="email" // ✅ necessário para FormData
+              placeholder="Email"
+              required
+              className="w-full px-3 md:px-4 py-2 text-sm md:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <input
+              type="password"
+              name="senha" // ✅ necessário para FormData
+              placeholder="Senha"
+              required
+              className="w-full px-3 md:px-4 py-2 text-sm md:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
-        )}
-      </form>
-    </div>
+
+          <button
+            type="submit"
+            className="mt-4 md:mt-6 w-full bg-blue-600 text-white py-2 text-sm md:text-base rounded-md font-semibold hover:bg-blue-700 transition"
+          >
+            Entrar
+          </button>
+
+          <button
+            type="button"
+            onClick={() => navigate('/cadastro')}
+            className="mt-2 md:mt-3 w-full bg-gray-100 text-gray-700 py-2 text-sm md:text-base rounded-md font-semibold hover:bg-gray-200 transition"
+          >
+            Criar conta
+          </button>
+
+          {token && (
+            <div className="mt-6">
+              <h3 className="text-sm font-semibold mb-2">Token JWT:</h3>
+              <textarea
+                value={token}
+                readOnly
+                rows={4}
+                className="w-full border rounded p-2 text-xs"
+              />
+            </div>
+          )}
+        </form>
+      </div>
+    </>
   );
 }

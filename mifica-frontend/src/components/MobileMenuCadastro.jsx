@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useMediaQuery from '../hooks/useMediaQuery';
+import logo from '../assets/logo.png';
 
 /**
  * Menu Sidebar Mobile específico para a página de Cadastro
@@ -15,7 +16,6 @@ export default function MobileMenuCadastro() {
 
   const menuItems = [
     { label: 'Cadastro', icon: '📝', path: '/cadastro' },
-    { label: 'Cadastro Admin', icon: '🔑', path: '/cadastro-admin' },
     { label: 'Login', icon: '🔓', path: '/login' },
   ];
 
@@ -55,9 +55,12 @@ export default function MobileMenuCadastro() {
         }`}
       >
         {/* Header */}
-        <div className="p-6 border-b border-gray-700">
-          <h2 className="text-lg font-bold text-blue-300">Menu de Cadastro</h2>
-          <p className="text-sm text-gray-400 mt-2">Navegação rápida</p>
+        <div className="p-5 border-b border-gray-700">
+          <div className="flex items-center gap-2">
+            <img src={logo} alt="Logo Mifica" className="w-8 h-auto" />
+            <h2 className="text-lg font-bold text-blue-300">Mifica</h2>
+          </div>
+          <p className="text-xs text-gray-400 mt-2">Navegação rápida</p>
         </div>
 
         {/* Menu Items */}

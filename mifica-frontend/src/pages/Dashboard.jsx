@@ -44,23 +44,23 @@ export default function Dashboard() {
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white">
       <Topo />
 
-      <div className="max-w-6xl mx-auto px-6 py-10">
+      <div className="max-w-6xl mx-auto px-4 md:px-6 py-6 md:py-10">
         {/* Boas-vindas */}
-        <h1 className="text-4xl font-bold text-blue-400 mb-2">Bem-vindo ao Mifica</h1>
-        <p className="text-lg text-gray-300 mb-8">Seu sistema está pronto para evoluir.</p>
+        <h1 className="text-2xl md:text-4xl font-bold text-blue-400 mb-2">Bem-vindo ao Mifica</h1>
+        <p className="text-sm md:text-lg text-gray-300 mb-6 md:mb-8">Seu sistema está pronto para evoluir.</p>
 
         {/* Perfil + Indicadores */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Perfil do Usuário */}
-          <div className="bg-white/10 backdrop-blur-md rounded-xl p-6 shadow-lg border border-blue-500">
-            <h2 className="text-2xl font-semibold text-blue-300 mb-4">Perfil do Usuário</h2>
+          <div className="bg-white/10 backdrop-blur-md rounded-xl p-4 md:p-6 shadow-lg border border-blue-500">
+            <h2 className="text-xl md:text-2xl font-semibold text-blue-300 mb-4">Perfil do Usuário</h2>
             <p><strong>Nome:</strong> {usuario.nome}</p>
             <p><strong>Email:</strong> {usuario.email}</p>
             <p><strong>Reputação:</strong> {usuario.reputacao}</p>
 
             <div className="mt-4">
               <p className="font-semibold mb-2">Conquistas:</p>
-              <ul className="list-disc ml-6 text-sm">
+              <ul className="list-disc ml-6 text-xs md:text-sm">
                 {usuario.conquistas?.length > 0 ? (
                   usuario.conquistas.map((c, i) => <li key={i}>{c}</li>)
                 ) : (
@@ -81,8 +81,8 @@ export default function Dashboard() {
           </div>
 
           {/* Indicadores Blockchain */}
-          <div className="bg-white/10 backdrop-blur-md rounded-xl p-6 shadow-lg border border-indigo-500">
-            <h2 className="text-2xl font-semibold text-indigo-300 mb-4">Indicadores Blockchain</h2>
+          <div className="bg-white/10 backdrop-blur-md rounded-xl p-4 md:p-6 shadow-lg border border-indigo-500">
+            <h2 className="text-xl md:text-2xl font-semibold text-indigo-300 mb-4">Indicadores Blockchain</h2>
             <p><strong>Total movimentado:</strong> R$ {totalValor.toFixed(2)}</p>
             {ultimaTransacao && (
               <p className="mt-2">
@@ -94,8 +94,8 @@ export default function Dashboard() {
 
         {/* Painel Administrativo */}
         {usuario.role === 'ADMIN' && (
-          <div className="bg-white/10 backdrop-blur-md rounded-xl p-6 shadow-lg border border-red-500 mt-10">
-            <h2 className="text-2xl font-semibold text-red-400 mb-2">Painel Administrativo</h2>
+          <div className="bg-white/10 backdrop-blur-md rounded-xl p-4 md:p-6 shadow-lg border border-red-500 mt-8 md:mt-10">
+            <h2 className="text-xl md:text-2xl font-semibold text-red-400 mb-2">Painel Administrativo</h2>
             <p className="mb-4">Acesso rápido para ações administrativas:</p>
             <button
               onClick={() => navigate('/cadastro-admin')}
@@ -107,8 +107,8 @@ export default function Dashboard() {
         )}
 
         {/* Transações Blockchain */}
-        <div className="bg-white/10 backdrop-blur-md rounded-xl p-6 shadow-lg border border-gray-500 mt-10">
-          <h2 className="text-2xl font-semibold text-gray-300 mb-4">Transações Blockchain</h2>
+        <div className="bg-white/10 backdrop-blur-md rounded-xl p-4 md:p-6 shadow-lg border border-gray-500 mt-8 md:mt-10">
+          <h2 className="text-xl md:text-2xl font-semibold text-gray-300 mb-4">Transações Blockchain</h2>
 
           <form className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
             <input

@@ -20,16 +20,16 @@ export default function Perfil() {
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white">
       <Topo />
 
-      <div className="max-w-4xl mx-auto px-6 py-10">
-        <div className="bg-white/10 backdrop-blur-md rounded-xl p-6 shadow-lg border border-blue-500">
-          <h2 className="text-3xl font-bold text-blue-300 mb-4">Perfil de {usuario.nome}</h2>
+      <div className="max-w-4xl mx-auto px-4 md:px-6 py-6 md:py-10">
+        <div className="bg-white/10 backdrop-blur-md rounded-xl p-4 md:p-6 shadow-lg border border-blue-500">
+          <h2 className="text-2xl md:text-3xl font-bold text-blue-300 mb-4">Perfil de {usuario.nome}</h2>
           <p><strong>Email:</strong> {usuario.email}</p>
           <p><strong>Reputação:</strong> {usuario.reputacao}</p>
           <p><strong>Nível:</strong> {nivel}</p>
 
           <div className="mt-6">
-            <h3 className="text-xl font-semibold mb-2">Conquistas:</h3>
-            <ul className="list-disc ml-6 text-sm">
+            <h3 className="text-lg md:text-xl font-semibold mb-2">Conquistas:</h3>
+            <ul className="list-disc ml-6 text-xs md:text-sm">
               {usuario.conquistas?.length > 0 ? (
                 usuario.conquistas.map((c, i) => <li key={i}>{c}</li>)
               ) : (

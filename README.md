@@ -20,6 +20,18 @@
 
 ---
 
+## 📐 Engenharia guiada por especificação (SpecKit)
+
+Este repositório utiliza o **SpecKit** em [tools/spec-kit](tools/spec-kit) como base de apoio para práticas de **spec-driven development**.
+
+Na prática, isso ajuda a:
+
+- definir requisitos e escopo antes da implementação;
+- manter padrão técnico e consistência entre módulos;
+- melhorar documentação e rastreabilidade de decisões.
+
+---
+
 ## Sobre o Projeto
 
 Desenvolvi o Mifica como uma plataforma modular que integra **reputação**, **gamificação** e **transações via blockchain**, com foco em escalabilidade, segurança e extensibilidade. O projeto é dividido em módulos independentes que se comunicam via API REST e eventos assíncronos com Redis Pub/Sub.
@@ -118,6 +130,7 @@ mifica/
 │   ├── src/               # Components, Pages, Services, Context
 │   └── .env.production    # URL da API em produção
 ├── mifica-streamlit/      # Dashboard — Python, Streamlit
+├── tools/spec-kit/        # Submódulo de apoio a spec-driven development
 ├── .github/workflows/     # CI/CD — GitHub Actions
 ├── docker-compose.yml     # Orquestração local (MySQL, Redis, Traefik)
 └── start-dev.sh           # Script para subir ambiente de desenvolvimento
@@ -198,4 +211,10 @@ cd mifica
 Desenvolvido por **Gabriel Cauê**  
 📧 Entre em contato pelo [GitHub](https://github.com/gabrielcaue)
 [Linkedin] (https://www.linkedin.com/in/gabrielcaues)
+
+---
+
+## 🛠️ Status
+
+**Em manutenção.**
 

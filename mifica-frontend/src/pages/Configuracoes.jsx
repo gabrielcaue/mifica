@@ -59,10 +59,10 @@ export default function Configuracao() {
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white">
       <Topo />
 
-      <div className="max-w-4xl mx-auto px-6 py-10">
-        <div className="bg-white/10 backdrop-blur-md rounded-xl p-6 shadow-lg border border-indigo-500">
-          <h2 className="text-3xl font-bold text-indigo-300 mb-2">Configurações de Conta</h2>
-          <p className="text-gray-300 mb-6">Ajuste suas preferências abaixo.</p>
+      <div className="max-w-4xl mx-auto px-4 md:px-6 py-6 md:py-10">
+        <div className="bg-white/10 backdrop-blur-md rounded-xl p-4 md:p-6 shadow-lg border border-indigo-500">
+          <h2 className="text-2xl md:text-3xl font-bold text-indigo-300 mb-2">Configurações de Conta</h2>
+          <p className="text-sm md:text-base text-gray-300 mb-6">Ajuste suas preferências abaixo.</p>
 
           <div className="bg-white/10 rounded-lg p-4 border border-gray-300">
             <p><strong>Nome:</strong> {usuario.nome}</p>
@@ -74,21 +74,21 @@ export default function Configuracao() {
                 placeholder="Senha atual"
                 value={senhaAtual}
                 onChange={(e) => setSenhaAtual(e.target.value)}
-                className="bg-white text-gray-800 px-4 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="bg-white text-gray-800 px-3 md:px-4 py-2 text-sm md:text-base rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500"
               />
               <input
                 type="password"
                 placeholder="Nova senha"
                 value={novaSenha}
                 onChange={(e) => setNovaSenha(e.target.value)}
-                className="bg-white text-gray-800 px-4 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="bg-white text-gray-800 px-3 md:px-4 py-2 text-sm md:text-base rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500"
               />
               <input
                 type="password"
                 placeholder="Confirmar nova senha"
                 value={confirmarSenha}
                 onChange={(e) => setConfirmarSenha(e.target.value)}
-                className="bg-white text-gray-800 px-4 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="bg-white text-gray-800 px-3 md:px-4 py-2 text-sm md:text-base rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500"
               />
 
               <button
