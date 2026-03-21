@@ -70,9 +70,9 @@ export default function Login() {
           onSubmit={handleLogin}
           className="bg-white rounded-xl shadow-lg p-6 md:p-8 w-full max-w-md border border-gray-200"
         >
-          <div className="flex flex-col items-center mb-5 md:mb-7">
-            <img src={logo} alt="Logo Mifica" className="w-20 md:w-24 mb-2 md:mb-3 drop-shadow-md" />
-            <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight text-blue-700">Mifica</h2>
+          <div className="flex flex-col items-center mb-7 md:mb-8">
+            <img src={logo} alt="Logo Mifica" className="w-28 md:w-32 mb-3 md:mb-4 drop-shadow-lg" />
+            <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight text-blue-700">Seu sistema está pronto para evoluir</h2>
             <p className="text-xs md:text-sm text-gray-500 text-center">Acesse sua conta para continuar</p>
           </div>
 
