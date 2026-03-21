@@ -47,7 +47,7 @@ export default function Dashboard() {
       <div className="max-w-6xl mx-auto px-4 md:px-6 py-6 md:py-10">
         {/* Boas-vindas */}
         <h1 className="text-2xl md:text-4xl font-bold text-blue-400 mb-2">Bem-vindo ao Mifica</h1>
-        <p className="text-sm md:text-lg text-gray-300 mb-6 md:mb-8">Seu sistema está pronto para evoluir.</p>
+        <p className="text-sm md:text-lg text-gray-300 mb-6 md:mb-8">Construa sua reputação digital</p>
 
         {/* Perfil + Indicadores */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
