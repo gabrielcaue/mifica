@@ -1,18 +1,23 @@
 // src/pages/Cadastro.jsx
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import api from '../services/api';   // ✅ cliente axios configurado
+import api from '../services/api';
+import useMediaQuery from '../hooks/useMediaQuery';
+import MobileMenuCadastro from '../components/MobileMenuCadastro';
 import logo from '../assets/logo.png';
 
 export default function Cadastro() {
   const [nome, setNome] = useState('');
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
-  const [mensagem, setMensagem] = useState('');
+  const [mensagemCampoSenha, setMensagemCampoSenha] = useState('');
   const navigate = useNavigate();
+  const { isMobile } = useMediaQuery();
 
   const handleCadastro = async (e) => {
     e.preventDefault();
+    setMensagemCampoSenha('');
+
     try {
       const dados = { nome, email, senha };
 
@@ -20,43 +25,50 @@ export default function Cadastro() {
       const response = await api.post('/usuarios/cadastro', dados);
 
       console.log("Cadastro realizado:", response.data);
-      const msg = response?.data?.mensagem || 'Cadastro realizado! Verifique seu e-mail para ativar a conta.';
-      setMensagem(msg);
+      setMensagemCampoSenha('Usuario cadastrado com sucesso!');
       setNome('');
       setEmail('');
       setSenha('');
     } catch (error) {
       console.error("Erro ao cadastrar:", error);
       const msg = error?.response?.data || "Erro ao cadastrar usuário";
-      alert(typeof msg === 'string' ? msg : "Erro ao cadastrar usuário");
+
+      if (typeof msg === 'string') {
+        const msgLower = msg.toLowerCase();
+        if (msgLower.includes('email já cadastrado') || msgLower.includes('conta já existe')) {
+          setMensagemCampoSenha('E-mail já cadastrado!');
+          return;
+        }
+      }
+
+      setMensagemCampoSenha('Não foi possível concluir o cadastro agora.');
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 px-4">
-      <form
-        onSubmit={handleCadastro}
-        className="bg-white rounded-xl shadow-lg p-8 w-full max-w-md border border-gray-200"
-      >
-        <div className="flex flex-col items-center mb-6">
-          <img src={logo} alt="Logo Mifica" className="w-14 mb-3" />
-          <h2 className="text-2xl font-bold text-gray-800">Cadastro Mifica</h2>
-          <p className="text-sm text-gray-500">Crie sua conta para começar</p>
+    <>
+      {/* Menu Mobile */}
+      <MobileMenuCadastro />
+
+      <div className={`min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 px-3 md:px-4 ${isMobile ? 'py-8' : 'py-4'}`}>
+        <form
+          onSubmit={handleCadastro}
+          className="bg-white rounded-xl shadow-lg p-6 md:p-8 w-full max-w-md border border-gray-200"
+        >
+        <div className="flex flex-col items-center mb-4 md:mb-6">
+          <img src={logo} alt="Logo Mifica" className="w-12 md:w-14 mb-2 md:mb-3" />
+          <h2 className="text-xl md:text-2xl font-bold text-gray-800">Cadastro Mifica</h2>
+          <p className="text-xs md:text-sm text-gray-500 text-center">Crie sua conta para começar</p>
         </div>
 
-        <div className="space-y-4">
-          {mensagem && (
-            <p className="text-sm text-green-700 bg-green-100 border border-green-300 rounded-md px-3 py-2">
-              {mensagem}
-            </p>
-          )}
+        <div className="space-y-3 md:space-y-4">
           <input
             type="text"
             placeholder="Nome completo"
             value={nome}
             onChange={e => setNome(e.target.value)}
             required
-            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 md:px-4 py-2 text-sm md:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
           <input
             type="email"
@@ -64,7 +76,7 @@ export default function Cadastro() {
             value={email}
             onChange={e => setEmail(e.target.value)}
             required
-            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 md:px-4 py-2 text-sm md:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
           <input
             type="password"
@@ -72,13 +84,18 @@ export default function Cadastro() {
             value={senha}
             onChange={e => setSenha(e.target.value)}
             required
-            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 md:px-4 py-2 text-sm md:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
+          {mensagemCampoSenha && (
+            <p className="text-xs md:text-sm text-green-700 mt-1">
+              {mensagemCampoSenha}
+            </p>
+          )}
         </div>
 
         <button
           type="submit"
-          className="mt-6 w-full bg-blue-600 text-white py-2 rounded-md font-semibold hover:bg-blue-700 transition"
+          className="mt-4 md:mt-6 w-full bg-blue-600 text-white py-2 text-sm md:text-base rounded-md font-semibold hover:bg-blue-700 transition"
         >
           Cadastrar
         </button>
@@ -86,11 +103,12 @@ export default function Cadastro() {
         <button
           type="button"
           onClick={() => navigate('/login')}
-          className="mt-3 w-full bg-gray-100 text-gray-700 py-2 rounded-md font-semibold hover:bg-gray-200 transition"
+          className="mt-2 md:mt-3 w-full bg-gray-100 text-gray-700 py-2 text-sm md:text-base rounded-md font-semibold hover:bg-gray-200 transition"
         >
           Ir para login
         </button>
       </form>
     </div>
+    </>
   );
 }

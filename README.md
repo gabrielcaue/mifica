@@ -14,6 +14,12 @@
 
 ---
 
+## 📌 Resumo rápido para recrutadores
+
+- Tecnologias e função de cada uma (versão curta): [TECNOLOGIAS_RESUMO.md](TECNOLOGIAS_RESUMO.md)
+
+---
+
 ## Sobre o Projeto
 
 Desenvolvi o Mifica como uma plataforma modular que integra **reputação**, **gamificação** e **transações via blockchain**, com foco em escalabilidade, segurança e extensibilidade. O projeto é dividido em módulos independentes que se comunicam via API REST e eventos assíncronos com Redis Pub/Sub.

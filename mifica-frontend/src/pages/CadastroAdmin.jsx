@@ -2,11 +2,14 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
+import useMediaQuery from '../hooks/useMediaQuery';
+import MobileMenuAdmin from '../components/MobileMenuAdmin';
 import logo from '../assets/logo.png';
 
 export default function CadastroAdmin() {
   const [senhaAcesso, setSenhaAcesso] = useState('');
   const [autenticado, setAutenticado] = useState(false);
+  const { isMobile } = useMediaQuery();
 
   const [nome, setNome] = useState('');
   const [email, setEmail] = useState('');
@@ -14,6 +17,7 @@ export default function CadastroAdmin() {
   const [telefone, setTelefone] = useState('');
   const [dataNascimento, setDataNascimento] = useState('');
   const [erroData, setErroData] = useState('');
+  const [mensagemCampoSenha, setMensagemCampoSenha] = useState('');
   const [role, setRole] = useState('USER');
   const navigate = useNavigate();
 
@@ -75,6 +79,7 @@ export default function CadastroAdmin() {
 
   const handleCadastro = async (e) => {
     e.preventDefault();
+    setMensagemCampoSenha('');
 
     // Valida data antes de enviar
     const erro = validarData(dataNascimento);
@@ -96,142 +101,171 @@ export default function CadastroAdmin() {
         senhaAcesso
       });
 
-      alert('Administrador cadastrado com sucesso!');
+      setMensagemCampoSenha('Usuario cadastrado com sucesso!');
       setNome('');
       setEmail('');
       setSenha('');
       setTelefone('');
       setDataNascimento('');
       setRole('USER');
-      navigate('/login');
     } catch (err) {
       console.error('Erro ao cadastrar administrador:', err);
       const msg = err?.response?.data || 'Erro ao cadastrar administrador';
-      alert(typeof msg === 'string' ? msg : 'Erro ao cadastrar administrador');
+
+      if (typeof msg === 'string') {
+        const msgLower = msg.toLowerCase();
+        if (msgLower.includes('email já cadastrado') || msgLower.includes('conta já existe')) {
+          setMensagemCampoSenha('E-mail já cadastrado!');
+          return;
+        }
+      }
+
+      setMensagemCampoSenha('Não foi possível concluir o cadastro agora.');
     }
   };
 
   if (!autenticado) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-900 text-white px-4">
-        <div className="bg-slate-800 p-8 rounded-xl shadow-xl w-full max-w-md">
-          <div className="flex flex-col items-center mb-4">
-            <img src={logo} alt="Logo Mifica" className="w-12 mb-3" />
-            <h2 className="text-2xl font-bold text-center">🔐 Acesso Restrito</h2>
-            <p className="text-sm text-gray-300 text-center">Digite a senha para acessar o cadastro de administrador</p>
-          </div>
-<form
-  onSubmit={async (e) => {
-    e.preventDefault();
-    try {
-      await api.post('/usuarios/validar-acesso-admin', { senhaAcesso });
-      setAutenticado(true);
-    } catch (err) {
-      const msg = err?.response?.data || 'Senha incorreta';
-      alert(typeof msg === 'string' ? msg : 'Senha incorreta');
-    }
-  }}
->
-  <input
-    type="password"
-    placeholder="Senha de acesso"
-    value={senhaAcesso}
-    onChange={e => setSenhaAcesso(e.target.value)}
-    className="w-full px-4 py-2 mb-4 border border-gray-600 rounded-md bg-slate-700 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
-  />
-  <button
-    type="submit"
-    className="w-full bg-indigo-600 text-white py-2 rounded-md font-semibold hover:bg-indigo-700 transition"
-  >
-    Entrar
-  </button>
-</form>
+      <>
+        {/* Menu Mobile */}
+        <MobileMenuAdmin />
 
+        <div className={`min-h-screen flex items-center justify-center bg-gray-900 text-white px-3 md:px-4 ${isMobile ? 'py-8' : 'py-4'}`}>
+          <div className="bg-slate-800 p-6 md:p-8 rounded-xl shadow-xl w-full max-w-md">
+            <div className="flex flex-col items-center mb-4">
+              <img src={logo} alt="Logo Mifica" className="w-10 md:w-12 mb-2 md:mb-3" />
+              <h2 className="text-xl md:text-2xl font-bold text-center">🔐 Acesso Restrito</h2>
+              <p className="text-xs md:text-sm text-gray-300 text-center mt-2">Digite a senha para acessar o cadastro de administrador</p>
+            </div>
+  <form
+    onSubmit={async (e) => {
+      e.preventDefault();
+      try {
+        await api.post('/usuarios/validar-acesso-admin', { senhaAcesso });
+        setAutenticado(true);
+      } catch (err) {
+        const msg = err?.response?.data || 'Senha incorreta';
+        alert(typeof msg === 'string' ? msg : 'Senha incorreta');
+      }
+    }}
+  >
+    <input
+      type="password"
+      placeholder="Senha de acesso"
+      value={senhaAcesso}
+      onChange={e => setSenhaAcesso(e.target.value)}
+      className="w-full px-3 md:px-4 py-2 mb-3 md:mb-4 text-sm md:text-base border border-gray-600 rounded-md bg-slate-700 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+    />
+    <button
+      type="submit"
+      className="w-full bg-indigo-600 text-white py-2 text-sm md:text-base rounded-md font-semibold hover:bg-indigo-700 transition"
+    >
+      Entrar
+    </button>
+  </form>
+
+          </div>
         </div>
-      </div>
+      </>
     );
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 px-4">
-      <form
-        onSubmit={handleCadastro}
-        className="bg-white rounded-xl shadow-xl p-10 w-full max-w-lg border border-gray-300"
-      >
-        <div className="flex flex-col items-center mb-6">
-          <img src={logo} alt="Logo Mifica" className="w-12 mb-3" />
-          <h2 className="text-3xl font-bold text-gray-800">Cadastro de Administrador</h2>
-          <p className="text-sm text-gray-500">Preencha os dados para criar uma conta administrativa</p>
-        </div>
+    <>
+      {/* Menu Mobile */}
+      <MobileMenuAdmin />
 
-        <div className="space-y-4">
-          <input
-            type="text"
-            placeholder="Nome completo"
-            value={nome}
-            onChange={e => setNome(e.target.value)}
-            required
-            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-          />
-          <input
-            type="email"
-            placeholder="Email institucional"
-            value={email}
-            onChange={e => setEmail(e.target.value)}
-            required
-            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-          />
-          <input
-            type="password"
-            placeholder="Senha segura"
-            value={senha}
-            onChange={e => setSenha(e.target.value)}
-            required
-            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-          />
-          <input
-            type="text"
-            placeholder="Telefone"
-            value={telefone}
-            onChange={e => setTelefone(e.target.value)}
-            required
-            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-          />
-          <div>
+      <div className={`min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 px-3 md:px-4 ${isMobile ? 'py-8' : 'py-4'}`}>
+        <form
+          onSubmit={handleCadastro}
+          className="bg-white rounded-xl shadow-xl p-6 md:p-10 w-full max-w-lg border border-gray-300"
+        >
+          <div className="flex flex-col items-center mb-4 md:mb-6">
+            <img src={logo} alt="Logo Mifica" className="w-10 md:w-12 mb-2 md:mb-3" />
+            <h2 className="text-xl md:text-3xl font-bold text-gray-800 text-center">Cadastro de Administrador</h2>
+            <p className="text-xs md:text-sm text-gray-500 text-center mt-2">Preencha os dados para criar uma conta administrativa</p>
+          </div>
+
+          <div className="space-y-3 md:space-y-4">
             <input
               type="text"
-              placeholder="Data de nascimento (DD/MM/AAAA)"
-              value={dataNascimento}
-              onChange={handleDataChange}
-              maxLength={10}
+              placeholder="Nome completo"
+              value={nome}
+              onChange={e => setNome(e.target.value)}
               required
-              className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 ${
-                erroData
-                  ? 'border-red-500 focus:ring-red-500'
-                  : 'border-gray-300 focus:ring-indigo-500'
-              }`}
+              className="w-full px-3 md:px-4 py-2 text-sm md:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
-            {erroData && (
-              <p className="text-red-500 text-sm mt-1">{erroData}</p>
+            <input
+              type="email"
+              placeholder="Email institucional"
+              value={email}
+              onChange={e => setEmail(e.target.value)}
+              required
+              className="w-full px-3 md:px-4 py-2 text-sm md:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            />
+            <input
+              type="password"
+              placeholder="Senha segura"
+              value={senha}
+              onChange={e => setSenha(e.target.value)}
+              required
+              className="w-full px-3 md:px-4 py-2 text-sm md:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            />
+            {mensagemCampoSenha && (
+              <p className="text-xs md:text-sm text-green-700 mt-1">{mensagemCampoSenha}</p>
             )}
+            <input
+              type="text"
+              placeholder="Telefone"
+              value={telefone}
+              onChange={e => setTelefone(e.target.value)}
+              required
+              className="w-full px-3 md:px-4 py-2 text-sm md:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            />
+            <div>
+              <input
+                type="text"
+                placeholder="Data de nascimento (DD/MM/AAAA)"
+                value={dataNascimento}
+                onChange={handleDataChange}
+                maxLength={10}
+                required
+                className={`w-full px-3 md:px-4 py-2 text-sm md:text-base border rounded-md focus:outline-none focus:ring-2 ${
+                  erroData
+                    ? 'border-red-500 focus:ring-red-500'
+                    : 'border-gray-300 focus:ring-indigo-500'
+                }`}
+              />
+              {erroData && (
+                <p className="text-red-500 text-xs md:text-sm mt-1">{erroData}</p>
+              )}
+            </div>
+            <select
+              value={role}
+              onChange={e => setRole(e.target.value)}
+              className="w-full px-3 md:px-4 py-2 text-sm md:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            >
+              <option value="USER">Usuário</option>
+              <option value="ADMIN">Administrador</option>
+            </select>
           </div>
-          <select
-            value={role}
-            onChange={e => setRole(e.target.value)}
-            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-          >
-            <option value="USER">Usuário</option>
-            <option value="ADMIN">Administrador</option>
-          </select>
-        </div>
 
-        <button
-          type="submit"
-          className="mt-6 w-full bg-indigo-600 text-white py-2 rounded-md font-semibold hover:bg-indigo-700 transition"
-        >
-          Cadastrar Administrador
-        </button>
-      </form>
-    </div>
+          <button
+            type="submit"
+            className="mt-4 md:mt-6 w-full bg-indigo-600 text-white py-2 text-sm md:text-base rounded-md font-semibold hover:bg-indigo-700 transition"
+          >
+            Cadastrar Administrador
+          </button>
+
+          <button
+            type="button"
+            onClick={() => navigate('/login')}
+            className="mt-2 md:mt-3 w-full bg-gray-100 text-gray-700 py-2 text-sm md:text-base rounded-md font-semibold hover:bg-gray-200 transition"
+          >
+            Ir para login
+          </button>
+        </form>
+      </div>
+    </>
   );
 }
