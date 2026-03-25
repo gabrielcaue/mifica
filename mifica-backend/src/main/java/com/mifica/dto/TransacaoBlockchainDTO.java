@@ -3,6 +3,9 @@ package com.mifica.dto;
 import java.time.LocalDateTime;
 
 public class TransacaoBlockchainDTO {
+
+    // ICP-TOTAL: 1
+    // ICP-01: DTO descreve evento de transferência em blockchain para persistência e consulta.
     private Long id;
     private String hashTransacao;
     private String remetente;

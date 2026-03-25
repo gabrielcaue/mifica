@@ -10,6 +10,9 @@ import java.time.LocalDate;
 
 public class UsuarioCadastroDTO {
 
+    // ICP-TOTAL: 1
+    // ICP-01: DTO especializa dados de onboarding para criação de conta.
+
     @NotBlank(message = "Nome completo é obrigatório.")
     private String nome;
 

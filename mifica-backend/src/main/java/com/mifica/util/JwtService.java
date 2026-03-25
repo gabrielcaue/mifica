@@ -23,6 +23,9 @@ import io.jsonwebtoken.security.Keys;
 @Service
 public class JwtService {
 
+    // ICP-TOTAL: 2
+    // ICP-01: Serviço centraliza geração/validação de tokens com claims de identidade e autorização.
+
     @Value("${jwt.secret}")
     private String secret;
 
@@ -61,6 +64,7 @@ public class JwtService {
      * @return claims contendo email, id, nome e role
      */
     public Claims validarToken(String token) {
+        // ICP-02: Parsing assinado protege integridade do payload e controla expiração.
         return Jwts.parserBuilder()
                 .setSigningKey(getSigningKey())
                 .build()

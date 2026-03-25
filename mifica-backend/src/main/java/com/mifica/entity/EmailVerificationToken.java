@@ -8,6 +8,9 @@ import jakarta.persistence.*;
 @Table(name = "email_verification_tokens")
 public class EmailVerificationToken {
 
+    // ICP-TOTAL: 1
+    // ICP-01: Entidade controla token de confirmação com validade temporal e consumo único.
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

@@ -13,6 +13,9 @@ import java.time.LocalDate;
 
 public class UsuarioDTO {
 
+    // ICP-TOTAL: 2
+    // ICP-01: DTO agrega validações de entrada e múltiplos perfis de construção (manual e por entidade).
+
     private Long id;
 
     @NotBlank(message = "Nome é obrigatório.")
@@ -60,6 +63,7 @@ public class UsuarioDTO {
 
     // 🔹 Construtor baseado na entidade
     public UsuarioDTO(Usuario usuario) {
+        // ICP-02: Conversão de entidade inclui normalização de papel enum para string de transporte.
         this.id = usuario.getId();
         this.nome = usuario.getNome();
         this.email = usuario.getEmail();

@@ -12,6 +12,9 @@ import java.util.List;
 @RequestMapping("/api/contratos")
 public class ContratoController {
 
+    // ICP-TOTAL: 1
+    // ICP-01: Controller simplifica fluxo de criação/listagem preservando semântica HTTP adequada.
+
     @Autowired
     private ContratoService contratoService;
 

@@ -25,7 +25,7 @@ export default function Cadastro() {
       const response = await api.post('/usuarios/cadastro', dados);
 
       console.log("Cadastro realizado:", response.data);
-      setMensagemCampoSenha('Usuario cadastrado com sucesso!');
+      setMensagemCampoSenha('Usuario criada com sucesso!');
       setNome('');
       setEmail('');
       setSenha('');
@@ -57,7 +57,7 @@ export default function Cadastro() {
         >
         <div className="flex flex-col items-center mb-7 md:mb-8">
           <img src={logo} alt="Logo Mifica" className="w-28 md:w-32 mb-3 md:mb-4 drop-shadow-lg" />
-          <h2 className="text-3xl md:text-5xl font-extrabold tracking-tight text-blue-700">Software que transforma</h2>
+          <h2 className="text-3xl md:text-5xl font-extrabold tracking-tight text-blue-700 text-center">Software que transforma</h2>
           <p className="text-sm md:text-base text-gray-500 text-center">Crie sua conta para começar</p>
         </div>
 

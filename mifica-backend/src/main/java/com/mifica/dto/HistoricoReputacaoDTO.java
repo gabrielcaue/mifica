@@ -3,6 +3,9 @@ package com.mifica.dto;
 import java.time.LocalDateTime;
 
 public class HistoricoReputacaoDTO {
+
+    // ICP-TOTAL: 1
+    // ICP-01: DTO modela auditoria temporal de variação de reputação do usuário.
     private Long id;
     private String emailUsuario;
     private int reputacaoAnterior;

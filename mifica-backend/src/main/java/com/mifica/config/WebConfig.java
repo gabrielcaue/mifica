@@ -7,6 +7,9 @@ import org.springframework.lang.NonNull;
 
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
+
+    // ICP-TOTAL: 1
+    // ICP-01: Configuração define integração web global (CORS/interceptação) para toda API.
     @Override
     public void addCorsMappings(@NonNull CorsRegistry registry) {
         registry.addMapping("/**")

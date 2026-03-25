@@ -12,6 +12,9 @@ import java.util.List;
 @RequestMapping("/api/desafios")
 public class DesafioController {
 
+    // ICP-TOTAL: 1
+    // ICP-01: Controller encapsula casos de uso de desafio com mapeamento direto de serviço.
+
     @Autowired
     private DesafioService desafioService;
 

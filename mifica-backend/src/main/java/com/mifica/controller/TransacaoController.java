@@ -15,6 +15,9 @@ import java.util.List;
 @RequestMapping("/api/transacoes")
 public class TransacaoController {
 
+    // ICP-TOTAL: 2
+    // ICP-01: Controller depende de extração de identidade por token para escopo de dados financeiros.
+
     @Autowired
     private TransacaoService transacaoService;
 
@@ -23,6 +26,7 @@ public class TransacaoController {
 
     @GetMapping
     public ResponseEntity<List<Transacao>> listarTransacoes(@RequestHeader("Authorization") String token) {
+        // ICP-02: Tratamento de autenticação e fallback de autorização são feitos na borda HTTP.
         try {
             String email = jwtUtil.extrairEmail(token.replace("Bearer ", ""));
             List<Transacao> transacoes = transacaoService.listarPorEmail(email);

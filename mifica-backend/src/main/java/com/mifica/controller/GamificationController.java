@@ -14,6 +14,9 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/gamification")
 public class GamificationController {
 
+    // ICP-TOTAL: 1
+    // ICP-01: Controller publica evento assíncrono e não bloqueia requisição aguardando processamento.
+
     @Autowired
     private GamificationPublisher publisher;
 

@@ -5,6 +5,9 @@ import jakarta.persistence.*;
 @Entity
 public class DesafioGamificado {
 
+    // ICP-TOTAL: 1
+    // ICP-01: Entidade modela desafio com pontuação para motor de gamificação.
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

@@ -6,6 +6,9 @@ import java.time.LocalDateTime;
 @Entity
 public class Transacao {
 
+    // ICP-TOTAL: 1
+    // ICP-01: Entidade guarda dados financeiros de transferência para rastreabilidade transacional.
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

@@ -1,7 +1,15 @@
-# Pacotes do projeto (visão para recrutador/gestão)
+# Índice SDD dos pacotes
 
-Este diretório resume os pacotes por módulo para leitura rápida.
-No backend, os textos usam linguagem técnica mais profunda (intencional).
+Este diretório está padronizado em **SDD (Specification-Driven Development)**.
+
+Padrão adotado em cada arquivo:
+1. Objetivo do pacote
+2. Escopo (inclui / não inclui)
+3. Contratos e interfaces
+4. Regras e invariantes
+5. Critérios de aceitação (testáveis)
+6. Dependências e integrações
+7. Riscos e trade-offs
 
 ## Backend (Java)
 - [backend-app](backend-app.md)

@@ -1,6 +1,9 @@
 package com.mifica.dto;
 
 public class LoginRequestDTO {
+
+    // ICP-TOTAL: 1
+    // ICP-01: DTO define contrato de entrada para endpoint de login autenticado.
     private String email;
     private String senha;
 

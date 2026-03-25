@@ -1,6 +1,9 @@
 package com.mifica.dto;
 
 public class DesafioDTO {
+
+    // ICP-TOTAL: 1
+    // ICP-01: DTO concentra payload de desafio entre API e serviço.
     private Long id;
     private String titulo;
     private String descricao;

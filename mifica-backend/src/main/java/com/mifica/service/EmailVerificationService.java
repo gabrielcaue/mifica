@@ -14,6 +14,9 @@ import com.mifica.repository.UsuarioRepository;
 @Service
 public class EmailVerificationService {
 
+    // ICP-TOTAL: 2
+    // ICP-01: Serviço controla ciclo de vida de token com política de expiração e uso único.
+
     private final EmailVerificationTokenRepository tokenRepository;
     private final UsuarioRepository usuarioRepository;
 
@@ -38,6 +41,7 @@ public class EmailVerificationService {
 
     @Transactional
     public String verificarToken(String tokenRecebido) {
+        // ICP-02: Verificação executa sequência de validações com efeitos colaterais em usuário e token.
         EmailVerificationToken token = tokenRepository.findByToken(tokenRecebido).orElse(null);
 
         if (token == null) {

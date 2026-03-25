@@ -6,6 +6,8 @@ import 'dart:convert';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class ApiClient {
+  // ICP-TOTAL: 3
+  // ICP-01: Cliente centraliza autenticação por token e tratamento padrão de erros HTTP.
   // Altere para seu URL de produção
   final String baseUrl = const String.fromEnvironment(
     'API_URL',
@@ -19,6 +21,7 @@ class ApiClient {
     String endpoint,
     Map<String, dynamic> data,
   ) async {
+    // ICP-02: Fluxo de POST agrega injeção condicional de JWT, serialização e política de recuperação para 401.
     try {
       final token = await storage.read(key: _tokenKey);
       final headers = {
@@ -48,6 +51,7 @@ class ApiClient {
   }
 
   Future<Map<String, dynamic>> get(String endpoint) async {
+    // ICP-03: GET reutiliza estratégia de autenticação e normaliza retorno de erro para chamadas consumidoras.
     try {
       final token = await storage.read(key: _tokenKey);
       final headers = {

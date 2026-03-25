@@ -9,6 +9,9 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class CorsConfig{
 
+    // ICP-TOTAL: 1
+    // ICP-01: Configuração CORS centraliza política de acesso cross-origin para ambiente de frontend.
+
     @Bean
     public WebMvcConfigurer corsConfigurer() {
         return new WebMvcConfigurer() {

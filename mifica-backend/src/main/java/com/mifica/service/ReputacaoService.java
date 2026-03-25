@@ -16,6 +16,9 @@ import java.util.stream.Collectors;
 @Service
 public class ReputacaoService {
 
+    // ICP-TOTAL: 2
+    // ICP-01: Serviço sincroniza histórico de reputação com atualização da entidade principal.
+
     @Autowired
     private HistoricoReputacaoRepository historicoRepo;
 
@@ -23,6 +26,7 @@ public class ReputacaoService {
     private UsuarioRepository usuarioRepo;
 
     public void registrarAlteracao(String email, int novaReputacao) {
+        // ICP-02: Fluxo condicional preserva atomicidade lógica entre auditoria e reputação atual.
         Optional<Usuario> usuarioOpt = usuarioRepo.findByEmail(email);
 
         usuarioOpt.ifPresent(usuario -> {

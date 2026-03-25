@@ -28,6 +28,9 @@ import io.jsonwebtoken.security.Keys;
 @Component
 public class JwtUtil {
 
+    // ICP-TOTAL: 3
+    // ICP-01: Componente centraliza geração, extração e validação de JWT com dependência de estado externo (secret + repositório).
+
     @Value("${jwt.secret}")
     private String secretKey;
 
@@ -48,6 +51,7 @@ public class JwtUtil {
      */
     // Gera token com email como subject e role como claim
     public String gerarToken(String email) {
+        // ICP-02: Geração de token depende de busca de usuário e composição de claims de autorização.
         Optional<Usuario> usuarioOpt = usuarioRepository.findByEmail(email);
 
         if (usuarioOpt.isEmpty()) {
@@ -91,6 +95,7 @@ public class JwtUtil {
 
     // Verifica se o token é válido
     public boolean tokenValido(String token) {
+        // ICP-03: Validação por tentativa controla falhas de parsing/assinatura sem expor exceções ao chamador.
         try {
             extrairEmail(token);
             return true;

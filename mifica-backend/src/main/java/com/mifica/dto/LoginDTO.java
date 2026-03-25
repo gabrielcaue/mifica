@@ -1,6 +1,9 @@
 package com.mifica.dto;
 
 public class LoginDTO {
+
+    // ICP-TOTAL: 1
+    // ICP-01: DTO transporta credenciais mínimas para autenticação do usuário.
     private String email;
     private String senha;
 

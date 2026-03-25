@@ -11,6 +11,9 @@ import org.slf4j.LoggerFactory;
 @Service
 public class EmailService {
 
+    // ICP-TOTAL: 2
+    // ICP-01: Serviço encapsula construção de e-mail transacional com link assinado de verificação.
+
     private static final Logger log = LoggerFactory.getLogger(EmailService.class);
 
     private final JavaMailSender mailSender;
@@ -26,6 +29,7 @@ public class EmailService {
     }
 
     public void enviarEmailVerificacao(String destino, String nome, String token) {
+        // ICP-02: Envio SMTP inclui estratégia de logging e propagação de erro por tipo de exceção.
         String link = backendUrl + "/api/usuarios/verificar-email?token=" + token;
 
         SimpleMailMessage message = new SimpleMailMessage();

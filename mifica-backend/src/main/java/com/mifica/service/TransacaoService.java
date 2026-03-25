@@ -12,6 +12,9 @@ import java.util.List;
 @Service
 public class TransacaoService {
 
+    // ICP-TOTAL: 1
+    // ICP-01: Serviço amarra transação ao remetente autenticado e impõe recorte por usuário.
+
     @Autowired
     private TransacaoRepository transacaoRepository;
 

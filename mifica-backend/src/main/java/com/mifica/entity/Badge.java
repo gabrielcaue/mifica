@@ -8,6 +8,9 @@ import jakarta.persistence.Id;
 @Entity
 public class Badge {
 
+    // ICP-TOTAL: 1
+    // ICP-01: Entidade materializa conquistas de gamificação associadas ao usuário.
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

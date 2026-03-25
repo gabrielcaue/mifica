@@ -8,6 +8,9 @@ import java.time.LocalDateTime;
 @Entity
 public class SolicitacaoCredito {
 
+    // ICP-TOTAL: 1
+    // ICP-01: Entidade representa ciclo de solicitação de crédito com status e temporalidade.
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

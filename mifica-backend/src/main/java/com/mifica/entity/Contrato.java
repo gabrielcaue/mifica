@@ -5,6 +5,9 @@ import jakarta.persistence.*;
 @Entity
 public class Contrato {
 
+    // ICP-TOTAL: 1
+    // ICP-01: Entidade persiste metadados de contrato e referência blockchain.
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

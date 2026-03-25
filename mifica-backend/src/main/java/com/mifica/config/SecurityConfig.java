@@ -30,6 +30,9 @@ import com.mifica.util.JwtFiltro;
 @Configuration
 public class SecurityConfig {
 
+    // ICP-TOTAL: 3
+    // ICP-01: Classe concentra decisões transversais de segurança (CORS, autorização por rota e encadeamento de filtros).
+
     @Autowired
     private JwtFiltro jwtFiltro;
 
@@ -45,6 +48,7 @@ public class SecurityConfig {
      */
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        // ICP-02: Matriz de autorização por endpoint define fronteiras de acesso público, usuário autenticado e admin.
         http
             // Configura CORS para permitir requisições do frontend (GitHub Pages)
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
@@ -83,6 +87,7 @@ public class SecurityConfig {
      */
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
+        // ICP-03: Origem permitida é derivada dinamicamente de configuração, com saneamento de entrada.
         CorsConfiguration configuration = new CorsConfiguration();
         // Lê origins da variável de ambiente, separados por vírgula
         configuration.setAllowedOriginPatterns(

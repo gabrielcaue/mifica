@@ -23,6 +23,9 @@ import org.springframework.lang.NonNull;
 @Configuration
 public class RedisConfig {
 
+    // ICP-TOTAL: 3
+    // ICP-01: Configuração define infraestrutura Pub/Sub e tolerância a falha de conexão no startup.
+
     /** Nome do canal Redis Pub/Sub usado para eventos de gamificação. */
     public static final String GAMIFICATION_CHANNEL = "gamification-events";
 
@@ -63,6 +66,8 @@ public class RedisConfig {
             @NonNull MessageListenerAdapter gamificationListenerAdapter,
             @NonNull ChannelTopic gamificationTopic) {
 
+        // ICP-02: Subclasse anônima customiza lifecycle para permitir startup degradado sem derrubar a aplicação.
+
         final Logger log = LoggerFactory.getLogger(RedisConfig.class);
 
         RedisMessageListenerContainer container = new RedisMessageListenerContainer() {
@@ -78,6 +83,7 @@ public class RedisConfig {
         };
         // Conecta ao Redis (host/port/password definidos em application.properties)
         container.setConnectionFactory(connectionFactory);
+        // ICP-03: Encadeamento explícito de listener e tópico define o roteamento efetivo de eventos.
         // Registra o listener no canal de gamificação
         container.addMessageListener(gamificationListenerAdapter, gamificationTopic);
         return container;

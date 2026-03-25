@@ -16,6 +16,9 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class GamificationService {
+
+    // ICP-TOTAL: 2
+    // ICP-01: Regra de pontuação possui gatilho de badge e evolução de nível baseada em limiar.
     private final UserRepository userRepository;
     private final BadgeRepository badgeRepository;
 
@@ -29,6 +32,7 @@ public class GamificationService {
      * Persiste a atualização no banco de dados (MySQL via JPA).
      */
     public void addPoints(Long userId, int points) {
+        // ICP-02: Atualização combina consistência de saldo de pontos com concessão condicional de badge.
         // Busca usuário no banco — lança exceção se não existir
         User user = userRepository.findById(java.util.Objects.requireNonNull(userId)).orElseThrow();
         // Soma os novos pontos ao total existente

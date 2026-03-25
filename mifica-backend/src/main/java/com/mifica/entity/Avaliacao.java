@@ -6,6 +6,9 @@ import java.time.LocalDateTime;
 @Entity
 public class Avaliacao {
 
+    // ICP-TOTAL: 1
+    // ICP-01: Entidade representa vínculo de avaliação entre usuários e reputação percebida.
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

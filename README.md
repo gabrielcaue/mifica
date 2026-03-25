@@ -1,6 +1,6 @@
 # 🧠 Mifica — Plataforma Modular de Reputação, Gamificação e Blockchain
 
-> ✅ **Status: Online** — Infraestrutura migrada de Kafka para Redis Pub/Sub (Upstash), segurança CORS configurada e variáveis de ambiente seguras no Render.
+> ✅ **Status: Online** — Infraestrutura resiliente com Redis Pub/Sub (Upstash), CORS centralizado, segurança por JWT, e ICPs/CDD aplicados ao backend Java.
 
 ---
 
@@ -11,24 +11,55 @@
 | 🌐 **Frontend (GitHub Pages)** | [gabrielcaue.github.io/mifica](https://gabrielcaue.github.io/mifica/) |
 | ⚙️ **Backend API (Render)** | [mifica-backend.onrender.com](https://mifica-backend.onrender.com) |
 | 📦 **Repositório** | [github.com/gabrielcaue/mifica](https://github.com/gabrielcaue/mifica) |
+| 📖 **Documentação Técnica** | [docs/packages/00-INDEX.md](docs/packages/00-INDEX.md) |
 
 ---
 
 ## 📌 Resumo rápido para recrutadores
 
-- Tecnologias e função de cada uma (versão curta): [TECNOLOGIAS_RESUMO.md](TECNOLOGIAS_RESUMO.md)
+- Tecnologias e função de cada uma: [TECNOLOGIAS_RESUMO.md](TECNOLOGIAS_RESUMO.md)
+- Documentação de arquitetura e módulos: [docs/packages/](docs/packages/)
+
+### 🎯 Diferenciais (evidência rápida em seleção)
+
+- **SDD aplicado em documentação de pacotes**: 24 documentos padronizados por escopo, contratos, critérios de aceitação e riscos.
+- **CDD/ICP aplicado no backend**: 45+ classes Java com pontos de complexidade cognitiva explicitados.
+- **Arquitetura orientada a manutenção**: separação clara entre `controller`, `service`, `repository`, `config`, `util` e `dto`.
+
+**Exemplos para avaliação técnica (tech manager / coordenação):**
+- [docs/packages/backend-service.md](docs/packages/backend-service.md)
+- [docs/packages/backend-controller.md](docs/packages/backend-controller.md)
+- [docs/packages/backend-config.md](docs/packages/backend-config.md)
+- [docs/packages/00-INDEX.md](docs/packages/00-INDEX.md)
 
 ---
 
-## 📐 Engenharia guiada por especificação (SpecKit)
+## 🧠 Engenharia Guiada por Compreensão Cognitiva (CDD/ICP)
 
-Este repositório utiliza o **SpecKit** em [tools/spec-kit](tools/spec-kit) como base de apoio para práticas de **spec-driven development**.
+**Cognitive-Driven Development (CDD)** com **Índice de Complexidade Percebida (ICP)** aplicado ao backend:
 
-Na prática, isso ajuda a:
+Cada classe Java com mais de 20 linhas recebeu análise de complexidade cognitiva, com comentários `// ICP-TOTAL: N` e `// ICP-XX: descrição` documentando pontos de decisão e fluxos não-lineares. Essa abordagem, inspirada em trabalhos da [Zup](https://zup.com.br/blog/cognitive-driven-development-cdd/), melhora legibilidade e facilita futuras manutenções.
 
-- definir requisitos e escopo antes da implementação;
-- manter padrão técnico e consistência entre módulos;
-- melhorar documentação e rastreabilidade de decisões.
+- **Total de classes backend com CDD**: 45+
+- **Máximo ICP por classe**: 7 (UsuarioService)
+- **Cobertura**: Controllers, Services, Configs, Entities, DTOs, Filters, Utils
+
+---
+
+## 📐 Engenharia Guiada por Especificação (SpecKit)
+
+Este repositório utiliza **Spec-Driven Development (SDD)** com o toolkit **SpecKit** em [tools/spec-kit](tools/spec-kit):
+
+### Filosofia de Especificação
+- Especificações são o artefato primário; código é a expressão executável.
+- Manutenção do software significa evoluir especificações, não apenas código.
+- Documentação técnica versionada em [docs/packages/](docs/packages/) rastreia decisões arquiteturais.
+
+### Prática no Projeto
+- Requisitos modelados como **PRDs estruturados** (Product Requirements Documents)
+- Mudanças em especificações propagam automaticamente para implementação
+- Testes nascidos da especificação, não como artefato posterior
+- Pesquisa de contexto técnico integrada ao processo (constrains organizacionais, padrões, etc.)
 
 ---
 
@@ -47,46 +78,60 @@ Meu objetivo foi construir uma aplicação que demonstrasse domínio real sobre 
 ✅ Autenticação JWT com controle de acesso por roles (USER / ADMIN)  
 ✅ Sistema de reputação com cálculo dinâmico e conquistas desbloqueáveis  
 ✅ Gamificação com missões diárias, recompensas e pontuação  
-✅ Integração com Redis Pub/Sub para eventos assíncronos (gamificação em tempo real)  
+✅ Integração com Redis Pub/Sub para eventos assíncronos (Upstash em produção)  
 ✅ Persistência com MySQL + Hibernate/JPA  
-✅ Documentação automática da API com Swagger/OpenAPI  
-✅ Spring Security com filtros customizados e CORS configurável  
+✅ Documentação automática com Swagger/OpenAPI  
+✅ Spring Security com filtros JWT customizados e CORS centralizado  
+✅ **ICPs/CDD aplicados** — Complexidade cognitiva documentada em 45+ classes  
+✅ Configuração segura via variáveis de ambiente (12-Factor App)  
 
-### Frontend (React + Vite + TailwindCSS)
-✅ SPA com login, cadastro, dashboard e perfil  
-✅ Painel administrativo com controle de usuários  
-✅ Rotas protegidas por autenticação  
+### Frontend (React 18 + Vite + TailwindCSS)
+✅ SPA responsiva com login, cadastro, dashboard e perfil de usuário  
+✅ Painel administrativo com controle de usuários (ADMIN only)  
+✅ Rotas protegidas por autenticação JWT  
 ✅ Deploy automatizado no GitHub Pages  
+✅ Design mobile-first com suporte a responsividade  
+
+### Flutter (Base inicial — 84 linhas com CDD)
+✅ Cliente HTTP com injeção automática de token JWT  
+✅ Tratamento centralizado de erros e fallback de autenticação  
+✅ Segurança com Flutter Secure Storage  
 
 ### Infraestrutura & DevOps
 ✅ **Docker** — Multi-stage builds otimizados para backend e frontend  
-✅ **Docker Compose** — Orquestração local de todos os serviços  
-✅ **Redis Pub/Sub (Upstash)** — Mensageria assíncrona para eventos de gamificação  
-✅ **CI/CD com GitHub Actions** — Pipeline automatizado de build e deploy  
-✅ **Render** — Backend em produção com HTTPS automático  
+✅ **Docker Compose** — Orquestração local de MySQL, Redis, backend e frontend  
+✅ **Redis Pub/Sub (Upstash)** — Pub/Sub assíncrono resiliente para gamificação  
+✅ **CI/CD com GitHub Actions** — Pipeline de build, testes e deploy automatizado  
+✅ **Render** — Backend Java 21 em produção com HTTPS automático  
 ✅ **GitHub Pages** — Frontend estático com deploy contínuo  
-✅ **Variáveis de ambiente** — Zero credenciais no código (12-Factor App)  
-✅ **Traefik** — Reverse proxy e load balancer no ambiente local  
+✅ **Variáveis de ambiente** — Zero credenciais no código (princípio 12-Factor)  
 
-### Painel Administrativo (Streamlit + Python)
-✅ Dashboard de análise de dados com visualizações interativas  
-✅ Integração com a API do backend  
+### Painel Analítico (Streamlit + Python)
+✅ Dashboard interativo com visualizações de dados  
+✅ Integração com API backend  
+✅ Análise de reputação, gamificação e transações  
 
 ---
 
 ## 🔄 Atualizações Recentes
 
-### Março/2026
+### Março/2026 — Ciclo CDD & Especificação
 
-- **Migrei de Apache Kafka para Redis Pub/Sub** — Substituí toda a infraestrutura de Kafka (KRaft) por Redis Pub/Sub com Upstash como provedor gerenciado. A migração simplificou a stack, reduziu custos e manteve a comunicação assíncrona para eventos de gamificação.
+- **Implementei CDD (Cognitive-Driven Development) com ICPs** — Todas as 45+ classes Java >20 linhas receberam análise de complexidade cognitiva. Cada ponto de decisão, bifurcação condicional e delegação assíncrona foi documentado com comentários `// ICP-XX`. Máximo ICP encontrado: 7 em `UsuarioService` (gerenciamento de reputação, recompensas, alteração de senha).
 
-- **Refatorei toda a configuração de segurança (CORS/Security)** — Unifiquei a configuração CORS no Spring Security com `allowedOriginPatterns` configurável por variável de ambiente, liberação explícita de preflight `OPTIONS`, e endpoints públicos para cadastro e login acessíveis por qualquer pessoa.
+- **Refatorei documentação técnica para SDD** — Estruturei especificações em [docs/packages/](docs/packages/) seguindo abordagem spec-driven, com rastreabilidade de decisões arquiteturais em cada módulo (backend-service, backend-controller, backend-config, etc.).
 
-- **Eliminei credenciais hardcoded do repositório** — Todas as senhas, tokens e secrets agora são lidas exclusivamente por variáveis de ambiente (`JWT_SECRET`, `MYSQLPASSWORD`, `REDIS_PASSWORD`, etc.), seguindo o princípio 12-Factor App.
+- **Solidifiquei segurança por autenticação centralizada** — JWT em todas as rotas protegidas, CORS configurável por variável de ambiente, e eliminação de dados sensíveis de repositório.
 
-- **Corrigi inconsistências do perfil de produção** — Removi dialeto PostgreSQL incorreto que estava no `application-prod.properties` (o banco é MySQL), ajustei `ddl-auto` para `update`, e eliminei `context-path` duplicado que gerava `/api/api/`.
+### Período Anterior (Fevereiro/2026)
 
-- **Atualizei o pipeline CI/CD** — Mantive pipeline de build no GitHub Actions e deploy automático via integração nativa do Render.
+- **Migrei de Apache Kafka para Redis Pub/Sub** — Substituí toda a infraestrutura Kafka por Redis Pub/Sub com Upstash como provedor gerenciado, simplificando a stack sem perder comunicação assíncrona.
+
+- **Refatorei configuração de segurança HTTP** — Unifiquei CORS no SecurityConfig com `allowedOriginPatterns`, liberação explícita de preflight OPTIONS, e endpoints públicos para cadastro/login.
+
+- **Eliminei credenciais hardcoded** — 100% de secrets agora via variáveis de ambiente (JWT_SECRET, DATABASE_PASSWORD, REDIS_PASSWORD, etc.), seguindo 12-Factor App.
+
+- **Corrigi perfil de produção** — Removido dialeto PostgreSQL incorreto, ajustado ddl-auto para update, eliminados context-path duplicados.
 
 ---
 

@@ -24,6 +24,9 @@ import java.util.Map;
 @RequestMapping("/api/secure")
 public class SecureController {
 
+    // ICP-TOTAL: 2
+    // ICP-01: Endpoint protegido por senha aplica controle de acesso customizado fora do fluxo JWT.
+
     @Value("${admin.redis.senha}")
     private String senhaCorreta;
 
@@ -37,6 +40,7 @@ public class SecureController {
      */
     @PostMapping("/conteudo")
     public ResponseEntity<?> getConteudo(@RequestBody Map<String, String> body) {
+        // ICP-02: Fluxo alterna entre rejeição imediata e retorno estruturado de dados sensíveis em memória.
         String senha = body.get("senha");
         if (!senhaCorreta.equals(senha)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)

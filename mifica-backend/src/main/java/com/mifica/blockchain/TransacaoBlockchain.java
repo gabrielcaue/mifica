@@ -6,6 +6,9 @@ import java.time.LocalDateTime;
 @Entity
 public class TransacaoBlockchain {
 
+    // ICP-TOTAL: 1
+    // ICP-01: Entidade representa contrato de persistência para trilha blockchain com campos de rastreabilidade.
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

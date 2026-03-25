@@ -6,6 +6,9 @@ import java.time.LocalDateTime;
 @Entity
 public class HistoricoReputacao {
 
+    // ICP-TOTAL: 1
+    // ICP-01: Entidade registra trilha de auditoria para variações de reputação.
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

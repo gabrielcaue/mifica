@@ -12,6 +12,9 @@ import java.util.stream.Collectors;
 @Service
 public class ContratoService {
 
+    // ICP-TOTAL: 1
+    // ICP-01: Serviço converte DTO↔entidade para manter fronteira de API desacoplada da persistência.
+
     @Autowired
     private ContratoRepository contratoRepository;
 

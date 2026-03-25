@@ -1,6 +1,9 @@
 package com.mifica.dto;
 
 public class ContratoDTO {
+
+    // ICP-TOTAL: 1
+    // ICP-01: DTO define fronteira de serialização para operações de contrato.
     private Long id;
     private String nome;
     private String descricao;

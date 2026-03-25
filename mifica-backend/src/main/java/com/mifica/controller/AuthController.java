@@ -20,6 +20,9 @@ import java.util.Map;
 @RequestMapping("/auth")
 public class AuthController {
 
+    // ICP-TOTAL: 2
+    // ICP-01: Controller concentra autenticação com validações encadeadas de status e credenciais.
+
     @Autowired
     private UsuarioService usuarioService;
 
@@ -30,6 +33,7 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequestDTO loginRequest) {
+        // ICP-02: Fluxo de login combina múltiplas guard clauses e montagem de resposta com claims relevantes.
         Usuario usuario = usuarioService.buscarPorEmail(loginRequest.getEmail());
 
         if (usuario != null && !Boolean.TRUE.equals(usuario.getEnabled())) {

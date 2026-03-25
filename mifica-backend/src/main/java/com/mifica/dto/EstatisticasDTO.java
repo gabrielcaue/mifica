@@ -1,6 +1,9 @@
 package com.mifica.dto;
 
 public class EstatisticasDTO {
+
+    // ICP-TOTAL: 1
+    // ICP-01: DTO consolida indicadores agregados para consumo direto pelo frontend.
     private int totalUsuarios;
     private double mediaReputacao;
 

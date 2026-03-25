@@ -18,6 +18,9 @@ import org.springframework.lang.NonNull;
 
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
+    // ICP-TOTAL: 2
+    // ICP-01: Filtro extrai token bearer e injeta autenticação no contexto de segurança.
+
     private final JwtService jwtService = new JwtService();
 
     @Override
@@ -25,6 +28,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     @NonNull HttpServletResponse response,
                                     @NonNull FilterChain filterChain)
             throws ServletException, IOException {
+
+        // ICP-02: Fluxo combina validação de token e fallback de resposta 401 para credenciais inválidas.
 
         String token = request.getHeader("Authorization");
 

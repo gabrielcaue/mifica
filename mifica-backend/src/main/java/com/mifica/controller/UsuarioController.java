@@ -41,6 +41,9 @@ import com.mifica.redis.GamificationPublisher;
 @RequestMapping("/api/usuarios")
 public class UsuarioController {
 
+    // ICP-TOTAL: 6
+    // ICP-01: Orquestra múltiplos fluxos (cadastro, verificação de e-mail, login, perfil e administração) no mesmo controller.
+
     private static final String USUARIO_NAO_ENCONTRADO = "Usuário não encontrado.";
     private static final String TOKEN_INVALIDO = "Token inválido ou expirado.";
 
@@ -88,6 +91,7 @@ public class UsuarioController {
      */
     @PostMapping("/cadastro")
     public ResponseEntity<?> cadastrarUsuario(@RequestBody UsuarioDTO dto) {
+        // ICP-02: Cadastro possui bifurcação para reenvio de confirmação e tratamento de consistência transacional de e-mail.
         if (dto.getEmail() != null) {
             dto.setEmail(dto.getEmail().trim().toLowerCase());
         }
@@ -205,6 +209,7 @@ public class UsuarioController {
      */
     @PostMapping("/login")
     public ResponseEntity<?> loginPost(@RequestBody LoginDTO dto) {
+        // ICP-03: Login combina validação de credenciais, geração de JWT e montagem de payload para frontend.
         try {
             boolean valido = usuarioService.validarLogin(dto.getEmail(), dto.getSenha());
             if (!valido) {
@@ -222,6 +227,7 @@ public class UsuarioController {
             resposta.put("nome", usuario.getNome());
             resposta.put("reputacao", usuario.getReputacao());
             resposta.put("conquistas", usuario.getConquistas());
+            resposta.put("emailVerificado", usuario.getEmailVerificado());
 
             return ResponseEntity.ok(resposta);
         } catch (RuntimeException e) {
@@ -251,6 +257,7 @@ public class UsuarioController {
      */
     @GetMapping("/perfil")
     public ResponseEntity<?> perfil(@RequestHeader("Authorization") String token) {
+        // ICP-04: Extração de identidade via JWT com tratamento explícito de token inválido e usuário inexistente.
         try {
             String email = jwtUtil.extrairEmail(token.replace("Bearer ", ""));
             Usuario usuario = usuarioService.buscarPorEmail(email);
@@ -366,6 +373,7 @@ public ResponseEntity<?> atualizarSenha(
         @PathVariable Long id,
         @RequestBody Map<String, String> payload,
         @RequestHeader("Authorization") String token) {
+    // ICP-05: Alteração de senha depende de autorização por identidade do token e validações de domínio.
     try {
         String email = jwtUtil.extrairEmail(token.replace("Bearer ", ""));
         Usuario usuario = usuarioService.buscarPorEmail(email);
@@ -398,6 +406,7 @@ public ResponseEntity<?> atualizarSenha(
      */
     @PostMapping("/{id}/points")
     public ResponseEntity<String> addPoints(@PathVariable Long userId, @RequestParam int points) {
+        // ICP-06: Publicação assíncrona desacopla request HTTP do processamento de pontuação.
         // Publica mensagem no canal Redis — processada assincronamente pelo subscriber
         publisher.publishEvent(userId, points);
         return ResponseEntity.ok("📤 Evento de pontos enviado via Redis para usuário " + userId);

@@ -4,11 +4,15 @@ import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
 import useMediaQuery from '../hooks/useMediaQuery';
 import MobileMenuCadastro from '../components/MobileMenuCadastro';
+import ModalEmailNaoVerificado from '../components/ModalEmailNaoVerificado';
 import logo from '../assets/logo.png';
 import { jwtDecode } from 'jwt-decode';
 
 export default function Login() {
   const [token, setToken] = useState('');
+  const [emailNaoVerificado, setEmailNaoVerificado] = useState(false);
+  const [emailGuardado, setEmailGuardado] = useState('');
+  const [modalAberto, setModalAberto] = useState(false);
   const { login } = useAuth();
   const { isMobile } = useMediaQuery();
   const navigate = useNavigate();
@@ -33,6 +37,17 @@ export default function Login() {
       const tokenRecebido = res.data.token;
       if (!tokenRecebido) {
         alert("Login falhou: token não recebido.");
+        return;
+      }
+
+      // ✅ Verifica se o email foi verificado
+      const emailVerificado = res.data.emailVerificado;
+      
+      if (!emailVerificado) {
+        // Email não verificado - mostra modal e guarda dados
+        setEmailGuardado(emailForm);
+        setEmailNaoVerificado(true);
+        setModalAberto(true);
         return;
       }
 
@@ -61,9 +76,33 @@ export default function Login() {
     }
   };
 
+  const handleReenviarEmail = async () => {
+    if (!emailGuardado) {
+      alert("Erro: e-mail não encontrado.");
+      return;
+    }
+
+    try {
+      const response = await api.post('/usuarios/reenviar-confirmacao', {
+        email: emailGuardado
+      });
+      alert(response.data || "E-mail de confirmação reenviado com sucesso!");
+      setEmailNaoVerificado(false);
+      setModalAberto(false);
+      setEmailGuardado('');
+    } catch (err) {
+      console.error("Erro ao reenviar email:", err);
+      alert("Não foi possível reenviar o e-mail de confirmação agora.");
+    }
+  };
+
   return (
     <>
       <MobileMenuCadastro />
+      <ModalEmailNaoVerificado 
+        isOpen={modalAberto} 
+        onClose={() => setModalAberto(false)} 
+      />
 
       <div className={`min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 px-3 md:px-4 ${isMobile ? 'py-8' : 'py-4'}`}>
         <form
@@ -72,7 +111,7 @@ export default function Login() {
         >
           <div className="flex flex-col items-center mb-7 md:mb-8">
             <img src={logo} alt="Logo Mifica" className="w-28 md:w-32 mb-3 md:mb-4 drop-shadow-lg" />
-            <h2 className="text-3xl md:text-5xl font-extrabold tracking-tight text-blue-700">Software que transforma</h2>
+            <h2 className="text-3xl md:text-5xl font-extrabold tracking-tight text-blue-700 text-center">Software que transforma</h2>
             <p className="text-sm md:text-base text-gray-500 text-center">Acesse sua conta para continuar</p>
           </div>
 
@@ -84,6 +123,18 @@ export default function Login() {
               required
               className="w-full px-3 md:px-4 py-2 text-sm md:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
+            
+            {/* Botão Reenviar Email - Protegido */}
+            {emailNaoVerificado && !modalAberto && (
+              <button
+                type="button"
+                onClick={handleReenviarEmail}
+                className="w-full px-3 md:px-4 py-2 text-sm md:text-base border border-orange-400 bg-orange-50 text-orange-600 rounded-md font-semibold hover:bg-orange-100 transition"
+              >
+                ✉️ Reenviar email de confirmação
+              </button>
+            )}
+            
             <input
               type="password"
               name="senha" // ✅ necessário para FormData

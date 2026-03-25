@@ -9,6 +9,8 @@ import jakarta.persistence.*;
 @Entity
 @Table(name = "usuarios")
 public class Usuario {
+    // ICP-TOTAL: 4
+    // ICP-01: Entidade concentra estado de autenticação, perfil, reputação, conquistas e relacionamentos.
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -172,6 +174,7 @@ public class Usuario {
 
     // 🔥 Sistema de Níveis
     public void atualizarNivel() {
+        // ICP-02: Nível é derivado por faixas de reputação com regras de domínio explícitas.
         if (this.reputacao >= 80) {
             this.nivel = "AVANCADO";
         } else if (this.reputacao >= 40) {
@@ -182,6 +185,7 @@ public class Usuario {
     }
 
     public boolean cumpriuMissaoHoje() {
+        // ICP-03: Missão diária depende de consulta temporal sobre coleção de solicitações.
         return solicitacoes.stream()
             .anyMatch(s -> s.getDataCriacao().toLocalDate().equals(LocalDate.now()));
     }
@@ -205,6 +209,7 @@ public class Usuario {
     }
 
     public void aplicarRecompensas() {
+        // ICP-04: Recompensas combinam múltiplas condições com efeitos cumulativos na reputação.
         if (cumpriuMissaoHoje()) {
             this.reputacao += 5;
             System.out.println("🎁 Recompensa: +5 de reputação por missão diária!");

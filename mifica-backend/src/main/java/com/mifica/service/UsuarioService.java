@@ -28,6 +28,9 @@ import com.mifica.repository.UsuarioRepository;
 @Service
 public class UsuarioService {
 
+    // ICP-TOTAL: 7
+    // ICP-01: Serviço central concentra regras de autenticação, reputação, recompensas e manutenção de perfil.
+
     @Autowired
     private UsuarioRepository usuarioRepository;
 
@@ -40,6 +43,7 @@ public class UsuarioService {
 
     // Cadastro com senha criptografada
     public UsuarioDTO criar(UsuarioDTO dto) {
+        // ICP-02: Cadastro exige criptografia antes da persistência para manter invariantes de segurança.
         String senhaCriptografada = criptografarSenha(dto.getSenha());
         return criarUsuario(dto, senhaCriptografada);
     }
@@ -67,6 +71,7 @@ public class UsuarioService {
      * Compara senha digitada com hash BCrypt armazenado no banco.
      */
     public boolean validarLogin(String email, String senhaDigitada) {
+        // ICP-03: Autenticação combina múltiplas guard clauses (existência, ativação, verificação de e-mail e senha).
         Usuario usuario = buscarPorEmail(email);
         if (usuario == null) throw new RuntimeException("Usuário não encontrado");
         if (!Boolean.TRUE.equals(usuario.getEnabled())) {
@@ -163,6 +168,7 @@ public class UsuarioService {
     }
 
     public void aplicarRecompensas(String email) {
+        // ICP-04: Aplicação de recompensas depende de estado incremental de conquistas e reputação.
         Usuario usuario = buscarPorEmail(email);
         if (usuario == null) return;
 
@@ -182,6 +188,7 @@ public class UsuarioService {
     }
 
     public void aplicarRecompensasCertas(Usuario usuario) {
+        // ICP-05: Regras de progressão usam combinação de missão diária, marcos de reputação e ajuste de nível.
         boolean cumpriuMissao = verificarMissaoDiaria(usuario);
         if (cumpriuMissao) {
             usuario.setReputacao(usuario.getReputacao() + 1);
@@ -253,6 +260,7 @@ public class UsuarioService {
     }
 
     public Optional<UsuarioDTO> atualizar(Long id, UsuarioDTO dto) {
+        // ICP-06: Atualização parcial mantém campos opcionais e aplica transformação de papel/senha quando necessário.
         Optional<Usuario> optionalUsuario = usuarioRepository.findById(Objects.requireNonNull(id));
         if (optionalUsuario.isEmpty()) return Optional.empty();
 
@@ -329,6 +337,7 @@ public UsuarioDTO atualizarUsuario(Long id, UsuarioDTO dto) {
 
         // 🔧 Novo método para atualizar senha
 public boolean atualizarSenha(Long id, String senhaAtual, String senhaNova) {
+    // ICP-07: Rotação de senha exige validação da senha antiga antes da escrita do novo hash.
     Usuario usuario = usuarioRepository.findById(Objects.requireNonNull(id))
         .orElseThrow(() -> new RuntimeException("Usuário não encontrado."));
 

@@ -6,6 +6,9 @@ import jakarta.persistence.*;
 @Table(name = "gamification_users")
 public class User {
 
+    // ICP-TOTAL: 1
+    // ICP-01: Entidade simplificada de usuário para contexto de pontuação e nível.
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

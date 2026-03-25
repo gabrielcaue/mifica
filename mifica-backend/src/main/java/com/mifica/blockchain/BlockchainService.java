@@ -16,11 +16,15 @@ import java.util.stream.Collectors;
 @Service
 public class BlockchainService {
 
+    // ICP-TOTAL: 2
+    // ICP-01: Serviço faz transformação bidirecional DTO↔entidade com carimbo temporal de transação.
+
     @Autowired
     private TransacaoBlockchainRepository transacaoRepo;
 
     /** Registra uma nova transação blockchain com timestamp automático. */
     public TransacaoBlockchainDTO registrarTransacao(TransacaoBlockchainDTO dto) {
+        // ICP-02: Registro exige mapeamento completo e preservação de consistência entre payload e persistência.
         TransacaoBlockchain transacao = new TransacaoBlockchain();
         transacao.setHashTransacao(dto.getHashTransacao());
         transacao.setRemetente(dto.getRemetente());

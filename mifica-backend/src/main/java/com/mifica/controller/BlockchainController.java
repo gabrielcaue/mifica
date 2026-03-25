@@ -12,6 +12,9 @@ import java.util.List;
 @RequestMapping("/api/blockchain")
 public class BlockchainController {
 
+    // ICP-TOTAL: 1
+    // ICP-01: Controller atua como fachada REST para operações de registro e listagem blockchain.
+
     @Autowired
     private BlockchainService blockchainService;
 

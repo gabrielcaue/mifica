@@ -12,6 +12,9 @@ import java.util.stream.Collectors;
 @Service
 public class DesafioService {
 
+    // ICP-TOTAL: 1
+    // ICP-01: Serviço aplica mapeamento DTO↔entidade em fluxo de criação e listagem de desafios.
+
     @Autowired
     private DesafioRepository desafioRepository;
 

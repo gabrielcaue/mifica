@@ -27,6 +27,9 @@ import org.springframework.lang.NonNull;
 @Component
 public class JwtFiltro extends OncePerRequestFilter {
 
+    // ICP-TOTAL: 3
+    // ICP-01: Filtro combina exclusão de rotas públicas e hidratação do SecurityContext em fluxo único.
+
     private final JwtService jwtService;
 
     public JwtFiltro(JwtService jwtService) {
@@ -39,6 +42,7 @@ public class JwtFiltro extends OncePerRequestFilter {
      */
     @Override
     protected boolean shouldNotFilter(@NonNull HttpServletRequest request) throws ServletException {
+        // ICP-02: Lista extensa de exceções de rota exige manutenção cuidadosa para evitar brechas ou bloqueios indevidos.
         String path = request.getRequestURI();
         return path.equals("/") ||
                 path.startsWith("/api/usuarios/login") ||
@@ -64,6 +68,8 @@ public class JwtFiltro extends OncePerRequestFilter {
                                     @NonNull HttpServletResponse response,
                                     @NonNull FilterChain filterChain)
                                     throws ServletException, IOException {
+
+        // ICP-03: Fluxo trata extração de bearer token, validação de claims e criação de autoridade em cadeia.
 
         // Extrai o header Authorization: Bearer <token>
         String authHeader = request.getHeader("Authorization");

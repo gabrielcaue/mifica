@@ -21,6 +21,9 @@ import java.util.concurrent.ConcurrentLinkedDeque;
 @Component
 public class GamificationSubscriber {
 
+    // ICP-TOTAL: 3
+    // ICP-01: Subscriber combina observabilidade, buffer em memória e parsing de protocolo textual de eventos.
+
     private static final Logger log = LoggerFactory.getLogger(GamificationSubscriber.class);
     private static final int MAX_MENSAGENS = 50;
     private static final DateTimeFormatter FMT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -38,6 +41,7 @@ public class GamificationSubscriber {
      * Formato esperado: "User:{userId} Points:{points}"
      */
     public void onMessage(String message) {
+        // ICP-02: Fluxo mistura retenção de histórico, parsing defensivo e delegação transacional de pontos.
         log.info("📥 Evento de gamificação recebido: {}", message);
 
         // Armazena a mensagem com timestamp no buffer circular (máx. 50)
@@ -67,6 +71,7 @@ public class GamificationSubscriber {
      * Somente deve ser chamado após validação de senha (via SecureController).
      */
     public List<String> getMensagens() {
+        // ICP-03: Retorno defensivo evita exposição da estrutura concorrente interna.
         return new ArrayList<>(mensagensRecebidas);
     }
 
