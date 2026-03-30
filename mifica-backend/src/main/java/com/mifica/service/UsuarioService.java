@@ -53,10 +53,9 @@ public class UsuarioService {
         usuario.setNome(dto.getNome());
         usuario.setEmail(dto.getEmail());
         usuario.setSenha(senhaCriptografada); // ✅ corrigido
-        // Conta nasce desabilitada até clicar no link de confirmação
-        usuario.setEnabled(Boolean.FALSE);
-        // Cadastro comum precisa confirmar e-mail antes de autenticar
-        usuario.setEmailVerificado(Boolean.FALSE);
+        // Cadastro comum ativo para login imediato
+        usuario.setEnabled(Boolean.TRUE);
+        usuario.setEmailVerificado(Boolean.TRUE);
         usuario.setReputacao(dto.getReputacao() != null ? dto.getReputacao() : 1);
         usuario.setNivel(dto.getNivel());
         usuario.setRole(formatarPapel(dto.getRole()));
@@ -74,12 +73,6 @@ public class UsuarioService {
         // ICP-03: Autenticação combina múltiplas guard clauses (existência, ativação, verificação de e-mail e senha).
         Usuario usuario = buscarPorEmail(email);
         if (usuario == null) throw new RuntimeException("Usuário não encontrado");
-        if (!Boolean.TRUE.equals(usuario.getEnabled())) {
-            throw new RuntimeException("Conta ainda não ativada. Verifique seu e-mail para liberar o acesso.");
-        }
-        if (!Boolean.TRUE.equals(usuario.getEmailVerificado())) {
-            throw new RuntimeException("E-mail não verificado. Confirme seu e-mail antes de entrar.");
-        }
         if (!passwordEncoder.matches(senhaDigitada, usuario.getSenha())) {
             throw new RuntimeException("Senha inválida");
         }

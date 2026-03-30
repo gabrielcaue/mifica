@@ -4,15 +4,12 @@ import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
 import useMediaQuery from '../hooks/useMediaQuery';
 import MobileMenuCadastro from '../components/MobileMenuCadastro';
-import ModalEmailNaoVerificado from '../components/ModalEmailNaoVerificado';
 import logo from '../assets/logo.png';
 import { jwtDecode } from 'jwt-decode';
 
 export default function Login() {
   const [token, setToken] = useState('');
-  const [emailNaoVerificado, setEmailNaoVerificado] = useState(false);
-  const [emailGuardado, setEmailGuardado] = useState('');
-  const [modalAberto, setModalAberto] = useState(false);
+  const [mensagemErro, setMensagemErro] = useState('');
   const { login } = useAuth();
   const { isMobile } = useMediaQuery();
   const navigate = useNavigate();
@@ -22,6 +19,7 @@ export default function Login() {
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    setMensagemErro('');
 
     // ✅ Captura valores diretamente do formulário
     const formData = new FormData(e.target);
@@ -36,18 +34,7 @@ export default function Login() {
 
       const tokenRecebido = res.data.token;
       if (!tokenRecebido) {
-        alert("Login falhou: token não recebido.");
-        return;
-      }
-
-      // ✅ Verifica se o email foi verificado
-      const emailVerificado = res.data.emailVerificado;
-      
-      if (!emailVerificado) {
-        // Email não verificado - mostra modal e guarda dados
-        setEmailGuardado(emailForm);
-        setEmailNaoVerificado(true);
-        setModalAberto(true);
+        setMensagemErro('Não foi possível concluir o login agora.');
         return;
       }
 
@@ -72,37 +59,18 @@ export default function Login() {
       navigate(origem);
     } catch (err) {
       console.error("Erro ao fazer login:", err);
-      alert("Credenciais inválidas ou erro de conexão.");
-    }
-  };
-
-  const handleReenviarEmail = async () => {
-    if (!emailGuardado) {
-      alert("Erro: e-mail não encontrado.");
-      return;
-    }
-
-    try {
-      const response = await api.post('/usuarios/reenviar-confirmacao', {
-        email: emailGuardado
-      });
-      alert(response.data || "E-mail de confirmação reenviado com sucesso!");
-      setEmailNaoVerificado(false);
-      setModalAberto(false);
-      setEmailGuardado('');
-    } catch (err) {
-      console.error("Erro ao reenviar email:", err);
-      alert("Não foi possível reenviar o e-mail de confirmação agora.");
+      const msg = err?.response?.data;
+      if (typeof msg === 'string' && msg.trim()) {
+        setMensagemErro(msg);
+      } else {
+        setMensagemErro('Credenciais inválidas ou erro de conexão.');
+      }
     }
   };
 
   return (
     <>
       <MobileMenuCadastro />
-      <ModalEmailNaoVerificado 
-        isOpen={modalAberto} 
-        onClose={() => setModalAberto(false)} 
-      />
 
       <div className={`min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 px-3 md:px-4 ${isMobile ? 'py-8' : 'py-4'}`}>
         <form
@@ -115,33 +83,44 @@ export default function Login() {
             <p className="text-sm md:text-base text-gray-500 text-center">Acesse sua conta para continuar</p>
           </div>
 
+          {mensagemErro && (
+            <div className="bg-red-50 border border-red-300 rounded-md p-3 mb-4">
+              <p className="text-sm text-red-700 font-medium">
+                {mensagemErro}
+              </p>
+            </div>
+          )}
+
           <div className="space-y-3 md:space-y-4">
             <input
               type="email"
               name="email" // ✅ necessário para FormData
               placeholder="Email"
               required
-              className="w-full px-3 md:px-4 py-2 text-sm md:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className={`w-full px-3 md:px-4 py-2 text-sm md:text-base border rounded-md focus:outline-none focus:ring-2 ${
+                mensagemErro 
+                  ? 'border-red-500 focus:ring-red-500' 
+                  : 'border-gray-300 focus:ring-blue-500'
+              }`}
             />
-            
-            {/* Botão Reenviar Email - Protegido */}
-            {emailNaoVerificado && !modalAberto && (
-              <button
-                type="button"
-                onClick={handleReenviarEmail}
-                className="w-full px-3 md:px-4 py-2 text-sm md:text-base border border-orange-400 bg-orange-50 text-orange-600 rounded-md font-semibold hover:bg-orange-100 transition"
-              >
-                ✉️ Reenviar email de confirmação
-              </button>
-            )}
-            
+
             <input
               type="password"
               name="senha" // ✅ necessário para FormData
               placeholder="Senha"
               required
-              className="w-full px-3 md:px-4 py-2 text-sm md:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className={`w-full px-3 md:px-4 py-2 text-sm md:text-base border rounded-md focus:outline-none focus:ring-2 ${
+                mensagemErro 
+                  ? 'border-red-500 focus:ring-red-500' 
+                  : 'border-gray-300 focus:ring-blue-500'
+              }`}
             />
+
+            {mensagemErro && (
+              <p className="text-xs md:text-sm text-red-600 mt-1">
+                {mensagemErro}
+              </p>
+            )}
           </div>
 
           <button

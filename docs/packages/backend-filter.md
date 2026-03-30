@@ -1,26 +1,35 @@
 # Package: `com.mifica.filter`
 
-## Objetivo
-Aplicar autenticação no pipeline HTTP antes dos controllers.
+## Papel na arquitetura
+Executar autenticação técnica no início do pipeline HTTP, antes da execução dos controllers.
 
-## Escopo
-- Inclui: filtro de autenticação JWT na cadeia do Spring Security.
-- Não inclui: autorização por regra de negócio.
+## Responsabilidades
+- Extrair e validar token JWT de requests.
+- Popular `SecurityContext` para autorização posterior.
+- Garantir comportamento idempotente por requisição.
 
-## Contratos e interfaces
-- Lê `Authorization: Bearer <token>`.
-- Define contexto de autenticação em `SecurityContext` quando token válido.
+## Classes do pacote
+| Classe | Responsabilidade |
+|---|---|
+| `JwtAuthenticationFilter` | Filtro principal de autenticação por JWT |
+
+## Limites (clean architecture)
+- **Pode depender de:** `util` (JWT), Spring Security.
+- **Não deve depender de:** casos de uso de negócio (`service`).
 
 ## Regras e invariantes
-- Não autenticar quando token inválido/ausente em rota protegida.
-- Não interromper rotas públicas explicitamente liberadas.
+- Header esperado: `Authorization: Bearer <token>`.
+- Token inválido não autentica usuário.
+- Rotas públicas configuradas no `SecurityConfig` não devem ser quebradas por este pacote.
+
+## Checklist para mudanças
+- Falha de token gera resposta correta (`401`/`403`)?
+- Contexto de autenticação é limpo em caso inválido?
+- Filtro permanece performático (sem chamadas caras por request)?
 
 ## Critérios de aceitação
-- Requests autenticadas propagam usuário/autoridade corretamente.
-- Requests inválidas retornam status adequado pelo security chain.
-
-## Dependências e integrações
-- `util.JwtService` e Spring Security.
+- Request válida propaga principal e authorities.
+- Request sem token em rota protegida é rejeitada corretamente.
 
 ## Riscos e trade-offs
-- Falha no parse do token pode gerar falso 401/403; mitigado por tratamento defensivo.
+- Erros de parsing podem causar falso negativo de autenticação; exigir tratamento defensivo e logs claros.

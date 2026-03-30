@@ -1,25 +1,36 @@
 # Package: `com.mifica.repository`
 
-## Objetivo
-Abstrair acesso ao banco relacional através de interfaces Spring Data/JPA.
+## Papel na arquitetura
+Camada de acesso a dados com Spring Data JPA. Fornece interfaces para leitura/escrita sem expor SQL para camadas superiores.
 
-## Escopo
-- Inclui: CRUD e consultas derivadas por convenção.
-- Não inclui: lógica de negócio.
+## Responsabilidades
+- Persistência e consulta de entidades.
+- Métodos derivados para buscas frequentes.
+- Suporte transacional para serviços de domínio.
 
-## Contratos e interfaces
-- Métodos de consulta por ID, email e relacionamentos conforme necessidade do domínio.
+## Interfaces do pacote
+- `UserRepository`, `UsuarioRepository`
+- `ContratoRepository`, `TransacaoRepository`, `SolicitacaoCreditoRepository`
+- `DesafioRepository`, `BadgeRepository`, `HistoricoReputacaoRepository`
+- `EmailVerificationTokenRepository`
+
+## Limites (clean architecture)
+- **Pode depender de:** `entity`, Spring Data JPA.
+- **Não deve depender de:** `controller`, DTOs de API.
 
 ## Regras e invariantes
-- Repositórios não devem aplicar regras de negócio complexas.
-- Operações devem respeitar o modelo de entidades.
+- Não implementar regra de negócio no repositório.
+- Consultas devem ser determinísticas e aderentes ao modelo.
+- Mudanças de assinatura devem considerar impacto nos serviços consumidores.
+
+## Padrões recomendados
+- Nomear métodos de busca por intenção de domínio.
+- Evitar sobrecarga de métodos parecidos sem necessidade.
+- Monitorar queries que possam causar N+1.
 
 ## Critérios de aceitação
-- Consultas retornam dados esperados para os casos de uso.
-- Escritas persistem sem quebrar integridade referencial.
-
-## Dependências e integrações
-- `entity` e `service`.
+- CRUD básico funcionando para entidades suportadas.
+- Consultas específicas retornam dados corretos com performance aceitável.
 
 ## Riscos e trade-offs
-- Query methods excessivos podem gerar acoplamento implícito; mitigado com revisão de contratos.
+- Excesso de query methods pode aumentar acoplamento; revisar periodicamente contratos e necessidade real.

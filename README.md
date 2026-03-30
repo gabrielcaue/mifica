@@ -9,7 +9,7 @@
 | Serviço | URL |
 |---|---|
 | 🌐 **Frontend (GitHub Pages)** | [gabrielcaue.github.io/mifica](https://gabrielcaue.github.io/mifica/) |
-| ⚙️ **Backend API (Render)** | [mifica-backend.onrender.com](https://mifica-backend.onrender.com) |
+| ⚙️ **Backend API** | Configure em `VITE_API_URL` |
 | 📦 **Repositório** | [github.com/gabrielcaue/mifica](https://github.com/gabrielcaue/mifica) |
 | 📖 **Documentação Técnica** | [docs/packages/00-INDEX.md](docs/packages/00-INDEX.md) |
 
@@ -102,7 +102,7 @@ Meu objetivo foi construir uma aplicação que demonstrasse domínio real sobre 
 ✅ **Docker Compose** — Orquestração local de MySQL, Redis, backend e frontend  
 ✅ **Redis Pub/Sub (Upstash)** — Pub/Sub assíncrono resiliente para gamificação  
 ✅ **CI/CD com GitHub Actions** — Pipeline de build, testes e deploy automatizado  
-✅ **Render** — Backend Java 21 em produção com HTTPS automático  
+✅ **Infraestrutura em nuvem** — Backend Java 21 em produção com HTTPS  
 ✅ **GitHub Pages** — Frontend estático com deploy contínuo  
 ✅ **Variáveis de ambiente** — Zero credenciais no código (princípio 12-Factor)  
 
@@ -141,14 +141,14 @@ Meu objetivo foi construir uma aplicação que demonstrasse domínio real sobre 
 ┌──────────────────┐     ┌──────────────────┐     ┌──────────────────┐
 │   Frontend       │     │   Backend        │     │   Streamlit      │
 │   React + Vite   │────▶│   Spring Boot 3  │◀────│   Python         │
-│   GitHub Pages   │     │   Render         │     │   Dashboard      │
+│   GitHub Pages   │     │   Backend API    │     │   Dashboard      │
 └──────────────────┘     └────────┬─────────┘     └──────────────────┘
                                   │
                     ┌─────────────┼─────────────┐
                     ▼             ▼             ▼
              ┌───────────┐ ┌───────────┐ ┌───────────┐
              │  Database │ │  Redis    │ │  Traefik  │
-             │  Render   │ │  Upstash  │ │  Proxy    │
+             │  MySQL    │ │  Upstash  │ │  Proxy    │
              └───────────┘ └───────────┘ └───────────┘
 ```
 
@@ -156,9 +156,9 @@ Meu objetivo foi construir uma aplicação que demonstrasse domínio real sobre 
 - **Redis Pub/Sub (Upstash)** → Eventos assíncronos para gamificação em tempo real
 - **Frontend (React + Vite)** → Interface do usuário com SPA
 - **Streamlit (Python)** → Painel administrativo e visualizações de dados
-- **Database (Render)** → Persistência de dados em produção
+- **Database (MySQL)** → Persistência de dados em produção
 - **Docker Compose + Traefik** → Orquestração e roteamento local
-- **GitHub Actions + Render** → CI de backend e deploy automático em produção
+- **GitHub Actions** → CI de backend e deploy automático em produção
 
 ---
 
@@ -211,11 +211,11 @@ cd mifica
 | **Redis Pub/Sub (Upstash)** | Eventos assíncronos de gamificação | ✅ Produção |
 | **Docker + Multi-stage Build** | Containers otimizados | ✅ Produção |
 | **CI/CD (GitHub Actions)** | Deploy automático backend + frontend | ✅ Produção |
-| **Database (Render)** | Persistência relacional | ✅ Produção |
+| **Database (MySQL)** | Persistência relacional | ✅ Produção |
 | **JWT + Spring Security** | Autenticação e autorização por roles | ✅ Produção |
 | **React + Vite + TailwindCSS** | Frontend SPA responsivo | ✅ Produção (GitHub Pages) |
 | **Swagger/OpenAPI** | Documentação automática da API | ✅ Implementado |
-| **Render** | PaaS para backend em nuvem | ✅ Produção |
+| **Cloud Provider** | Hospedagem do backend em nuvem | ✅ Produção |
 | **Traefik** | Reverse proxy / load balancer | ✅ Dev local |
 | **Streamlit** | Dashboard administrativo Python | ✅ Implementado |
 | **12-Factor App** | Configuração por variáveis de ambiente | ✅ Produção |
@@ -244,7 +244,7 @@ cd mifica
 ## 💡 Por que Este Projeto se Destaca
 
 1. **Não é um CRUD genérico** — Tem Redis Pub/Sub, gamificação, blockchain e eventos assíncronos
-2. **Está em produção** — Backend no Render, frontend no GitHub Pages, CI/CD rodando
+2. **Está em produção** — Backend em nuvem, frontend no GitHub Pages, CI/CD rodando
 3. **Segue boas práticas** — 12-Factor, variáveis de ambiente, multi-stage Docker
 4. **Arquitetura real** — Serviços com mensageria assíncrona, não monolito simples
 5. **Completo** — Java + React + Python + DevOps + Cloud

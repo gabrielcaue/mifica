@@ -4,7 +4,7 @@ WORKDIR /app
 
 # Copia apenas os arquivos de dependência primeiro para aproveitar cache
 COPY package*.json ./
-RUN npm install --frozen-lockfile
+RUN npm ci
 
 # Copia o restante do código e roda o build
 COPY . .

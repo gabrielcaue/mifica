@@ -1,25 +1,37 @@
 # Package: `com.mifica.util`
 
-## Objetivo
-Concentrar utilitários técnicos reutilizáveis, principalmente relacionados a JWT.
+## Papel na arquitetura
+Conter utilitários técnicos reutilizáveis de baixo acoplamento, principalmente para autenticação baseada em JWT.
 
-## Escopo
-- Inclui: geração, validação e extração de claims de tokens.
-- Não inclui: regras de negócio de usuário.
+## Responsabilidades
+- Gerar e validar tokens.
+- Extrair claims para autorização/autenticação.
+- Fornecer helpers técnicos para camadas de segurança.
 
-## Contratos e interfaces
-- APIs utilitárias para controllers/filtros consumirem autenticação.
+## Classes do pacote
+| Classe | Responsabilidade |
+|---|---|
+| `JwtService` | API principal de token para uso em serviços/filtros |
+| `JwtUtil` | utilitário de suporte para parsing/claims |
+| `JwtFiltro` | componente auxiliar de filtragem por token (quando aplicável no fluxo atual) |
+
+## Limites (clean architecture)
+- **Pode depender de:** bibliotecas JWT, configuração de segurança.
+- **Não deve depender de:** regras de negócio de domínio.
 
 ## Regras e invariantes
-- Token deve ser assinado com chave configurada por ambiente.
-- Claims mínimos (subject/role) devem ser consistentes.
+- Segredo/chave de assinatura deve vir de configuração externa segura.
+- Claims obrigatórias (subject, expiração, papel/perfil quando necessário) precisam ser consistentes.
+- Expiração deve ser validada em toda autenticação.
+
+## Convenções de segurança
+- Não logar token completo em produção.
+- Evitar duplicação de lógica de validação entre classes.
+- Padronizar algoritmo de assinatura e tempo de expiração.
 
 ## Critérios de aceitação
-- Token gerado é validável pela aplicação.
-- Extração de email/role funciona para payloads válidos.
-
-## Dependências e integrações
-- bibliotecas JWT e `repository` (quando necessário para claims).
+- Token válido é aceito por filtros de segurança.
+- Token inválido/expirado é rejeitado com resposta apropriada.
 
 ## Riscos e trade-offs
-- Duplicidade de utilitários JWT pode gerar divergência; mitigado por padronização.
+- Duplicidade de utilitários JWT gera inconsistência e falhas de segurança; manter um fluxo canônico.

@@ -1,27 +1,45 @@
 # Package: `com.mifica.controller`
 
-## Objetivo
-Expor a API REST e traduzir requisições HTTP em casos de uso do domínio.
+## Papel na arquitetura
+Camada de entrada HTTP da aplicação. Converte requisições REST em chamadas para casos de uso (`service`) e devolve respostas padronizadas.
 
-## Escopo
-- Inclui: mapeamento de rotas, validações de entrada, resposta HTTP e delegação para services.
-- Não inclui: persistência direta ou regra de negócio complexa.
+## Responsabilidades
+- Definir endpoints, verbos HTTP e códigos de resposta.
+- Validar payload e parâmetros de forma leve.
+- Delegar integralmente regra de negócio para `service`.
 
-## Contratos e interfaces
-- Contratos JSON (DTOs) para login, cadastro, perfil, transações e gamificação.
-- Códigos HTTP coerentes (`200`, `201`, `400`, `401`, `403`, `404`, `500`).
+## Classes do pacote
+| Classe | Domínio principal |
+|---|---|
+| `AuthController` | autenticação/login/cadastro |
+| `UsuarioController` | gestão de usuário/perfil |
+| `ContratoController` | operações de contratos |
+| `DesafioController` | desafios e progresso |
+| `TransacaoController` | transações de domínio |
+| `GamificationController` | pontos/recompensas/gamificação |
+| `BlockchainController` | endpoints de blockchain |
+| `SecureController` | rotas protegidas de validação de segurança |
+| `HomeController` | endpoint(s) institucionais/health simples |
+| `ConfigController` | leitura/exposição de configurações controladas |
+
+## Limites (clean architecture)
+- **Pode depender de:** `dto`, `service`, componentes web/segurança.
+- **Não deve depender de:** `repository` diretamente.
 
 ## Regras e invariantes
-- Controller não implementa regra de negócio; apenas orquestra e delega.
-- Endpoints protegidos devem validar identidade/autorização.
+- Controller não persiste dados diretamente.
+- Requisições autenticadas devem depender de contexto de segurança válido.
+- Respostas nunca devem expor credenciais ou dados sensíveis.
+
+## Padrões obrigatórios
+- Usar DTO de entrada e saída.
+- Tratar erros de forma consistente (`4xx` para erro do cliente, `5xx` para erro interno).
+- Manter métodos curtos e orientados a endpoint.
 
 ## Critérios de aceitação
-- Rotas públicas acessam sem token.
-- Rotas protegidas falham sem token válido.
-- Respostas expõem apenas campos permitidos.
-
-## Dependências e integrações
-- `service`, `dto`, `util` (JWT), Spring Web.
+- Rotas públicas funcionam sem token.
+- Rotas protegidas bloqueiam acesso inválido.
+- Contratos JSON permanecem estáveis entre versões compatíveis.
 
 ## Riscos e trade-offs
-- Acúmulo de lógica em controller reduz coesão; mitigado por separação em services.
+- Lógica em excesso em controller reduz testabilidade e manutenibilidade.

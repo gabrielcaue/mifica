@@ -1,26 +1,49 @@
 # Package: `com.mifica.dto`
 
-## Objetivo
-Definir contratos de entrada e saída da API sem expor entidades internas.
+## Papel na arquitetura
+Definir o **contrato externo da API** e os modelos de transporte entre camadas, desacoplando HTTP do modelo JPA.
 
-## Escopo
-- Inclui: DTOs de autenticação, usuário, reputação, contrato e blockchain.
-- Não inclui: lógica de persistência.
+## Responsabilidades
+- Modelar payloads de request/response.
+- Estabilizar integração com frontend/clientes.
+- Reduzir vazamento de detalhes internos (`entity`) para fora da aplicação.
 
-## Contratos e interfaces
-- Campos e formatos esperados em request/response.
-- Suporte a validação declarativa (quando aplicável).
+## Classes do pacote
+### Autenticação e acesso
+- `AuthRequest`
+- `AuthResponseDTO`
+- `LoginDTO`
+- `LoginRequestDTO`
+- `UsuarioCadastroDTO`
+
+### Usuário e reputação
+- `UsuarioDTO`
+- `ReputacaoDTO`
+- `HistoricoReputacaoDTO`
+- `EstatisticasDTO`
+
+### Contratos, desafios e blockchain
+- `ContratoDTO`
+- `DesafioDTO`
+- `BlockchainContratoDTO`
+- `TransacaoBlockchainDTO`
+
+## Limites (clean architecture)
+- **Pode depender de:** validações simples e tipos Java puros.
+- **Não deve depender de:** `repository` e frameworks de persistência.
 
 ## Regras e invariantes
-- DTO não deve carregar comportamento de domínio.
-- Senha e dados sensíveis não devem ser retornados.
+- DTO não contém regra de negócio.
+- Campos sensíveis (senha, segredo, token interno) não devem ser expostos indevidamente.
+- Mudanças em DTO público devem considerar compatibilidade com consumidores.
+
+## Convenções de evolução
+- Preferir adição de campos opcionais em vez de quebra de contrato.
+- Renomeações devem ser versionadas/documentadas.
 
 ## Critérios de aceitação
-- API responde com DTOs estáveis e previsíveis.
-- Alterações de entidade não quebram contrato externo indevidamente.
-
-## Dependências e integrações
-- Utilizado por `controller` e `service`.
+- Serialização/deserialização funciona sem ambiguidade.
+- Contratos de API são previsíveis e documentáveis.
 
 ## Riscos e trade-offs
-- Excesso de DTOs aumenta manutenção, mas reduz acoplamento entre API e JPA.
+- Muitos DTOs aumentam volume de código, porém melhoram desacoplamento e segurança de contrato.
