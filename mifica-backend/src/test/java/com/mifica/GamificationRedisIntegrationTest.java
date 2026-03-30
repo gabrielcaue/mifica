@@ -4,6 +4,7 @@ import com.mifica.redis.GamificationPublisher;
 import com.mifica.repository.UserRepository;
 import com.mifica.entity.User;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -13,6 +14,7 @@ import static org.assertj.core.api.Assertions.assertThat;
     "spring.data.redis.host=localhost",
     "spring.data.redis.port=6379"
 })
+@EnabledIfEnvironmentVariable(named = "RUN_REDIS_INTEGRATION_TESTS", matches = "true")
 public class GamificationRedisIntegrationTest {
 
     @Autowired
