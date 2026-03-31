@@ -24,8 +24,6 @@ import com.mifica.dto.UsuarioDTO;
 import com.mifica.entity.Role;
 import com.mifica.entity.Usuario;
 import com.mifica.repository.UsuarioRepository;
-import com.mifica.service.EmailService;
-import com.mifica.service.EmailVerificationService;
 import com.mifica.service.UsuarioService;
 import com.mifica.util.JwtUtil;
 import com.mifica.redis.GamificationPublisher;
@@ -59,12 +57,6 @@ public class UsuarioController {
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
 
-    @Autowired
-    private EmailVerificationService emailVerificationService;
-
-    @Autowired
-    private EmailService emailService;
-
     @Value("${admin.cadastro.senha}")
     private String senhaCadastroAdmin;
 
@@ -97,24 +89,9 @@ public class UsuarioController {
         }
 
         if (usuarioService.emailJaExiste(dto.getEmail())) {
-            Usuario existente = usuarioService.buscarPorEmail(dto.getEmail());
-
-            if (existente != null && !Boolean.TRUE.equals(existente.getEmailVerificado())) {
-                try {
-                    String token = emailVerificationService.gerarToken(existente);
-                    emailService.enviarEmailVerificacao(existente.getEmail(), existente.getNome(), token);
-                    return ResponseEntity.ok(Map.of(
-                            "email", existente.getEmail(),
-                            "mensagem", "Conta já existe e ainda não foi verificada. Enviamos um novo e-mail de confirmação."
-                    ));
-                } catch (Exception e) {
-                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                            .body("Conta já existe, mas não foi possível reenviar o e-mail de confirmação agora.");
-                }
-            }
-
             return ResponseEntity.badRequest().body("Email já cadastrado.");
         }
+
         UsuarioDTO novo;
         try {
             novo = usuarioService.criar(dto);
@@ -122,54 +99,16 @@ public class UsuarioController {
             return ResponseEntity.badRequest().body("Email já cadastrado.");
         }
 
-        Usuario usuarioCriado = usuarioService.buscarPorEmail(dto.getEmail());
-
-        try {
-            String token = emailVerificationService.gerarToken(usuarioCriado);
-            emailService.enviarEmailVerificacao(usuarioCriado.getEmail(), usuarioCriado.getNome(), token);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Conta criada, mas não foi possível enviar o e-mail de confirmação. Use reenviar confirmação.");
-        }
-
         Map<String, Object> resposta = new HashMap<>();
         resposta.put("id", novo.getId());
         resposta.put("email", novo.getEmail());
-        resposta.put("mensagem", "Cadastro realizado! Verifique seu e-mail para ativar a conta.");
+        resposta.put("mensagem", "Cadastro realizado com sucesso!");
         return ResponseEntity.ok(resposta);
     }
 
-    @GetMapping("/verificar-email")
-    public ResponseEntity<String> verificarEmail(@RequestParam("token") String token) {
-        String erro = emailVerificationService.verificarToken(token);
-        if (erro != null) {
-            return ResponseEntity.badRequest().body(erro);
-        }
-        return ResponseEntity.ok("✅ E-mail verificado com sucesso! Agora você já pode fazer login.");
-    }
-
-    @PostMapping("/reenviar-confirmacao")
-    public ResponseEntity<String> reenviarConfirmacao(@RequestBody Map<String, String> payload) {
-        String email = payload.get("email");
-        Usuario usuario = usuarioService.buscarPorEmail(email);
-
-        if (usuario == null) {
-            return ResponseEntity.ok("Se o e-mail existir, enviaremos uma nova confirmação.");
-        }
-
-        if (Boolean.TRUE.equals(usuario.getEmailVerificado())) {
-            return ResponseEntity.ok("Este e-mail já está verificado.");
-        }
-
-        try {
-            String token = emailVerificationService.gerarToken(usuario);
-            emailService.enviarEmailVerificacao(usuario.getEmail(), usuario.getNome(), token);
-            return ResponseEntity.ok("Novo e-mail de confirmação enviado.");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Não foi possível reenviar a confirmação agora. Tente novamente em instantes.");
-        }
-    }
+    // 🔧 Endpoints de verificação de email removidos
+    // Login agora é direto sem necessidade de verificação de email
+    // (implementar 2FA/MFA em futuro próximo se necessário)
 
     // 🔧 Cadastro de administrador
     /**

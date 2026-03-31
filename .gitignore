@@ -1,5 +1,7 @@
 # Root-level local artifacts and secrets
 node_modules/
+.env
+.env.*
 
 # Build artifacts
 **/target/
@@ -10,3 +12,4 @@ certs/
 *.csr
 *.p12
 *.jks
+*.key

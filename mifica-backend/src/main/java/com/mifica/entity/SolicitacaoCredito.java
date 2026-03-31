@@ -1,11 +1,18 @@
 package com.mifica.entity;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.CreationTimestamp;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
+@Table(name = "solicitacao_credito", indexes = {
+    @Index(name = "idx_solicitacao_status", columnList = "status"),
+    @Index(name = "idx_solicitacao_data", columnList = "data_solicitacao"),
+    @Index(name = "idx_solicitacao_usuario", columnList = "usuario_id")
+})
 public class SolicitacaoCredito {
 
     // ICP-TOTAL: 1
@@ -15,10 +22,20 @@ public class SolicitacaoCredito {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false, precision = 15, scale = 2)
     private BigDecimal valorSolicitado;
+
+    @Column(length = 500)
     private String descricao;
+
+    @Column(nullable = false)
     private LocalDate prazoPagamento;
+
+    @Column(nullable = false, length = 40)
     private String status;
+
+    @CreationTimestamp
+    @Column(nullable = false, updatable = false)
     private LocalDateTime dataSolicitacao;
 
     @ManyToOne
@@ -79,6 +96,6 @@ public class SolicitacaoCredito {
     }
 
     public LocalDateTime getDataCriacao() {
-        return getDataCriacao();
+        return dataSolicitacao;
     }
 }

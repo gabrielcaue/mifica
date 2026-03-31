@@ -1,4 +1,4 @@
-name: Backend CI (Render Auto Deploy)
+name: Backend CI
 
 on:
   push:

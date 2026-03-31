@@ -11,12 +11,14 @@ export default function Cadastro() {
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
   const [mensagemCampoSenha, setMensagemCampoSenha] = useState('');
+  const [erroCadastro, setErroCadastro] = useState(false);
   const navigate = useNavigate();
   const { isMobile } = useMediaQuery();
 
   const handleCadastro = async (e) => {
     e.preventDefault();
     setMensagemCampoSenha('');
+    setErroCadastro(false);
 
     try {
       const dados = { nome, email, senha };
@@ -26,6 +28,7 @@ export default function Cadastro() {
 
       console.log("Cadastro realizado:", response.data);
       setMensagemCampoSenha('Usuario criada com sucesso!');
+      setErroCadastro(false);
       setNome('');
       setEmail('');
       setSenha('');
@@ -37,11 +40,13 @@ export default function Cadastro() {
         const msgLower = msg.toLowerCase();
         if (msgLower.includes('email já cadastrado') || msgLower.includes('conta já existe')) {
           setMensagemCampoSenha('E-mail já cadastrado!');
+          setErroCadastro(true);
           return;
         }
       }
 
       setMensagemCampoSenha('Não foi possível concluir o cadastro agora.');
+      setErroCadastro(true);
     }
   };
 
@@ -87,7 +92,7 @@ export default function Cadastro() {
             className="w-full px-3 md:px-4 py-2 text-sm md:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
           {mensagemCampoSenha && (
-            <p className="text-xs md:text-sm text-green-700 mt-1">
+            <p className={`text-xs md:text-sm mt-1 ${erroCadastro ? 'text-red-600' : 'text-green-700'}`}>
               {mensagemCampoSenha}
             </p>
           )}

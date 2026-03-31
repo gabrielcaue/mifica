@@ -1,9 +1,20 @@
 package com.mifica.entity;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.DynamicUpdate;
+import org.hibernate.envers.Audited;
+
 import java.time.LocalDateTime;
 
 @Entity
+@Audited
+@DynamicUpdate
+@Table(name = "transacao", indexes = {
+    @Index(name = "idx_transacao_remetente", columnList = "remetente"),
+    @Index(name = "idx_transacao_destinatario", columnList = "destinatario"),
+    @Index(name = "idx_transacao_data", columnList = "data_transacao")
+})
 public class Transacao {
 
     // ICP-TOTAL: 1
@@ -13,9 +24,17 @@ public class Transacao {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false, length = 120)
     private String remetente;
+
+    @Column(nullable = false, length = 120)
     private String destinatario;
+
+    @Column(nullable = false)
     private Double valor;
+
+    @CreationTimestamp
+    @Column(nullable = false, updatable = false)
     private LocalDateTime dataTransacao;
 
     // Getters e Setters

@@ -1,26 +1,37 @@
 # Package: `com.mifica.entity`
 
-## Objetivo
-Representar o modelo persistente do domínio (usuários, transações, contratos e afins).
+## Papel na arquitetura
+Modelar o estado persistente do negócio (núcleo de dados da aplicação).
 
-## Escopo
-- Inclui: entidades JPA, relacionamentos e enumerações do domínio.
-- Não inclui: regras de transporte HTTP.
+## Responsabilidades
+- Definir entidades JPA, relacionamentos e enums.
+- Representar invariantes estruturais do domínio no nível de dados.
+- Servir como base para consultas/transações dos repositórios.
 
-## Contratos e interfaces
-- Mapeamento ORM para tabelas e colunas.
-- Relações `OneToMany`, `ManyToOne`, `ElementCollection` conforme domínio.
+## Entidades do pacote
+| Tipo | Elementos |
+|---|---|
+| Usuário e acesso | `User`, `Usuario`, `Role`, `EmailVerificationToken` |
+| Reputação e gamificação | `HistoricoReputacao`, `Badge`, `DesafioGamificado`, `Avaliacao` |
+| Negócio financeiro/contratual | `Contrato`, `Transacao`, `SolicitacaoCredito` |
+
+## Limites (clean architecture)
+- **Pode depender de:** anotações JPA/Hibernate e tipos utilitários Java.
+- **Não deve depender de:** `controller` e objetos HTTP.
 
 ## Regras e invariantes
-- Integridade referencial entre agregados.
-- Campos obrigatórios devem ser respeitados pela camada de serviço.
+- Chaves e relacionamentos devem manter integridade referencial.
+- Valores críticos (datas, valores monetários, status) devem ser validados nas camadas superiores.
+- Entidade não deve conter lógica de integração externa.
+
+## Convenções de modelagem
+- Evitar side effects em `getters/setters`.
+- Evitar acoplamento com serialização externa direta.
+- Sempre revisar impacto de `cascade` e `fetch` para desempenho e consistência.
 
 ## Critérios de aceitação
-- Entidades persistem e recuperam corretamente via repositórios.
-- Relacionamentos mantêm consistência nas operações de escrita.
-
-## Dependências e integrações
-- JPA/Hibernate e camada repository.
+- Persistência e recuperação funcionam em cenários de CRUD.
+- Relacionamentos se mantêm consistentes em transações.
 
 ## Riscos e trade-offs
-- Entidades muito ricas podem acoplar domínio à persistência; mitigado com DTO/service.
+- Entidades anêmicas simplificam manutenção, mas concentram regra de negócio em `service`.

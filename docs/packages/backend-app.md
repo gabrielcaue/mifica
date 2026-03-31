@@ -1,23 +1,34 @@
 # Package: `com.mifica`
 
-## Objetivo
-Inicializar a aplicação Spring Boot e carregar o contexto principal.
+## Papel na arquitetura
+Pacote raiz da aplicação backend. Seu papel é **inicializar o runtime Spring Boot** e ativar o scan dos demais pacotes (`config`, `controller`, `service`, etc.).
 
-## Escopo
-- Inclui: classe de bootstrap e inicialização do runtime.
-- Não inclui: regras de negócio.
+## Responsabilidades
+- Fornecer o ponto de entrada da aplicação.
+- Garantir bootstrap consistente entre ambientes (dev/staging/prod).
+- Centralizar convenções de inicialização.
 
-## Contratos e interfaces
-- Inicia aplicação via `main()` e autoconfiguração Spring.
+## Classes do pacote
+| Classe | Responsabilidade | Observações |
+|---|---|---|
+| `MificaApplication` | Executa `main()` e inicia o contexto Spring | Deve permanecer enxuta, sem regra de negócio |
+
+## Limites (clean architecture)
+- **Pode depender de:** Spring Boot starter e configuração global.
+- **Não deve depender de:** repositórios, controllers específicos e lógica de domínio.
 
 ## Regras e invariantes
-- A aplicação deve subir sem dependência de estado local fora de configuração.
+- O startup não deve assumir estado local (arquivos, cache, DB) sem configuração explícita.
+- Falhas de ambiente devem gerar erro claro no boot.
+
+## Checklist para mudanças
+- Mudança alterou apenas bootstrapping?
+- Não houve inclusão de regra de negócio no `main()`?
+- Logs de startup continuam claros para troubleshooting?
 
 ## Critérios de aceitação
-- Aplicação sobe sem erro e expõe endpoints configurados.
-
-## Dependências e integrações
-- Spring Boot autoconfiguration.
+- Aplicação inicia sem exceções em ambiente configurado.
+- Contexto Spring carrega todos os beans esperados.
 
 ## Riscos e trade-offs
-- Alto acoplamento no startup quando variáveis de ambiente faltam.
+- Acoplamento excessivo no bootstrap dificulta evolução; manter pacote mínimo reduz risco.

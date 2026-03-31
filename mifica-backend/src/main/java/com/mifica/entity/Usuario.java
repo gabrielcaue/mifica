@@ -7,7 +7,11 @@ import java.util.List;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "usuarios")
+@Table(name = "usuarios", indexes = {
+    @Index(name = "idx_usuario_role", columnList = "role"),
+    @Index(name = "idx_usuario_enabled", columnList = "enabled"),
+    @Index(name = "idx_usuario_reputacao", columnList = "reputacao")
+})
 public class Usuario {
     // ICP-TOTAL: 4
     // ICP-01: Entidade concentra estado de autenticação, perfil, reputação, conquistas e relacionamentos.
@@ -15,12 +19,13 @@ public class Usuario {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false, length = 120)
     private String nome;
 
     @Column(unique = true, nullable = false)
     private String email;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 255)
     private String senha;
 
     @Column(nullable = false)
@@ -31,13 +36,16 @@ public class Usuario {
 
     private int reputacao = 50;
 
+    @Column(length = 40)
     private String nivel;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 30)
     private Role role; // ✅ agora usa o enum externo
 
     private LocalDate dataNascimento;
 
+    @Column(length = 30)
     private String telefone;
 
     @OneToMany(mappedBy = "usuarioSolicitante", cascade = CascadeType.ALL)

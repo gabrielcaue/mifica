@@ -9,10 +9,12 @@ API REST do projeto Mifica. Responsável por toda a lógica de reputação, gami
 - **Java 21** + **Spring Boot 3.5**
 - **Spring Security** + JWT customizado
 - **Spring Data JPA** + Hibernate + MySQL
+- **Flyway** para migrations versionadas de banco
+- **Hibernate Envers** para auditoria de entidades críticas
 - **Redis Pub/Sub** (publisher/subscriber para gamificação via Upstash)
 - **Swagger/OpenAPI** para documentação
 - **Docker** com multi-stage build
-- **Render** para deploy em produção
+- **Cloud provider** para deploy em produção
 
 ## Variáveis de Ambiente (obrigatórias)
 
@@ -48,9 +50,9 @@ CORS_ALLOWED_ORIGIN_PATTERNS=*
 | Configurações | [/#/configuracoes](https://gabrielcaue.github.io/mifica/#/configuracoes) | 🔒 Autenticado |
 | Painel Admin | [/#/admin](https://gabrielcaue.github.io/mifica/#/admin) | 🔒 ADMIN only |
 
-## Endpoints da API (Backend — Render)
+## Endpoints da API (Backend)
 
-> **Base:** `https://mifica-backend.onrender.com`
+> **Base:** definida por `VITE_API_URL` no frontend e `BACKEND_PUBLIC_URL` no backend
 
 | Método | Rota | Descrição | Acesso |
 |---|---|---|---|
@@ -77,3 +79,9 @@ CORS_ALLOWED_ORIGIN_PATTERNS=*
 ```
 
 Veja o [README principal](../README.md) para mais detalhes.
+
+## Banco de dados e auditoria
+
+- Migrations SQL em [src/main/resources/db/migration/V1__baseline_schema.sql](src/main/resources/db/migration/V1__baseline_schema.sql)
+- Auditoria habilitada com Envers em entidades de negócio críticas (`Contrato`, `Transacao`, `DesafioGamificado`)
+- Índices e constraints também foram configurados no mapeamento JPA das entidades

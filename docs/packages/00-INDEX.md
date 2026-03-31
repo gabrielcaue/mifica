@@ -23,6 +23,10 @@ Padrão adotado em cada arquivo:
 - [backend-repository](backend-repository.md)
 - [backend-service](backend-service.md)
 - [backend-util](backend-util.md)
+- [backend-test](backend-test.md)
+
+### Cobertura backend
+Documentação criada para todos os pacotes principais em `src/main/java/com/mifica/*` e para o pacote de testes em `src/test/java/com/mifica/*`.
 
 ## Frontend (React)
 - [frontend-components](frontend-components.md)

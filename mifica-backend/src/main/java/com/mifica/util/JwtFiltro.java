@@ -49,8 +49,6 @@ public class JwtFiltro extends OncePerRequestFilter {
                 path.startsWith("/api/usuarios/cadastro") ||
                 path.startsWith("/api/usuarios/cadastro-admin") ||
                 path.startsWith("/api/usuarios/validar-acesso-admin") ||
-                path.startsWith("/api/usuarios/verificar-email") ||
-                path.startsWith("/api/usuarios/reenviar-confirmacao") ||
                 path.equals("/api/usuarios/criar") ||
                 path.startsWith("/swagger-ui") ||
                 path.startsWith("/v3/api-docs") ||

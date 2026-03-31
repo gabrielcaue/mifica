@@ -3,7 +3,10 @@ package com.mifica.entity;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "gamification_users")
+@Table(name = "gamification_users", indexes = {
+    @Index(name = "idx_guser_name", columnList = "name"),
+    @Index(name = "idx_guser_level", columnList = "level")
+})
 public class User {
 
     // ICP-TOTAL: 1
@@ -13,6 +16,7 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false, length = 120)
     private String name;
 
     private int points;   // <-- campo que faltava

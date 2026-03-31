@@ -5,7 +5,11 @@ import java.time.LocalDateTime;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "email_verification_tokens")
+@Table(name = "email_verification_tokens", indexes = {
+    @Index(name = "idx_email_token_usuario", columnList = "usuario_id"),
+    @Index(name = "idx_email_token_expira", columnList = "expira_em"),
+    @Index(name = "idx_email_token_usado", columnList = "usado")
+})
 public class EmailVerificationToken {
 
     // ICP-TOTAL: 1
