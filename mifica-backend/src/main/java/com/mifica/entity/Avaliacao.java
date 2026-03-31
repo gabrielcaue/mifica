@@ -1,9 +1,16 @@
 package com.mifica.entity;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.CreationTimestamp;
+
 import java.time.LocalDateTime;
 
 @Entity
+@Table(name = "avaliacao", indexes = {
+    @Index(name = "idx_avaliacao_avaliador", columnList = "avaliador_id"),
+    @Index(name = "idx_avaliacao_avaliado", columnList = "avaliado_id"),
+    @Index(name = "idx_avaliacao_data", columnList = "data")
+})
 public class Avaliacao {
 
     // ICP-TOTAL: 1
@@ -13,8 +20,14 @@ public class Avaliacao {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private int nota; // de 1 a 5
+
+    @Column(length = 500)
     private String comentario;
+
+    @CreationTimestamp
+    @Column(nullable = false, updatable = false)
     private LocalDateTime data;
 
     @ManyToOne

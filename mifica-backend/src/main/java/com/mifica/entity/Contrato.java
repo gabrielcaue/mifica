@@ -1,8 +1,13 @@
 package com.mifica.entity;
 
 import jakarta.persistence.*;
+import org.hibernate.envers.Audited;
 
 @Entity
+@Audited
+@Table(name = "contrato", indexes = {
+    @Index(name = "idx_contrato_nome", columnList = "nome")
+})
 public class Contrato {
 
     // ICP-TOTAL: 1
@@ -12,8 +17,13 @@ public class Contrato {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false, length = 120)
     private String nome;
+
+    @Column(length = 500)
     private String descricao;
+
+    @Column(length = 255)
     private String enderecoBlockchain;
 
     // Getters e Setters

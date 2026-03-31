@@ -1,8 +1,13 @@
 package com.mifica.entity;
 
 import jakarta.persistence.*;
+import org.hibernate.envers.Audited;
 
 @Entity
+@Audited
+@Table(name = "desafio_gamificado", indexes = {
+    @Index(name = "idx_desafio_titulo", columnList = "titulo")
+})
 public class DesafioGamificado {
 
     // ICP-TOTAL: 1
@@ -12,8 +17,13 @@ public class DesafioGamificado {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false, length = 150)
     private String titulo;
+
+    @Column(length = 500)
     private String descricao;
+
+    @Column(nullable = false)
     private int pontos;
 
     // Getters e Setters

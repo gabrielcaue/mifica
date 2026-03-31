@@ -4,8 +4,15 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
+import jakarta.persistence.Table;
+import jakarta.persistence.Column;
 
 @Entity
+@Table(name = "badge", indexes = {
+    @Index(name = "idx_badge_user", columnList = "user_id"),
+    @Index(name = "idx_badge_name", columnList = "name")
+})
 public class Badge {
 
     // ICP-TOTAL: 1
@@ -15,8 +22,13 @@ public class Badge {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false, length = 120)
     private String name;
+
+    @Column(length = 500)
     private String description;
+
+    @Column(nullable = false)
     private Long userId;
 
     // Construtor vazio (necessário para JPA)
