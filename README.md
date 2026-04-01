@@ -1,6 +1,6 @@
 # 🧠 Mifica — Plataforma Modular de Reputação, Gamificação e Blockchain
 
-> ✅ **Status: Online** — Infraestrutura resiliente com Redis Pub/Sub (Upstash), CORS centralizado, segurança por JWT, e ICPs/CDD aplicados ao backend Java.
+> ⚠️ **Status: Em Manutenção** — O domínio está em manutenção. Infraestrutura resiliente com Redis Pub/Sub (Upstash), CORS centralizado, segurança por JWT, e ICPs/CDD aplicados ao backend Java.
 
 ---
 
