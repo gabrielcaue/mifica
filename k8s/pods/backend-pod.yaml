@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: mifica-backend-pod
+  namespace: mifica
+  labels:
+    app: mifica-backend
+spec:
+  containers:
+    - name: mifica-backend
+      image: mifica/backend:latest
+      ports:
+        - containerPort: 8080
+      envFrom:
+        - configMapRef:
+            name: mifica-config
+        - secretRef:
+            name: mifica-secret

@@ -1,0 +1,112 @@
+version: "3.9"
+
+name: mifica-ec2
+
+services:
+  nginx:
+    image: nginx:1.27-alpine
+    container_name: mifica-nginx
+    restart: unless-stopped
+    depends_on:
+      - mifica-frontend
+      - mifica-backend
+      - mifica-streamlit
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ../nginx.prod.conf:/etc/nginx/conf.d/default.conf:ro
+      - ../certbot/www:/var/www/certbot:ro
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+    networks:
+      - mifica-net
+
+  mifica-frontend:
+    build:
+      context: ../mifica-frontend
+      dockerfile: Dockerfile
+    image: mifica-frontend:latest
+    container_name: mifica-frontend
+    restart: unless-stopped
+    expose:
+      - "80"
+    networks:
+      - mifica-net
+
+  mifica-backend:
+    build:
+      context: ../mifica-backend
+      dockerfile: Dockerfile.prod
+    image: mifica-backend:latest
+    container_name: mifica-backend
+    restart: unless-stopped
+    expose:
+      - "8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      JWT_SECRET: ${JWT_SECRET}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+      ADMIN_REDIS_PASSWORD: ${ADMIN_REDIS_PASSWORD}
+      CORS_ALLOWED_ORIGIN_PATTERNS: ${CORS_ALLOWED_ORIGIN_PATTERNS}
+      MYSQLHOST: ${MYSQLHOST}
+      MYSQLPORT: ${MYSQLPORT}
+      MYSQLDATABASE: ${MYSQLDATABASE}
+      MYSQLUSER: ${MYSQLUSER}
+      MYSQLPASSWORD: ${MYSQLPASSWORD}
+      REDIS_HOST: ${REDIS_HOST}
+      REDIS_PORT: ${REDIS_PORT}
+      REDIS_USERNAME: ${REDIS_USERNAME}
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+      REDIS_SSL: ${REDIS_SSL}
+      BACKEND_PUBLIC_URL: ${BACKEND_PUBLIC_URL}
+    networks:
+      - mifica-net
+
+  mifica-streamlit:
+    build:
+      context: ../mifica-streamlit
+      dockerfile: Dockerfile
+    image: mifica-streamlit:latest
+    container_name: mifica-streamlit
+    restart: unless-stopped
+    expose:
+      - "8501"
+    command: >
+      streamlit run app.py
+      --server.baseUrlPath=streamlit
+      --server.enableCORS=false
+      --server.enableXsrfProtection=false
+    networks:
+      - mifica-net
+
+  mysql:
+    image: mysql:8.0
+    container_name: mifica-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQLDATABASE}
+      MYSQL_USER: ${MYSQLUSER}
+      MYSQL_PASSWORD: ${MYSQLPASSWORD}
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - mifica-net
+
+  redis:
+    image: redis:7-alpine
+    container_name: mifica-redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+    networks:
+      - mifica-net
+
+networks:
+  mifica-net:
+    driver: bridge
+
+volumes:
+  mysql_data:
+  redis_data:

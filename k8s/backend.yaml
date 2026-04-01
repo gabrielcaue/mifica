@@ -1,0 +1,129 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mifica-backend
+  namespace: mifica
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: mifica-backend
+  template:
+    metadata:
+      labels:
+        app: mifica-backend
+    spec:
+      containers:
+        - name: mifica-backend
+          image: mifica/backend:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              valueFrom:
+                configMapKeyRef:
+                  name: mifica-config
+                  key: SPRING_PROFILES_ACTIVE
+            - name: CORS_ALLOWED_ORIGIN_PATTERNS
+              valueFrom:
+                configMapKeyRef:
+                  name: mifica-config
+                  key: CORS_ALLOWED_ORIGIN_PATTERNS
+            - name: BACKEND_PUBLIC_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: mifica-config
+                  key: BACKEND_PUBLIC_URL
+
+            - name: MYSQLHOST
+              valueFrom:
+                configMapKeyRef:
+                  name: mifica-config
+                  key: MYSQLHOST
+            - name: MYSQLPORT
+              valueFrom:
+                configMapKeyRef:
+                  name: mifica-config
+                  key: MYSQLPORT
+            - name: MYSQLDATABASE
+              valueFrom:
+                configMapKeyRef:
+                  name: mifica-config
+                  key: MYSQLDATABASE
+            - name: MYSQLUSER
+              valueFrom:
+                secretKeyRef:
+                  name: mifica-secret
+                  key: MYSQLUSER
+            - name: MYSQLPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mifica-secret
+                  key: MYSQLPASSWORD
+
+            - name: REDIS_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: mifica-config
+                  key: REDIS_HOST
+            - name: REDIS_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: mifica-config
+                  key: REDIS_PORT
+            - name: REDIS_SSL
+              valueFrom:
+                configMapKeyRef:
+                  name: mifica-config
+                  key: REDIS_SSL
+            - name: REDIS_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: mifica-secret
+                  key: REDIS_USERNAME
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mifica-secret
+                  key: REDIS_PASSWORD
+
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: mifica-secret
+                  key: JWT_SECRET
+            - name: ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mifica-secret
+                  key: ADMIN_PASSWORD
+            - name: ADMIN_REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mifica-secret
+                  key: ADMIN_REDIS_PASSWORD
+          livenessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8080
+            initialDelaySeconds: 40
+            periodSeconds: 15
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8080
+            initialDelaySeconds: 20
+            periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mifica-backend
+  namespace: mifica
+spec:
+  selector:
+    app: mifica-backend
+  ports:
+    - port: 8080
+      targetPort: 8080

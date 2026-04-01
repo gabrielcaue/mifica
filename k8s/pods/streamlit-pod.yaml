@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: mifica-streamlit-pod
+  namespace: mifica
+  labels:
+    app: mifica-streamlit
+spec:
+  containers:
+    - name: mifica-streamlit
+      image: mifica/streamlit:latest
+      ports:
+        - containerPort: 8501
+      command:
+        - streamlit
+        - run
+        - app.py
+        - --server.port=8501
+        - --server.address=0.0.0.0
+        - --server.baseUrlPath=/streamlit

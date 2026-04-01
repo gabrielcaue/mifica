@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: mifica-frontend-pod
+  namespace: mifica
+  labels:
+    app: mifica-frontend
+spec:
+  containers:
+    - name: mifica-frontend
+      image: mifica/frontend:latest
+      ports:
+        - containerPort: 80

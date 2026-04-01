@@ -112,7 +112,7 @@
             <scope>runtime</scope>
         </dependency>
 
-        <!-- PostgreSQL Connector (Render Database) -->
+        <!-- PostgreSQL Connector -->
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
@@ -149,12 +149,6 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
-        </dependency>
-
-        <!-- E-mail (confirmação de cadastro) -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-mail</artifactId>
         </dependency>
     </dependencies>
 

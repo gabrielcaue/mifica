@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mifica-config
+  namespace: mifica
+data:
+  SPRING_PROFILES_ACTIVE: "prod"
+  CORS_ALLOWED_ORIGIN_PATTERNS: "*"
+  BACKEND_PUBLIC_URL: "http://localhost"
+
+  MYSQLHOST: "mysql"
+  MYSQLPORT: "3306"
+  MYSQLDATABASE: "mifica"
+
+  REDIS_HOST: "redis"
+  REDIS_PORT: "6379"
+  REDIS_SSL: "false"

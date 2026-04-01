@@ -1,0 +1,35 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: mifica-ingress
+  namespace: mifica
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-body-size: "20m"
+    nginx.ingress.kubernetes.io/use-regex: "true"
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: mifica.local
+      http:
+        paths:
+          - path: /api(/|$)(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: mifica-backend
+                port:
+                  number: 8080
+          - path: /streamlit(/|$)(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: mifica-streamlit
+                port:
+                  number: 8501
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: mifica-frontend
+                port:
+                  number: 80

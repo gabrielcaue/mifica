@@ -1,3 +1,5 @@
+# syntax=docker/dockerfile:1.7
+
 # Multi-stage build para otimizar imagem
 FROM maven:3.9-eclipse-temurin-21 AS builder
 
@@ -5,11 +7,11 @@ WORKDIR /app
 
 # Copy pom.xml e baixa dependências
 COPY pom.xml .
-RUN mvn dependency:go-offline -B
+RUN --mount=type=cache,target=/root/.m2 mvn dependency:go-offline -B
 
 # Copy código e faz build
 COPY src src
-RUN mvn clean package -DskipTests -q
+RUN --mount=type=cache,target=/root/.m2 mvn package -DskipTests -q
 
 # Imagem final enxuta
 FROM eclipse-temurin:21-jre-alpine

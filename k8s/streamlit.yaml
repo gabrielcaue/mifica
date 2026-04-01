@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mifica-streamlit
+  namespace: mifica
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mifica-streamlit
+  template:
+    metadata:
+      labels:
+        app: mifica-streamlit
+    spec:
+      containers:
+        - name: mifica-streamlit
+          image: mifica/streamlit:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8501
+          command:
+            - streamlit
+            - run
+            - app.py
+            - --server.port=8501
+            - --server.address=0.0.0.0
+            - --server.baseUrlPath=/streamlit
+          livenessProbe:
+            httpGet:
+              path: /streamlit/
+              port: 8501
+            initialDelaySeconds: 30
+            periodSeconds: 15
+          readinessProbe:
+            httpGet:
+              path: /streamlit/
+              port: 8501
+            initialDelaySeconds: 15
+            periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mifica-streamlit
+  namespace: mifica
+spec:
+  selector:
+    app: mifica-streamlit
+  ports:
+    - port: 8501
+      targetPort: 8501

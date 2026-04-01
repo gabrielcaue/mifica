@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: redis-pod
+  namespace: mifica
+  labels:
+    app: redis
+spec:
+  containers:
+    - name: redis
+      image: redis:7-alpine
+      command: ["redis-server", "--appendonly", "yes"]
+      ports:
+        - containerPort: 6379

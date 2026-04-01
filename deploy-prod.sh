@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-COMPOSE_FILE="docker-compose.prod.yml"
+COMPOSE_FILE="ec2/docker-compose.ec2.yml"
 
 if [[ ! -f .env ]]; then
-  echo "[ERRO] .env não encontrado. Copie .env.example para .env"
+  echo "[ERRO] .env não encontrado. Copie ec2/.env.example para .env"
   exit 1
 fi
 
