@@ -1,4 +1,4 @@
-name: Backend CI
+name: Backend CI/CD (AWS EC2)
 
 on:
   push:
@@ -9,6 +9,9 @@ on:
       - 'mifica-backend/**'
       - '.github/workflows/deploy-backend.yml'
   workflow_dispatch:
+
+permissions:
+  contents: read
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
@@ -30,3 +33,11 @@ jobs:
       - name: Build with Maven
         working-directory: ./mifica-backend
         run: mvn clean package -DskipTests -q
+
+  deploy-aws-ec2:
+    needs: build
+    uses: ./.github/workflows/deploy-backend-ec2.yml
+    secrets: inherit
+    with:
+      repository: ${{ github.repository }}
+      ref_name: ${{ github.ref_name }}

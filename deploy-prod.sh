@@ -2,6 +2,11 @@
 set -euo pipefail
 
 COMPOSE_FILE="ec2/docker-compose.ec2.yml"
+ENV_FILE=".env"
+
+compose() {
+  docker compose --env-file "$ENV_FILE" -f "$COMPOSE_FILE" "$@"
+}
 
 if [[ ! -f .env ]]; then
   echo "[ERRO] .env não encontrado. Copie ec2/.env.example para .env"
@@ -28,7 +33,7 @@ case "$cmd" in
     mkdir -p certbot/www
 
     echo "[INFO] Parando stack para liberar porta 80..."
-    docker compose -f "$COMPOSE_FILE" down || true
+    compose down || true
 
     if ! command -v certbot >/dev/null 2>&1; then
       echo "[INFO] Instalando certbot..."
@@ -43,29 +48,29 @@ case "$cmd" in
     sed -i.bak "s/api\.seu-dominio\.com/$domain/g" nginx.prod.conf
 
     echo "[INFO] Subindo stack com HTTPS..."
-    docker compose -f "$COMPOSE_FILE" up -d --build
+    compose up -d --build
 
     echo "[OK] HTTPS configurado. Teste: https://$domain/health"
     ;;
   up)
-    docker compose -f "$COMPOSE_FILE" up -d --build
+    compose up -d --build
     ;;
   down)
-    docker compose -f "$COMPOSE_FILE" down
+    compose down
     ;;
   restart)
-    docker compose -f "$COMPOSE_FILE" down
-    docker compose -f "$COMPOSE_FILE" up -d --build
+    compose down
+    compose up -d --build
     ;;
   logs)
-    docker compose -f "$COMPOSE_FILE" logs -f --tail=200
+    compose logs -f --tail=200
     ;;
   status)
-    docker compose -f "$COMPOSE_FILE" ps
+    compose ps
     ;;
   pull)
     git pull --rebase
-    docker compose -f "$COMPOSE_FILE" up -d --build
+    compose up -d --build
     ;;
   *)
     echo "Uso: ./deploy-prod.sh {init-ssl <dominio> <email>|up|down|restart|logs|status|pull}"
