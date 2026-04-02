@@ -11,7 +11,7 @@ Modelar o estado persistente do negócio (núcleo de dados da aplicação).
 ## Entidades do pacote
 | Tipo | Elementos |
 |---|---|
-| Usuário e acesso | `User`, `Usuario`, `Role`, `EmailVerificationToken` |
+| Usuário e acesso | `User`, `Usuario`, `Role` |
 | Reputação e gamificação | `HistoricoReputacao`, `Badge`, `DesafioGamificado`, `Avaliacao` |
 | Negócio financeiro/contratual | `Contrato`, `Transacao`, `SolicitacaoCredito` |
 

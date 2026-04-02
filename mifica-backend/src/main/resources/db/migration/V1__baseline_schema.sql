@@ -7,7 +7,6 @@ CREATE TABLE IF NOT EXISTS usuarios (
     email VARCHAR(255) NOT NULL,
     senha VARCHAR(255) NOT NULL,
     enabled BIT(1) NOT NULL,
-    email_verificado BIT(1) NOT NULL,
     reputacao INT,
     nivel VARCHAR(40),
     role VARCHAR(30) NOT NULL,
@@ -99,21 +98,6 @@ CREATE TABLE IF NOT EXISTS historico_reputacao (
     data_alteracao DATETIME(6) NOT NULL,
     PRIMARY KEY (id)
 );
-
-
-CREATE TABLE IF NOT EXISTS email_verification_tokens (
-    id BIGINT NOT NULL AUTO_INCREMENT,
-    token VARCHAR(120) NOT NULL,
-    usuario_id BIGINT NOT NULL,
-    expira_em DATETIME(6) NOT NULL,
-    usado BIT(1) NOT NULL,
-    PRIMARY KEY (id),
-    CONSTRAINT uk_email_verification_token UNIQUE (token),
-    CONSTRAINT fk_email_token_usuario
-        FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
-);
-
-
 CREATE TABLE IF NOT EXISTS gamification_users (
     id BIGINT NOT NULL AUTO_INCREMENT,
     name VARCHAR(120) NOT NULL,

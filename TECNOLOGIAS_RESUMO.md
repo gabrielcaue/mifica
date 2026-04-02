@@ -82,8 +82,8 @@
 | Docker | Containerização dos serviços |
 | Docker Compose | Orquestração local e produção |
 | Traefik | Proxy reverso no ambiente local |
-| Nginx | Proxy reverso no ambiente de produção |
-| AWS EC2 | Hospedagem da stack produtiva |
+| Nginx | Proxy reverso no ambiente de produção local |
+| Railway | Hospedagem do backend em produção |
 | GitHub Actions | Pipeline de build/test/deploy |
 | GitHub Pages | Entrega do frontend estático |
 | Variáveis de ambiente (12-Factor) | Gestão segura de configuração |

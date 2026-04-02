@@ -13,7 +13,6 @@ Camada de **casos de uso** e regras de negócio. Orquestra entidades, repositór
 |---|---|
 | `AuthService` | autenticação e emissão/validação de acesso |
 | `UsuarioService` | gestão de conta/perfil |
-| `EmailVerificationService` | fluxo de verificação de email |
 | `EmailService` | envio de notificações de email |
 | `ContratoService` | lifecycle de contratos |
 | `TransacaoService` | transações de negócio |

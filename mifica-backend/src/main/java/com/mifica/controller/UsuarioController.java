@@ -40,7 +40,7 @@ import com.mifica.redis.GamificationPublisher;
 public class UsuarioController {
 
     // ICP-TOTAL: 6
-    // ICP-01: Orquestra múltiplos fluxos (cadastro, verificação de e-mail, login, perfil e administração) no mesmo controller.
+    // ICP-01: Orquestra múltiplos fluxos (cadastro, login, perfil e administração) no mesmo controller.
 
     private static final String USUARIO_NAO_ENCONTRADO = "Usuário não encontrado.";
     private static final String TOKEN_INVALIDO = "Token inválido ou expirado.";
@@ -106,10 +106,6 @@ public class UsuarioController {
         return ResponseEntity.ok(resposta);
     }
 
-    // 🔧 Endpoints de verificação de email removidos
-    // Login agora é direto sem necessidade de verificação de email
-    // (implementar 2FA/MFA em futuro próximo se necessário)
-
     // 🔧 Cadastro de administrador
     /**
      * Cadastro de administrador (protegido por senha de acesso).
@@ -127,7 +123,6 @@ public class UsuarioController {
         novoAdmin.setEmail((String) payload.get("email"));
         novoAdmin.setSenha(passwordEncoder.encode((String) payload.get("senha")));
         novoAdmin.setEnabled(Boolean.TRUE);
-        novoAdmin.setEmailVerificado(Boolean.TRUE);
         novoAdmin.setRole(Role.ROLE_ADMIN);
         novoAdmin.setReputacao(100);
         novoAdmin.setConquistas(new ArrayList<>());
@@ -166,8 +161,6 @@ public class UsuarioController {
             resposta.put("nome", usuario.getNome());
             resposta.put("reputacao", usuario.getReputacao());
             resposta.put("conquistas", usuario.getConquistas());
-            resposta.put("emailVerificado", usuario.getEmailVerificado());
-
             return ResponseEntity.ok(resposta);
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());

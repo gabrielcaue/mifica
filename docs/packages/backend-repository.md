@@ -12,7 +12,6 @@ Camada de acesso a dados com Spring Data JPA. Fornece interfaces para leitura/es
 - `UserRepository`, `UsuarioRepository`
 - `ContratoRepository`, `TransacaoRepository`, `SolicitacaoCreditoRepository`
 - `DesafioRepository`, `BadgeRepository`, `HistoricoReputacaoRepository`
-- `EmailVerificationTokenRepository`
 
 ## Limites (clean architecture)
 - **Pode depender de:** `entity`, Spring Data JPA.

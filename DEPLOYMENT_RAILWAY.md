@@ -1,167 +1,62 @@
 # Guia de Deployment - Railway
 
-## 🚀 Setup Rápido no Railway
+## Setup rápido
 
-### 1. Criar Conta
-- Acesse: https://railway.app
-- Sign in com GitHub (mais rápido)
+1. Acesse https://railway.app e faça login com GitHub.
+2. Crie um projeto a partir do repositório `gabrielcaue/mifica`.
+3. Adicione os serviços necessários:
+   - Backend: raiz `mifica-backend`, Dockerfile `Dockerfile.prod`, porta `8080`.
+   - MySQL: use o banco gerenciado do Railway.
+   - Redis: use Upstash e conecte ao backend.
 
-### 2. Criar Novo Projeto
-- Click em "New Project" → "Deploy from GitHub repo"
-- Selecione seu repositório `gabrielcaue/mifica`
+## Variáveis obrigatórias
 
-### 3. Adicionar Serviços
+Configure estas variáveis no serviço do backend:
 
-#### Backend (Spring Boot)
-1. Click em "New Service" → "GitHub Repo"
-2. Selecione `mifica-backend` como raiz do Dockerfile
-3. Configure:
-   - **Dockerfile**: `Dockerfile.prod`
-   - **Port**: `8080`
-   - **Ambiente**: Production
-
-#### MySQL (Banco de Dados)
-1. Click em "New Service" → "Database" → "MySQL"
-2. Railway cria automaticamente variáveis como:
-   - `MYSQLHOST`
-   - `MYSQLPORT`
-   - `MYSQLDATABASE`
-   - `MYSQLUSER`
-   - `MYSQLPASSWORD`
-
-#### Redis (Upstash — para gamificação/eventos)
-Crie uma conta gratuita no [Upstash](https://upstash.com) e configure no backend:
+- `SPRING_PROFILES_ACTIVE=prod`
+- `JWT_SECRET`
+- `ADMIN_PASSWORD`
+- `ADMIN_REDIS_PASSWORD`
+- `CORS_ALLOWED_ORIGIN_PATTERNS`
+- `MYSQLHOST`
+- `MYSQLPORT`
+- `MYSQLDATABASE`
+- `MYSQLUSER`
+- `MYSQLPASSWORD`
 - `REDIS_HOST`
 - `REDIS_PORT`
+- `REDIS_USERNAME`
 - `REDIS_PASSWORD`
-- `REDIS_SSL` (true para Upstash)
-- `ADMIN_REDIS_PASSWORD`
+- `REDIS_SSL`
+- `BACKEND_PUBLIC_URL`
 
-### 4. Configurar Variáveis de Ambiente no Railway
-
-#### 📋 Passo a passo:
-
-1. **Acesse seu projeto no Railway**
-   - Entre em https://railway.app/dashboard
-   - Clique no seu projeto (mifica ou o nome que você deu)
-
-2. **Selecione o serviço backend**
-   - No dashboard do projeto, clique no card do **mifica-backend**
-
-3. **Abra a aba Variables**
-   - No menu superior, clique em **"Variables"** (ícone de chave 🔑)
-
-4. **Adicione as variáveis obrigatórias uma por uma:**
-
-   Clique em **"+ New Variable"** e adicione:
-
-   **JWT / Admin:**
-   ```
-   JWT_SECRET = (gerar - veja abaixo como criar)
-   ADMIN_PASSWORD = SenhaAdmin2026!
-   ADMIN_REDIS_PASSWORD = senha-especial-admin-redis
-   ```
-
-   **🔐 Como gerar o JWT_SECRET:**
-   
-   Você precisa criar uma chave secreta forte e aleatória. Escolha uma opção:
-   
-   **Opção 1 - No terminal (Mac/Linux):**
-   ```bash
-   openssl rand -base64 64
-   ```
-   
-   **Opção 2 - No navegador (qualquer sistema):**
-   - Acesse: https://randomkeygen.com/
-   - Copie uma chave da seção "Fort Knox Passwords" (256-bit)
-   
-   **Opção 3 - Node.js:**
-   ```bash
-   node -e "console.log(require('crypto').randomBytes(64).toString('base64'))"
-   ```
-   
-   **Opção 4 - Python:**
-   ```bash
-   python3 -c "import secrets; print(secrets.token_urlsafe(64))"
-   ```
-   
-   > ⚠️ **Importante:** Guarde essa chave em local seguro! Ela é usada para assinar os tokens JWT. Se perder, todos os usuários terão que fazer login novamente.
-
-   **MySQL (copie do serviço MySQL):**
-   
-   As variáveis de MySQL já existem no serviço de banco. Você pode:
-   - Opção 1: Deixar o Railway linkar automaticamente (Reference Variables)
-   - Opção 2: Copiar manualmente do serviço MySQL:
-   ```
-   MYSQLHOST = (copiar do serviço MySQL)
-   MYSQLPORT = (copiar do serviço MySQL)
-   MYSQLDATABASE = (copiar do serviço MySQL)
-   MYSQLUSER = (copiar do serviço MySQL)
-   MYSQLPASSWORD = (copiar do serviço MySQL)
-   ```
-
-   **Redis (Upstash):**
-   ```
-   REDIS_HOST = seu-redis-host.upstash.io
-   REDIS_PORT = 6379
-   REDIS_PASSWORD = seu-redis-password
-   REDIS_SSL = true
-   ```
-
-   **CORS:**
-   ```
-   CORS_ALLOWED_ORIGIN_PATTERNS = *
-   ```
-
-5. **Salvar e aguardar redeploy**
-   - Railway redeploya automaticamente após adicionar variáveis
-   - Acompanhe os logs na aba **"Deployments"**
-
-
-### 6. Deploy Automático
-Seu workflow GitHub Actions pushará automaticamente para Railway:
-- Cada push em `master` dispara build + deploy
-- Logs em tempo real no dashboard Railway
-
-### 7. Obter URL da API
-Após deploy bem-sucedido:
-1. No Railway dashboard, clique no serviço backend
-2. Copie a URL pública (ex: `https://mifica-backend-prod.railway.app`)
-3. Atualize em `mifica-frontend/.env.production`:
+Valores recomendados para este ambiente:
 
 ```env
-VITE_API_URL=https://mifica-backend-prod.railway.app
+SPRING_PROFILES_ACTIVE=prod
+ADMIN_PASSWORD=change-me
+ADMIN_REDIS_PASSWORD=change-me
+JWT_SECRET=change-me-with-a-strong-random-secret
+CORS_ALLOWED_ORIGIN_PATTERNS=https://gabrielcaue.github.io,http://localhost:5173
+MYSQLHOST=mysql.railway.internal
+MYSQLPORT=3306
+MYSQLDATABASE=railway
+MYSQLUSER=root
+MYSQLPASSWORD=change-me
+REDIS_HOST=able-giraffe-65440.upstash.io
+REDIS_PORT=6379
+REDIS_USERNAME=default
+REDIS_PASSWORD=change-me
+REDIS_SSL=true
+BACKEND_PUBLIC_URL=https://seu-projeto.railway.app
 ```
 
-## 📊 O que Impressiona Recrutadores
+## Publicação
 
-✅ **Backend em produção 24/7**  
-✅ **Database MySQL profissional**  
-✅ **CI/CD automático com GitHub Actions**  
-✅ **Logs e monitoramento no Railway**  
-✅ **Variáveis de ambiente seguras**  
-✅ **Multi-stage Docker otimizado**  
-✅ **SSL/HTTPS automático**  
+- O Railway redeploya automaticamente quando as variáveis são salvas.
+- Depois do deploy, copie a URL pública do serviço backend e use esse valor em `BACKEND_PUBLIC_URL`.
+- Atualize o frontend para apontar para a nova API publicada no Railway.
 
-## 🔗 Links Úteis
+## Pós-migração
 
-- Railway Dashboard: https://railway.app/dashboard
-- Railway Docs: https://docs.railway.app
-- Seu Backend (após deploy): `https://seu-projeto.railway.app`
-
-## 💡 Dicas
-
-1. **Primeiro Deploy**: Railway detecta automaticamente Spring Boot
-2. **Logs**: Veja em tempo real no dashboard
-3. **Rollback**: Histórico de deploys com um clique
-4. **Free Tier**: $5/mês de crédito grátis (suficiente)
-5. **Scaling**: Se crescer, upgrade é super simples
-
----
-
-**Próximos passos**:
-1. Criar conta Railway
-2. Adicionar `RAILWAY_TOKEN` em GitHub Secrets
-3. Fazer push para disparar CI/CD
-4. Verificar logs
-5. Copiar URL da API e atualizar frontend
+Os artefatos antigos de infraestrutura foram removidos para evitar mistura de plataformas.

@@ -6,7 +6,7 @@ Plataforma full-stack com arquitetura modular, focada em backend robusto, segura
 
 - Em manutenção evolutiva
 - Frontend publicado no GitHub Pages
-- Backend com perfil de produção e deploy via Docker Compose
+- Backend com perfil de produção no Railway
 
 ## Acesso e Documentação
 
@@ -22,7 +22,7 @@ Plataforma full-stack com arquitetura modular, focada em backend robusto, segura
 - **Backend (Spring Boot 3 + Java 21):** API REST, autenticação JWT, regras de reputação e gamificação, integração Redis Pub/Sub e blockchain.
 - **Frontend (React + Vite + Tailwind):** SPA com login, cadastro, dashboard e rotas protegidas.
 - **Streamlit (Python):** painel analítico para acompanhamento de dados da plataforma.
-- **Infraestrutura:** Docker/Docker Compose; Traefik no ambiente local e Nginx no ambiente de produção (EC2 + HTTPS).
+- **Infraestrutura:** Docker/Docker Compose; Traefik no ambiente local e Railway no ambiente de produção.
 
 ## Destaques Técnicos
 
@@ -70,7 +70,6 @@ mifica/
 ├── mifica-streamlit/
 ├── mifica-flutter/
 ├── docs/packages/
-├── ec2/
 ├── k8s/
 ├── docker-compose.yml
 └── docker-compose.prod.yml

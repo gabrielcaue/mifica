@@ -53,9 +53,7 @@ public class UsuarioService {
         usuario.setNome(dto.getNome());
         usuario.setEmail(dto.getEmail());
         usuario.setSenha(senhaCriptografada); // ✅ corrigido
-        // Cadastro comum ativo para login imediato
         usuario.setEnabled(Boolean.TRUE);
-        usuario.setEmailVerificado(Boolean.TRUE);
         usuario.setReputacao(dto.getReputacao() != null ? dto.getReputacao() : 1);
         usuario.setNivel(dto.getNivel());
         usuario.setRole(formatarPapel(dto.getRole()));
@@ -70,7 +68,7 @@ public class UsuarioService {
      * Compara senha digitada com hash BCrypt armazenado no banco.
      */
     public boolean validarLogin(String email, String senhaDigitada) {
-        // ICP-03: Autenticação combina múltiplas guard clauses (existência, ativação, verificação de e-mail e senha).
+        // ICP-03: Autenticação combina múltiplas guard clauses (existência, ativação e senha).
         Usuario usuario = buscarPorEmail(email);
         if (usuario == null) throw new RuntimeException("Usuário não encontrado");
         if (!passwordEncoder.matches(senhaDigitada, usuario.getSenha())) {
