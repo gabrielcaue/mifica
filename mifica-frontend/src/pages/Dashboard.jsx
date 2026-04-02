@@ -8,9 +8,8 @@ import Topo from '../components/Topo';
 import TransacoesList from '../components/TransacoesList';
 
 export default function Dashboard() {
-  const { usuario, logout } = useAuth();
+  const { usuario } = useAuth();
   const navigate = useNavigate();
-  const streamlitPath = `${import.meta.env.BASE_URL}streamlit`;
 
   const [transacoes, setTransacoes] = useState([]);
   const [totalValor, setTotalValor] = useState(0);
@@ -72,10 +71,10 @@ export default function Dashboard() {
             {/* Botão exclusivo para admins */}
             {usuario.role === 'ROLE_ADMIN' && (
               <button
-                onClick={() => window.open(streamlitPath, '_blank')}
+                onClick={() => navigate('/cadastro-admin')}
                 className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition mt-6"
               >
-                Acessar Painel Administrativo
+                Acessar Área Administrativa
               </button>
             )}
           </div>
@@ -93,7 +92,7 @@ export default function Dashboard() {
         </div>
 
         {/* Painel Administrativo */}
-        {usuario.role === 'ADMIN' && (
+        {usuario.role === 'ROLE_ADMIN' && (
           <div className="bg-white/10 backdrop-blur-md rounded-xl p-4 md:p-6 shadow-lg border border-red-500 mt-8 md:mt-10">
             <h2 className="text-xl md:text-2xl font-semibold text-red-400 mb-2">Painel Administrativo</h2>
             <p className="mb-4">Acesso rápido para ações administrativas:</p>

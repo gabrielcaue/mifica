@@ -259,6 +259,17 @@ export default function CadastroAdmin() {
 
           <button
             type="button"
+            onClick={() => {
+              sessionStorage.setItem('adminPanelAccess', 'true');
+              navigate('/admin');
+            }}
+            className="mt-2 w-full bg-green-600 text-white py-2 text-sm md:text-base rounded-md font-semibold hover:bg-green-700 transition"
+          >
+            Abrir Painel de Inteligência
+          </button>
+
+          <button
+            type="button"
             onClick={() => navigate('/login')}
             className="mt-2 md:mt-3 w-full bg-gray-100 text-gray-700 py-2 text-sm md:text-base rounded-md font-semibold hover:bg-gray-200 transition"
           >

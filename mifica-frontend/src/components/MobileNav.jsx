@@ -11,7 +11,7 @@ import logo from '../assets/logo.png';
  */
 export default function MobileNav({ additionalMenuItems = [] }) {
   const [isOpen, setIsOpen] = useState(false);
-  const { logout, user } = useAuth();
+  const { logout, usuario } = useAuth();
   const navigate = useNavigate();
   const { isMobile } = useMediaQuery();
 
@@ -64,7 +64,7 @@ export default function MobileNav({ additionalMenuItems = [] }) {
             <img src={logo} alt="Logo Mifica" className="w-8 h-auto" />
             <h2 className="text-lg font-bold text-blue-300">Mifica</h2>
           </div>
-          {user && <p className="text-sm text-gray-400">Bem-vindo, {user.nome || 'Usuário'}</p>}
+          {usuario && <p className="text-sm text-gray-400">Bem-vindo, {usuario.nome || 'Usuário'}</p>}
         </div>
 
         {/* Menu Items */}
@@ -82,7 +82,7 @@ export default function MobileNav({ additionalMenuItems = [] }) {
           ))}
 
           {/* Itens padrão para usuários autenticados */}
-          {user && (
+          {usuario && (
             <>
               <button
                 onClick={() => handleNavClick('/dashboard')}
@@ -106,17 +106,14 @@ export default function MobileNav({ additionalMenuItems = [] }) {
                 <span>Configurações</span>
               </button>
 
-              {/* Link para admin */}
-              {user?.role === 'admin' && (
-                <a
-                  href={import.meta.env.VITE_STREAMLIT_URL || "http://localhost:8501"}
-                  target="_blank"
-                  rel="noopener noreferrer"
+              {usuario?.role === 'ROLE_ADMIN' && (
+                <button
+                  onClick={() => handleNavClick('/cadastro-admin')}
                   className="w-full text-left px-4 py-3 rounded-lg text-green-300 hover:bg-green-700 transition flex items-center gap-3"
                 >
                   <span>🧠</span>
-                  <span>Painel Admin</span>
-                </a>
+                  <span>Área Admin</span>
+                </button>
               )}
 
               {/* Logout */}

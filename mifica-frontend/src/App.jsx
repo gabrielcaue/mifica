@@ -14,13 +14,26 @@ import RotaAdmin from './components/RotaAdmin.jsx';
 
 // Novo componente para embutir Streamlit
 function AdminPanel() {
+  const streamlitUrl = import.meta.env.VITE_STREAMLIT_URL
+    || (import.meta.env.DEV ? 'http://localhost:8501' : `${window.location.origin}/streamlit`);
+
   return (
     <iframe
-      src={import.meta.env.VITE_STREAMLIT_URL || "http://localhost:8501"}
+      src={streamlitUrl}
       style={{ width: "100%", height: "100vh", border: "none" }}
       title="Painel Administrativo"
     />
   );
+}
+
+function AdminPanelGate() {
+  const acessoLiberado = sessionStorage.getItem('adminPanelAccess') === 'true';
+
+  if (!acessoLiberado) {
+    return <Navigate to="/cadastro-admin" replace />;
+  }
+
+  return <AdminPanel />;
 }
 
 function RotasProtegidas() {
@@ -48,7 +61,7 @@ function RotasProtegidas() {
         element={
           usuario ? (
             <RotaAdmin>
-              <AdminPanel />
+              <AdminPanelGate />
             </RotaAdmin>
           ) : (
             <Navigate to="/login" state={{ from: location.pathname }} />

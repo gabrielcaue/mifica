@@ -20,7 +20,7 @@ O objetivo é oferecer uma plataforma modular com reputação, gamificação e t
 - **Frontend**: React + Vite, TailwindCSS, Axios, React Router DOM  
 - **Backend**: Spring Boot, JWT Authentication, Swagger  
 - **Banco de Dados**: MySQL (persistência completa de usuários e reputação)  
-- **Admin Panel**: Streamlit (embutido no frontend via iframe)  
+- **Admin Panel**: Streamlit (embutido via iframe no caminho `/streamlit`)  
 - **Infraestrutura**: Docker (backend já configurado, frontend em andamento)  
 
 ---
@@ -53,7 +53,7 @@ Certifique-se de que:
 
 O backend esteja rodando em http://localhost:8080
 
-O Streamlit esteja rodando em http://localhost:8501
+Use `VITE_STREAMLIT_URL=/streamlit` em produção para manter o painel “camuflado” no mesmo domínio do frontend. Em dev, o fallback continua `http://localhost:8501`.
 
 O MySQL esteja ativo e com a tabela usuarios criada:
 ```bash

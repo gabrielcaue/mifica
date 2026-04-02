@@ -5,7 +5,7 @@ import MobileNav from './MobileNav';
 import logo from '../assets/logo.png';
 
 export default function Topo() {
-  const { logout, user } = useAuth();
+  const { logout, usuario } = useAuth();
   const navigate = useNavigate();
   const { isMobile } = useMediaQuery();
 
@@ -53,16 +53,13 @@ export default function Topo() {
               Configurações
             </Link>
 
-            {/* Botão para admins */}
-            {user?.role === 'admin' && (
-              <a
-                href={import.meta.env.VITE_STREAMLIT_URL || "http://localhost:8501"}
-                target="_blank"
-                rel="noopener noreferrer"
+            {usuario?.role === 'ROLE_ADMIN' && (
+              <Link
+                to="/cadastro-admin"
                 className="px-3 md:px-4 py-2 text-sm md:text-base border border-green-600 rounded text-green-300 hover:bg-green-700 transition"
               >
-                🧠 Painel de Inteligência Mifica
-              </a>
+                🧠 Área Admin
+              </Link>
             )}
 
             <button
