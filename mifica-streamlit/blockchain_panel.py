@@ -5,6 +5,8 @@ def render():
     st.title("Painel de Transações Blockchain")
 
     token = st.session_state.get("token")
+    usuario = st.session_state.get("usuario", {})
+    role = usuario.get("role", "")
     if not token:
         st.warning("Faça login para acessar este painel.")
         return
@@ -12,15 +14,16 @@ def render():
     headers = {"Authorization": f"Bearer {token}"}
 
     st.subheader("📤 Registrar nova transação")
-    hash_tx = st.text_input("Hash da transação")
-    remetente = st.text_input("Remetente")
     destinatario = st.text_input("Destinatário")
     valor = st.number_input("Valor (ETH)", min_value=0.0, step=0.01)
 
+    if role == "ROLE_ADMIN":
+        st.caption("Admin pode transferir para usuários comuns e administradores, sem limite de valor.")
+    else:
+        st.caption("Usuários comuns só podem transferir para outros usuários comuns.")
+
     if st.button("Registrar"):
         payload = {
-            "hashTransacao": hash_tx,
-            "remetente": remetente,
             "destinatario": destinatario,
             "valor": valor
         }

@@ -1,10 +1,14 @@
 package com.mifica.blockchain;
 
 import com.mifica.dto.TransacaoBlockchainDTO;
+import com.mifica.entity.Role;
+import com.mifica.entity.Usuario;
+import com.mifica.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -22,13 +26,44 @@ public class BlockchainService {
     @Autowired
     private TransacaoBlockchainRepository transacaoRepo;
 
+    @Autowired
+    private UsuarioRepository usuarioRepository;
+
     /** Registra uma nova transação blockchain com timestamp automático. */
-    public TransacaoBlockchainDTO registrarTransacao(TransacaoBlockchainDTO dto) {
-        // ICP-02: Registro exige mapeamento completo e preservação de consistência entre payload e persistência.
+    public TransacaoBlockchainDTO registrarTransacao(String emailRemetente, String roleRemetente, TransacaoBlockchainDTO dto) {
+        // ICP-02: Registro valida perfil do remetente e normaliza a transação antes da persistência.
+        if (dto == null) {
+            throw new IllegalArgumentException("Dados da transação são obrigatórios.");
+        }
+
+        if (dto.getDestinatario() == null || dto.getDestinatario().trim().isEmpty()) {
+            throw new IllegalArgumentException("Destinatário é obrigatório.");
+        }
+
+        if (dto.getValor() <= 0) {
+            throw new IllegalArgumentException("O valor da transação deve ser maior que zero.");
+        }
+
+        Usuario remetente = usuarioRepository.findByEmail(emailRemetente)
+            .orElseThrow(() -> new IllegalArgumentException("Remetente não encontrado."));
+
+        Usuario destinatario = usuarioRepository.findByEmail(dto.getDestinatario().trim())
+            .orElseThrow(() -> new IllegalArgumentException("Destinatário não encontrado."));
+
+        boolean remetenteEhAdmin = Role.ROLE_ADMIN.name().equalsIgnoreCase(roleRemetente)
+            || (remetente.getRole() != null && Role.ROLE_ADMIN.equals(remetente.getRole()));
+        boolean destinatarioEhAdmin = Role.ROLE_ADMIN.equals(destinatario.getRole());
+
+        if (!remetenteEhAdmin && destinatarioEhAdmin) {
+            throw new IllegalArgumentException("Usuários comuns só podem transferir para usuários comuns.");
+        }
+
         TransacaoBlockchain transacao = new TransacaoBlockchain();
-        transacao.setHashTransacao(dto.getHashTransacao());
-        transacao.setRemetente(dto.getRemetente());
-        transacao.setDestinatario(dto.getDestinatario());
+        transacao.setHashTransacao(dto.getHashTransacao() == null || dto.getHashTransacao().isBlank()
+            ? UUID.randomUUID().toString()
+            : dto.getHashTransacao());
+        transacao.setRemetente(remetente.getEmail());
+        transacao.setDestinatario(destinatario.getEmail());
         transacao.setValor(dto.getValor());
         transacao.setDataTransacao(LocalDateTime.now());
 

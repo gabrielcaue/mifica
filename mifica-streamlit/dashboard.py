@@ -2,6 +2,7 @@ import streamlit as st
 from PIL import Image
 import base64
 from io import BytesIO
+import requests
 from components.user_card import exibir_user_card
 from utils.charts import grafico_reputacao
 from utils.data import carregar_usuarios
@@ -15,6 +16,36 @@ with st.spinner("Carregando dados dos usuários..."):
     usuarios = carregar_usuarios()
     nomes_usuarios = [u["nome"] for u in usuarios]
     usuario_selecionado = st.sidebar.selectbox("Selecionar usuário:", nomes_usuarios)
+
+usuario_logado = st.session_state.get("usuario", {})
+role_logado = usuario_logado.get("role", "")
+
+
+def registrar_transacao_dashboard():
+    token = st.session_state.get("token")
+    if not token:
+        st.info("Faça login para registrar transações.")
+        return
+
+    st.subheader("📤 Registrar transação")
+    destinatario = st.text_input("Destinatário", key="legacy_dashboard_destinatario")
+    valor = st.number_input("Valor (ETH)", min_value=0.0, step=0.01, key="legacy_dashboard_valor")
+
+    if role_logado == "ROLE_ADMIN":
+        st.caption("Admin pode transferir para usuários comuns e administradores, sem limite de valor.")
+    else:
+        st.caption("Usuários comuns só podem transferir para outros usuários comuns.")
+
+    if st.button("Registrar transação", key="legacy_dashboard_registrar_transacao"):
+        resposta = requests.post(
+            "http://localhost:8080/api/blockchain/transacoes",
+            json={"destinatario": destinatario, "valor": valor},
+            headers={"Authorization": f"Bearer {token}"},
+        )
+        if resposta.status_code == 201:
+            st.success("Transação registrada com sucesso!")
+        else:
+            st.error(f"Erro ao registrar transação: {resposta.text}")
 
 st.success("✅ Dados carregados com sucesso!")
 
@@ -54,3 +85,6 @@ elif opcao == "Perfil":
 elif opcao == "Configurações":
     st.subheader("⚙️ Configurações")
     st.write("Ajustes e preferências do sistema.")
+
+st.markdown("---")
+registrar_transacao_dashboard()

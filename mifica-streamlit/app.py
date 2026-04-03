@@ -43,6 +43,35 @@ st.markdown("---")
 
 # Dados do usuário selecionado
 usuario_dados = next((u for u in usuarios if u["nome"] == usuario_selecionado), None)
+usuario_logado = st.session_state.get("usuario", {})
+role_logado = usuario_logado.get("role", "")
+
+
+def registrar_transacao_dashboard():
+    token = st.session_state.get("token")
+    if not token:
+        st.info("Faça login para registrar transações.")
+        return
+
+    st.markdown("### 📤 Registrar transação")
+    st.caption("O formulário usa apenas destinatário e valor.")
+    destinatario = st.text_input("Destinatário", key="dashboard_destinatario")
+    valor = st.number_input("Valor (ETH)", min_value=0.0, step=0.01, key="dashboard_valor")
+
+    if role_logado == "ROLE_ADMIN":
+        st.caption("Admin pode transferir para usuários comuns e administradores, sem limite de valor.")
+    else:
+        st.caption("Usuários comuns só podem transferir para outros usuários comuns.")
+
+    if st.button("Registrar transação", key="dashboard_registrar_transacao"):
+        payload = {"destinatario": destinatario, "valor": valor}
+        headers = {"Authorization": f"Bearer {token}"}
+        resposta = requests.post("http://localhost:8080/api/blockchain/transacoes", json=payload, headers=headers)
+
+        if resposta.status_code == 201:
+            st.success("Transação registrada com sucesso!")
+        else:
+            st.error(f"Erro ao registrar transação: {resposta.text}")
 
 # Conteúdo condicional
 if opcao == "Dashboard":
@@ -64,6 +93,9 @@ if opcao == "Dashboard":
             st.write(f"• {tx['remetente']} → {tx['destinatario']} | R$ {tx['valor']} | {tx['dataTransacao']}")
     else:
         st.info("Nenhuma transação registrada ainda.")
+
+    st.markdown("---")
+    registrar_transacao_dashboard()
 
 elif opcao == "Perfil":
     st.subheader(f"👤 Perfil de {usuario_selecionado}" if usuario_selecionado else "👤 Perfil")

@@ -29,9 +29,19 @@ services:
       - mysql
       - redis
     environment:
+      JWT_SECRET: ${JWT_SECRET}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+      ADMIN_REDIS_PASSWORD: ${ADMIN_REDIS_PASSWORD}
+      CORS_ALLOWED_ORIGIN_PATTERNS: ${CORS_ALLOWED_ORIGIN_PATTERNS}
+      MYSQLHOST: mysql
+      MYSQLPORT: 3306
+      MYSQLDATABASE: mifica
+      MYSQLUSER: mifica
+      MYSQLPASSWORD: 11090806
       REDIS_HOST: redis
       REDIS_PORT: 6379
       REDIS_SSL: false
+      BACKEND_PUBLIC_URL: http://localhost:8080
     volumes:
       - ~/.m2:/root/.m2
     labels:
