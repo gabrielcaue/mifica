@@ -13,6 +13,11 @@ Centralizar integrações externas consumidas pelo dashboard Streamlit.
 ## Regras e invariantes
 - Camada de serviço deve isolar HTTP da camada de UI.
 
+## CDD/ICP — campos atualizados
+- Requests de transação blockchain enviam somente `destinatario` e `valor`.
+- Mensagens para perfil admin devem refletir o limite total de movimentação de `1.000.000`.
+- Dados técnicos (`hashTransacao`, `remetente`) não são obrigatórios na UX para operação padrão.
+
 ## Critérios de aceitação
 - Páginas do painel consomem dados sem repetir código de integração.
 

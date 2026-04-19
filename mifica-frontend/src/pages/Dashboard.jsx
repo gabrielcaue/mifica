@@ -85,7 +85,7 @@ export default function Dashboard() {
             <p><strong>Total movimentado:</strong> R$ {totalValor.toFixed(2)}</p>
             {ultimaTransacao && (
               <p className="mt-2">
-                <strong>Última transação:</strong> {ultimaTransacao.remetente} → {ultimaTransacao.destinatario} | R$ {ultimaTransacao.valor}
+                <strong>Última transação:</strong> {ultimaTransacao.destinatario} | R$ {ultimaTransacao.valor}
               </p>
             )}
           </div>
@@ -110,16 +110,6 @@ export default function Dashboard() {
           <h2 className="text-xl md:text-2xl font-semibold text-gray-300 mb-4">Transações Blockchain</h2>
 
           <form className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-            <input
-              type="text"
-              placeholder="Hash"
-              className="bg-white text-gray-800 px-4 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            <input
-              type="text"
-              placeholder="Remetente"
-              className="bg-white text-gray-800 px-4 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
             <input
               type="text"
               placeholder="Destinatário"

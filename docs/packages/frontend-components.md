@@ -13,6 +13,11 @@ Disponibilizar componentes de UI reutilizáveis para composição das páginas.
 ## Regras e invariantes
 - Componentes devem ser reutilizáveis e sem acoplamento desnecessário a páginas específicas.
 
+## CDD/ICP — campos atualizados
+- `RegistrarTransacao` opera com payload mínimo: `destinatario` e `valor`.
+- `TransacoesList` não deve renderizar `hashTransacao` e `remetente`.
+- Componentes preservam rastreabilidade visual mínima para o usuário final (destino e valor).
+
 ## Critérios de aceitação
 - Páginas reutilizam componentes sem duplicação de markup/lógica visual.
 

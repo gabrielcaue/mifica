@@ -95,12 +95,94 @@ Serviços locais esperados:
 | Streamlit | http://localhost:8501 |
 | Swagger | http://localhost:8080/swagger-ui.html |
 
+## Qualidade de Código (SonarQube Community)
+
+O projeto agora possui configuração para SonarQube local (Community Edition) usando Docker.
+
+### Subir SonarQube
+
+```bash
+docker compose --profile quality up -d sonarqube-db sonarqube
+```
+
+- URL: http://localhost:9000
+- Login inicial: `admin` / `admin` (será solicitada troca de senha no primeiro acesso)
+
+### Rodar análise do projeto
+
+1. Gere um token no SonarQube (My Account > Security)
+2. Exporte o token no terminal:
+
+```bash
+export SONAR_TOKEN="seu_token"
+```
+
+3. Rode o scanner em container:
+
+```bash
+docker run --rm \
+    --network mifica_default \
+    -e SONAR_HOST_URL="http://sonarqube:9000" \
+    -e SONAR_TOKEN="$SONAR_TOKEN" \
+    -v "$PWD:/usr/src" \
+    sonarsource/sonar-scanner-cli
+```
+
+> A configuração de análise está no arquivo `sonar-project.properties` na raiz do repositório.
+
+## Observabilidade (Prometheus + Grafana)
+
+Foi adicionada uma stack OSS muito usada em empresas:
+
+- **Prometheus** para coleta de métricas
+- **Grafana** para dashboards
+- **cAdvisor** para métricas de containers
+
+### Subir stack de observabilidade
+
+```bash
+docker compose --profile observability up -d
+```
+
+URLs:
+
+- Prometheus: http://localhost:9090
+- Grafana: http://localhost:3000 (login padrão: `admin` / `admin`)
+- cAdvisor: http://localhost:8088
+
+O backend expõe métricas em `http://localhost:8080/actuator/prometheus`.
+
+O stack usa:
+
+- `monitoring/prometheus/prometheus.yml` para os scrape jobs
+- `monitoring/grafana/provisioning/datasources/datasource.yml` para conectar o Grafana ao Prometheus automaticamente
+- `monitoring/grafana/provisioning/dashboards/dashboard.yml` para provisionar dashboards
+- `monitoring/grafana/dashboards/mifica-observability-overview.json` com dashboard inicial (latência, erro, throughput e recursos)
+
+Se quiser avaliar a coleta completa, suba também o backend no mesmo `docker compose` para o Prometheus enxergar o endpoint do Actuator.
+
+## Observações da Engenharia
+
+O projeto **não é fogo de artifício** — estamos construindo com base sólida, escalável e pronta para produção. A arquitetura segue princípios maduros (SOLID, 12-Factor App) e não é apenas um **MVP para gaveta**. 
+
+Temos **boas fundações**, então evitamos a situação de **farmácia**, onde tudo vai virar um remendo (spaghetti code). A governança de dados com Flyway e Envers garante que mudanças no schema e histórico de entidades sejam rastreáveis, não virando um **caos de migrações**.
+
+O stack está **bem amarrado** (tightly integrated) com Docker, CI/CD no GitHub Actions e observabilidade via Prometheus/Grafana. Isso nos deixa com um **bom ground truth** sobre o que está acontecendo em produção, não no escuro.
+
+### Gírias técnicas que combinam com o projeto
+
+- **Fogo de artifício:** solução bonita na demo, mas sem sustentação no mundo real.
+- **Farmácia:** ambiente espelhado para testar com segurança, sem afetar produção.
+- **Churrasco de bug:** quando os erros começam pequenos e viram bagunça generalizada.
+- **Frankenstein:** stack colada de qualquer jeito, sem integração de verdade.
+- **Ground truth:** a visão real do sistema via métricas, logs e dashboards.
+
 ## Roadmap Técnico
 
-- Prometheus + Grafana para observabilidade operacional.
 - Keycloak/OIDC para evolução de identidade e autenticação.
 - Busca avançada e analytics (Elastic/OpenSearch).
 - Evolução de resiliência distribuída (circuit breaker e políticas de tráfego).
+- Datamesh para descentralização de governança de dados e domínios autônomos.
 
 ## Contato
 

@@ -32,7 +32,7 @@ def registrar_transacao_dashboard():
     valor = st.number_input("Valor (ETH)", min_value=0.0, step=0.01, key="legacy_dashboard_valor")
 
     if role_logado == "ROLE_ADMIN":
-        st.caption("Admin pode transferir para usuários comuns e administradores, sem limite de valor.")
+        st.caption("Admin pode transferir para usuários comuns e administradores até o limite total de 1.000.000.")
     else:
         st.caption("Usuários comuns só podem transferir para outros usuários comuns.")
 

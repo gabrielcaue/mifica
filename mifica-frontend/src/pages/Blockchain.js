@@ -4,8 +4,6 @@ import api from '../services/api';
 function Blockchain() {
   const [transacoes, setTransacoes] = useState([]);
   const [novaTransacao, setNovaTransacao] = useState({
-    hashTransacao: '',
-    remetente: '',
     destinatario: '',
     valor: 0
   });
@@ -20,7 +18,7 @@ function Blockchain() {
     api.post('/blockchain/transacoes', novaTransacao)
       .then(res => {
         setTransacoes([...transacoes, res.data]);
-        setNovaTransacao({ hashTransacao: '', remetente: '', destinatario: '', valor: 0 });
+        setNovaTransacao({ destinatario: '', valor: 0 });
       })
       .catch(err => console.error("Erro ao registrar transação:", err));
   };
@@ -29,18 +27,6 @@ function Blockchain() {
     <div>
       <h2>Transações Blockchain</h2>
 
-      <input
-        type="text"
-        placeholder="Hash da transação"
-        value={novaTransacao.hashTransacao}
-        onChange={e => setNovaTransacao({ ...novaTransacao, hashTransacao: e.target.value })}
-      />
-      <input
-        type="text"
-        placeholder="Remetente"
-        value={novaTransacao.remetente}
-        onChange={e => setNovaTransacao({ ...novaTransacao, remetente: e.target.value })}
-      />
       <input
         type="text"
         placeholder="Destinatário"
@@ -58,7 +44,7 @@ function Blockchain() {
       <ul>
         {transacoes.map(tx => (
           <li key={tx.id}>
-            <strong>{tx.hashTransacao}</strong> — {tx.remetente} ➡️ {tx.destinatario} ({tx.valor} ETH) em {new Date(tx.dataTransacao).toLocaleString()}
+            {tx.destinatario} ({tx.valor} ETH) em {new Date(tx.dataTransacao).toLocaleString()}
           </li>
         ))}
       </ul>

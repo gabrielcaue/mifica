@@ -20,7 +20,9 @@ import java.util.stream.Collectors;
 @Service
 public class BlockchainService {
 
-    // ICP-TOTAL: 2
+    private static final double LIMITE_MOVIMENTACAO_ADMIN = 1_000_000.0;
+
+    // ICP-TOTAL: 3
     // ICP-01: Serviço faz transformação bidirecional DTO↔entidade com carimbo temporal de transação.
 
     @Autowired
@@ -56,6 +58,23 @@ public class BlockchainService {
 
         if (!remetenteEhAdmin && destinatarioEhAdmin) {
             throw new IllegalArgumentException("Usuários comuns só podem transferir para usuários comuns.");
+        }
+
+        if (remetenteEhAdmin) {
+            // ICP-03: CDD de limite financeiro do admin é aplicado pelo somatório histórico + valor atual.
+            double totalJaMovimentado = transacaoRepo.somarValorMovimentadoPorRemetente(remetente.getEmail());
+            double totalAposTransacao = totalJaMovimentado + dto.getValor();
+
+            if (totalAposTransacao > LIMITE_MOVIMENTACAO_ADMIN) {
+                double saldoDisponivel = Math.max(0, LIMITE_MOVIMENTACAO_ADMIN - totalJaMovimentado);
+                throw new IllegalArgumentException(
+                    String.format(
+                        "Limite de movimentação do admin (%.2f) excedido. Saldo disponível: %.2f.",
+                        LIMITE_MOVIMENTACAO_ADMIN,
+                        saldoDisponivel
+                    )
+                );
+            }
         }
 
         TransacaoBlockchain transacao = new TransacaoBlockchain();

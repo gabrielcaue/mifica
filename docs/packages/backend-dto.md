@@ -37,6 +37,11 @@ Definir o **contrato externo da API** e os modelos de transporte entre camadas, 
 - Campos sensíveis (senha, segredo, token interno) não devem ser expostos indevidamente.
 - Mudanças em DTO público devem considerar compatibilidade com consumidores.
 
+## CDD/ICP — campos atualizados
+- No fluxo de transações blockchain, clientes devem enviar apenas `destinatario` e `valor`.
+- `hashTransacao` e `remetente` são considerados campos técnicos/internos para auditoria.
+- Compatibilidade foi mantida sem quebra de contrato: campos internos permanecem no DTO para resposta e legado.
+
 ## Convenções de evolução
 - Preferir adição de campos opcionais em vez de quebra de contrato.
 - Renomeações devem ser versionadas/documentadas.

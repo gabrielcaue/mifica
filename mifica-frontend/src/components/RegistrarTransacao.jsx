@@ -3,8 +3,6 @@ import api from '../services/api';
 
 function RegistrarTransacao() {
   const [form, setForm] = useState({
-    hashTransacao: '',
-    remetente: '',
     destinatario: '',
     valor: '',
   });
@@ -22,8 +20,6 @@ function RegistrarTransacao() {
 
   return (
     <form onSubmit={handleSubmit}>
-      <input name="hashTransacao" placeholder="Hash" onChange={handleChange} />
-      <input name="remetente" placeholder="Remetente" onChange={handleChange} />
       <input name="destinatario" placeholder="Destinatário" onChange={handleChange} />
       <input name="valor" placeholder="Valor" type="number" onChange={handleChange} />
       <button type="submit">Registrar</button>

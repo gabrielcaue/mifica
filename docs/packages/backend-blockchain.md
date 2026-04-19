@@ -1,41 +1,37 @@
 # Package: `com.mifica.blockchain`
 
-## Papel na arquitetura
-Camada de integração e rastreabilidade para eventos/transações ligadas ao contexto blockchain da plataforma.
+## Objetivo
+Implementar o caso de uso de transações blockchain com validações de perfil e limite financeiro para administradores.
 
-## Responsabilidades
-- Registrar transações blockchain no banco para auditoria.
-- Expor operações de leitura para histórico e monitoramento.
-- Isolar detalhes desse domínio do restante da aplicação.
+## Escopo
+- Inclui: gravação de transações, consulta de histórico e validação de regras de transferência.
+- Não inclui: autenticação JWT (apenas consumo dos dados extraídos no controller).
 
-## Classes do pacote
-| Classe | Tipo | Responsabilidade |
-|---|---|---|
-| `BlockchainService` | serviço | Caso de uso para gravação/consulta de transações blockchain |
-| `TransacaoBlockchain` | entidade | Modelo persistente de transação blockchain |
-| `TransacaoBlockchainRepository` | repositório | Acesso a dados da entidade blockchain |
-
-## Limites (clean architecture)
-- **Pode depender de:** `dto`, JPA, infraestrutura transacional.
-- **Não deve depender de:** controllers externos ao domínio blockchain e regras de autenticação.
+## Contratos e interfaces
+- Entrada: `TransacaoBlockchainDTO` com uso funcional de `destinatario` e `valor`.
+- Persistência: `TransacaoBlockchainRepository` com query agregada por `remetente`.
+- Saída: `TransacaoBlockchainDTO` com metadados de auditoria (`id`, `hashTransacao`, `dataTransacao`).
 
 ## Regras e invariantes
-- `hash` da transação deve ser tratado como identificador técnico de auditoria.
-- Campos obrigatórios (`remetente`, `destinatario`, `valor`, `data`) não podem ser nulos.
-- Datas devem ser registradas no backend para padronização temporal.
+- `destinatario` é obrigatório e deve existir no cadastro de usuários.
+- `valor` deve ser maior que zero.
+- Usuário comum não pode transferir para admin.
+- Admin pode transferir para qualquer perfil, mas com limite acumulado de **1.000.000**.
+- O “desconto” do saldo do admin é feito pelo somatório histórico das operações (`SUM(valor)` por `remetente`) + valor atual.
 
-## Contratos de integração
-- Entrada típica: `TransacaoBlockchainDTO`.
-- Saída típica: confirmação persistida com `id` interno + metadados.
-
-## Checklist para mudanças
-- Alteração preserva rastreabilidade (hash + timestamps)?
-- Queries continuam performáticas para histórico?
-- Mudança impacta consistência com eventos on-chain?
+## CDD/ICP — campos atualizados
+- Frontends passaram a enviar apenas `destinatario` e `valor`.
+- Campos `hashTransacao` e `remetente` continuam internos para auditoria e são preenchidos no backend.
+- Regra financeira de admin foi registrada com ICP no serviço e no repositório.
 
 ## Critérios de aceitação
-- Criação de transação persiste sem perda de metadados.
-- Consulta retorna histórico consistente e auditável.
+- Transação válida persiste com `hashTransacao` e `dataTransacao` gerados no backend.
+- Quando `totalJaMovimentado + valorAtual > 1.000.000`, a API retorna erro de domínio.
+- Para admin no limite, nova operação deve ser bloqueada de forma determinística.
+
+## Dependências e integrações
+- `UsuarioRepository` para validação de remetente/destinatário.
+- JPA (`TransacaoBlockchainRepository`) para persistência e agregação de valores.
 
 ## Riscos e trade-offs
-- Divergência entre fonte on-chain e base relacional local exige estratégia de reconciliação.
+- Cálculo por somatório histórico é simples e confiável, mas depende da integridade do histórico persistido.

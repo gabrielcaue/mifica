@@ -18,7 +18,7 @@ def render():
     valor = st.number_input("Valor (ETH)", min_value=0.0, step=0.01)
 
     if role == "ROLE_ADMIN":
-        st.caption("Admin pode transferir para usuários comuns e administradores, sem limite de valor.")
+        st.caption("Admin pode transferir para usuários comuns e administradores até o limite total de 1.000.000.")
     else:
         st.caption("Usuários comuns só podem transferir para outros usuários comuns.")
 
@@ -38,7 +38,7 @@ def render():
     if r.status_code == 200:
         transacoes = r.json()
         for tx in transacoes:
-            st.markdown(f"**{tx['hashTransacao']}** — {tx['remetente']} ➡️ {tx['destinatario']} ({tx['valor']} ETH) em `{tx['dataTransacao']}`")
+            st.markdown(f"{tx['destinatario']} ({tx['valor']} ETH) em `{tx['dataTransacao']}`")
     else:
         st.error("Erro ao buscar transações.")
 

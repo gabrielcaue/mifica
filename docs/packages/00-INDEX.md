@@ -39,6 +39,7 @@ Documentação criada para todos os pacotes principais em `src/main/java/com/mif
 - [frontend-utils](frontend-utils.md)
 
 ## Streamlit (Python)
+- [streamlit-app](streamlit-app.md)
 - [streamlit-config](streamlit-config.md)
 - [streamlit-components](streamlit-components.md)
 - [streamlit-services](streamlit-services.md)

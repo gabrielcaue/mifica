@@ -24,7 +24,7 @@ function TransacoesList() {
       <ul>
         {transacoes.map(tx => (
           <li key={tx.id}>
-            {tx.remetente} → {tx.destinatario} | R$ {tx.valor} | {tx.dataTransacao}
+            {tx.destinatario} | R$ {tx.valor} | {tx.dataTransacao}
           </li>
         ))}
       </ul>

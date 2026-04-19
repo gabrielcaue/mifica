@@ -33,17 +33,17 @@
 | PostgreSQL driver | backend | Compatibilidade de ambientes legados/alternativos |
 | H2 (runtime) | backend | Banco em memória para cenários locais/testes |
 
-### Assíncrono, Integrações e Observabilidade
+### Assíncrono, Integrações e Telemetria
 
 | Tecnologia | Onde está | Função no projeto |
 |---|---|---|
-| Redis Pub/Sub | backend | Processamento assíncrono de eventos de gamificação |
-| Spring Data Redis | backend | Integração com Redis e listener container |
-| Upstash (produção) | backend/infra | Redis gerenciado em ambiente produtivo |
-| OpenAPI/Swagger (springdoc 2.5.0) | backend | Documentação interativa da API |
-| Spring Boot Actuator | backend | Endpoints de health/info |
-| Web3j 4.9.8 | backend | Integração com recursos blockchain |
-| Hibernate Validator + Jakarta EL | backend | Validação de payloads e regras de entrada |
+| Redis Pub/Sub | backend | Processamento assíncrono de eventos de gamificação e sinalização entre módulos |
+| Spring Data Redis | backend | Integração com Redis e listener container para consumo dos eventos |
+| Upstash (produção) | backend/infra | Redis gerenciado para suportar filas leves e eventos em produção |
+| OpenAPI/Swagger (springdoc 2.5.0) | backend | Documentação da API para consumo do frontend e manutenção da integração |
+| Spring Boot Actuator | backend | Exposição de health, metrics e readiness para a stack de observabilidade |
+| Web3j 4.9.8 | backend | Integração com recursos blockchain e fluxo de transações da plataforma |
+| Hibernate Validator + Jakarta EL | backend | Validação de payloads e regras de entrada antes de persistir ou publicar eventos |
 
 ## 2) Frontend Web
 
@@ -88,6 +88,23 @@
 | GitHub Pages | Entrega do frontend estático |
 | Variáveis de ambiente (12-Factor) | Gestão segura de configuração |
 
+## 6) Observabilidade, Qualidade e Análise
+
+| Tecnologia | Função no projeto |
+|---|---|
+| Prometheus | Coleta central das métricas expostas pelo backend e pelo ambiente de containers |
+| Grafana | Painéis para acompanhar latência, taxa de erro, throughput e uso de recursos do projeto |
+| cAdvisor | Base de métricas de containers que alimenta os dashboards operacionais |
+| SonarQube Community | Qualidade de código do backend Java, apoiando revisão técnica e redução de dívida |
+| Actuator | Ponto de integração do backend com a telemetria e health checks |
+
+### Como essas peças trabalham juntas
+
+- O backend publica saúde e métricas via `Actuator`.
+- O `Prometheus` coleta esses dados e também lê os contêineres via `cAdvisor`.
+- O `Grafana` consolida tudo em painéis para o time enxergar tendência e problema real.
+- O `SonarQube` entra no fluxo de qualidade para evitar que código ruim vire incidente depois.
+
 ---
 
 ## Tecnologias recentemente evidenciadas (já em uso)
@@ -115,3 +132,42 @@ O projeto aplica os cinco princípios SOLID em sua arquitetura:
 ## Observação de escopo
 
 Este resumo prioriza tecnologias **implementadas e detectáveis no código e configuração atual** do repositório, com ênfase no backend.
+
+---
+
+## Roadmap Tecnológico
+
+- **Keycloak/OIDC:** Evolução de identidade federada e autenticação centralizada.
+- **Busca avançada e analytics:** Elastic/OpenSearch para full-text search e insights de dados.
+- **Resiliência distribuída:** Circuit breakers, retry policies e rate limiting para tráfego robusto.
+- **Datamesh:** Descentralização de governança de dados, transformando silos em domínios autônomos com API-first data products. Cada domínio (gamificação, reputação, blockchain, transações) como um produtor de dados com catálogo e contratos bem definidos.
+
+---
+
+## Ambiente de Dev como "Farmácia"
+
+No contexto do Mifica, a ideia de **farmácia** é positiva: é um ambiente de dev/homologação que espelha o negócio para testar sem colocar a operação real em risco.
+
+### Quando isso é bom no projeto:
+- **Validação realista:** simula fluxos de autenticação, gamificação, blockchain, reputação e integrações sem mexer no ambiente vivo.
+- **Segurança para evolução:** permite testar features novas sem tocar dados reais de produção ou quebrar atendimento.
+- **Homologação e treinamento:** ajuda a equipe a validar o comportamento da plataforma antes de liberar mudanças.
+- **Integração de verdade:** permite testar Redis, observabilidade, frontend e backend com o mesmo contrato do ambiente final.
+
+### Boas práticas aplicadas ao Mifica:
+- **Dados fictícios ou anonimizados:** nada de CPF, pacientes ou credenciais reais no dev.
+- **Segregação clara:** `docker-compose.yml` para dev; `docker-compose.prod.yml`, Railway e stack de observabilidade para produção.
+- **Migração previsível:** Flyway mantém o schema consistente entre ambientes.
+- **Ambiente resetável:** o dev deve poder ser recriado do zero com migrations e seed controlado.
+
+---
+
+## Gírias e Conceitos da Engenharia
+
+- **Não é fogo de artifício:** o projeto não é só brilho de demo; tem base para crescer com segurança e manutenção.
+- **Farmácia boa:** ambiente de dev que espelha o negócio e protege produção, em vez de virar gambiarra.
+- **Sem churrasco de bug:** evitamos acumular problema escondido que só estoura depois do deploy.
+- **Bem amarrado:** backend, frontend, observabilidade e CI/CD conversam sem virar um Frankenstein.
+- **Ground truth:** a combinação de métricas, logs e dashboards mostra o que realmente acontece no sistema.
+- **Bronze/Gold:** dados e contratos organizados por nível de confiança e uso no pipeline.
+- **Observabilidade de verdade:** não é só ver que caiu; é conseguir entender onde, quando e por quê.
