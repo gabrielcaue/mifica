@@ -32,8 +32,19 @@ jobs:
           path: ~/.m2
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
-      - name: Build and analyze
+      - name: Build backend
+        working-directory: ./mifica-backend
+        run: mvn -B verify
+
+      - name: SonarQube analysis
+        working-directory: ./mifica-backend
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=gabrielcaue_mifica_b70fd157-099c-49a2-b7ff-eda27a256720 -Dsonar.projectName='mifica'
+        run: |
+          if [ -z "$SONAR_TOKEN" ] || [ -z "$SONAR_HOST_URL" ]; then
+            echo "SONAR_TOKEN/SONAR_HOST_URL not set. Skipping SonarQube analysis."
+            exit 0
+          fi
+
+          mvn -B org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=gabrielcaue_mifica_b70fd157-099c-49a2-b7ff-eda27a256720 -Dsonar.projectName='mifica'
