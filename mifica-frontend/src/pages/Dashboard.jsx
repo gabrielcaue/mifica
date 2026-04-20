@@ -14,6 +14,9 @@ export default function Dashboard() {
   const [transacoes, setTransacoes] = useState([]);
   const [totalValor, setTotalValor] = useState(0);
   const [ultimaTransacao, setUltimaTransacao] = useState(null);
+  const [destinatario, setDestinatario] = useState('');
+  const [valor, setValor] = useState('');
+  const [refreshTransacoes, setRefreshTransacoes] = useState(0);
 
   useEffect(() => {
     api.get('/blockchain/transacoes')
@@ -30,6 +33,38 @@ export default function Dashboard() {
       })
       .catch(error => console.error('Erro ao buscar transações:', error));
   }, []);
+
+  const handleRegistrarTransacao = async (e) => {
+    e.preventDefault();
+
+    if (!destinatario || !valor) {
+      alert('Informe destinatário e valor.');
+      return;
+    }
+
+    try {
+      await api.post('/transacoes', {
+        destinatario,
+        valor: Number(valor)
+      });
+
+      setDestinatario('');
+      setValor('');
+      setRefreshTransacoes(prev => prev + 1);
+
+      const response = await api.get('/blockchain/transacoes');
+      const lista = response.data;
+      setTransacoes(lista);
+      const total = lista.reduce((acc, tx) => acc + tx.valor, 0);
+      setTotalValor(total);
+      if (lista.length > 0) {
+        setUltimaTransacao(lista[lista.length - 1]);
+      }
+    } catch (error) {
+      console.error('Erro ao registrar transação:', error);
+      alert('Não foi possível registrar a transação.');
+    }
+  };
 
   if (!usuario) {
     return (
@@ -71,7 +106,10 @@ export default function Dashboard() {
             {/* Botão exclusivo para admins */}
             {usuario.role === 'ROLE_ADMIN' && (
               <button
-                onClick={() => navigate('/cadastro-admin')}
+                onClick={() => {
+                  sessionStorage.setItem('adminPanelAccess', 'true');
+                  navigate('/admin');
+                }}
                 className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition mt-6"
               >
                 Acessar Área Administrativa
@@ -91,47 +129,38 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Painel Administrativo */}
-        {usuario.role === 'ROLE_ADMIN' && (
-          <div className="bg-white/10 backdrop-blur-md rounded-xl p-4 md:p-6 shadow-lg border border-red-500 mt-8 md:mt-10">
-            <h2 className="text-xl md:text-2xl font-semibold text-red-400 mb-2">Painel Administrativo</h2>
-            <p className="mb-4">Acesso rápido para ações administrativas:</p>
-            <button
-              onClick={() => navigate('/cadastro-admin')}
-              className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 transition"
-            >
-              Gerenciar Usuários
-            </button>
-          </div>
-        )}
-
         {/* Transações Blockchain */}
         <div className="bg-white/10 backdrop-blur-md rounded-xl p-4 md:p-6 shadow-lg border border-gray-500 mt-8 md:mt-10">
           <h2 className="text-xl md:text-2xl font-semibold text-gray-300 mb-4">Transações Blockchain</h2>
 
-          <form className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+          <form onSubmit={handleRegistrarTransacao} className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
             <input
               type="text"
               placeholder="Destinatário"
+              value={destinatario}
+              onChange={(e) => setDestinatario(e.target.value)}
               className="bg-white text-gray-800 px-4 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             <input
               type="number"
               placeholder="Valor"
+              value={valor}
+              onChange={(e) => setValor(e.target.value)}
               className="bg-white text-gray-800 px-4 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
+            <div className="md:col-span-2">
+              <button
+                type="submit"
+                className="w-full md:w-auto px-6 py-2 border border-blue-500 text-blue-500 rounded-md font-semibold hover:bg-blue-500 hover:text-white transition"
+              >
+                Registrar
+              </button>
+            </div>
           </form>
-
-          <button
-            type="submit"
-            className="w-full md:w-auto px-6 py-2 border border-blue-500 text-blue-500 rounded-md font-semibold hover:bg-blue-500 hover:text-white transition"
-          >
-            Registrar
-          </button>
 
           {/* Lista de transações */}
           <div className="mt-8">
-            <TransacoesList />
+            <TransacoesList refreshKey={refreshTransacoes} />
           </div>
         </div>
       </div>

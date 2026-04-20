@@ -50,7 +50,9 @@ SPRING_PROFILES_ACTIVE=prod
 | Dashboard | [/#/dashboard](https://gabrielcaue.github.io/mifica/#/dashboard) | 🔒 Autenticado |
 | Perfil | [/#/perfil](https://gabrielcaue.github.io/mifica/#/perfil) | 🔒 Autenticado |
 | Configurações | [/#/configuracoes](https://gabrielcaue.github.io/mifica/#/configuracoes) | 🔒 Autenticado |
-| Painel Admin | [/#/admin](https://gabrielcaue.github.io/mifica/#/admin) | 🔒 ADMIN only |
+| Painel Admin (Inteligência) | [/#/admin](https://gabrielcaue.github.io/mifica/#/admin) | 🔒 Autenticado, redireciona para login se não logado |
+
+> **Nota sobre Painel de Inteligência:** O acesso é redirecionado para login se o usuário não estiver autenticado. Após validar a senha de acesso admin em `/#/cadastro-admin`, clique em "Abrir Painel de Inteligência" para acessar o painel Streamlit embutido (disponível apenas para usuários autenticados).
 
 ## Endpoints da API (Backend)
 

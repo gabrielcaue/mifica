@@ -24,6 +24,9 @@ export default function MobileNav({ additionalMenuItems = [] }) {
   };
 
   const handleNavClick = (path) => {
+    if (path === '/admin') {
+      sessionStorage.setItem('adminPanelAccess', 'true');
+    }
     navigate(path);
     setIsOpen(false);
   };
@@ -108,7 +111,7 @@ export default function MobileNav({ additionalMenuItems = [] }) {
 
               {usuario?.role === 'ROLE_ADMIN' && (
                 <button
-                  onClick={() => handleNavClick('/cadastro-admin')}
+                  onClick={() => handleNavClick('/admin')}
                   className="w-full text-left px-4 py-3 rounded-lg text-green-300 hover:bg-green-700 transition flex items-center gap-3"
                 >
                   <span>🧠</span>

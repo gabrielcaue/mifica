@@ -5,3 +5,4 @@ Pillow
 plotly
 pandas
 numpy
+streamlit-autorefresh

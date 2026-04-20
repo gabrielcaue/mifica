@@ -9,6 +9,11 @@ export default function Topo() {
   const navigate = useNavigate();
   const { isMobile } = useMediaQuery();
 
+  const handleAdminAccess = () => {
+    sessionStorage.setItem('adminPanelAccess', 'true');
+    navigate('/admin');
+  };
+
   const handleLogout = () => {
     logout();
     navigate('/');
@@ -54,12 +59,12 @@ export default function Topo() {
             </Link>
 
             {usuario?.role === 'ROLE_ADMIN' && (
-              <Link
-                to="/cadastro-admin"
+              <button
+                onClick={handleAdminAccess}
                 className="px-3 md:px-4 py-2 text-sm md:text-base border border-green-600 rounded text-green-300 hover:bg-green-700 transition"
               >
                 🧠 Área Admin
-              </Link>
+              </button>
             )}
 
             <button

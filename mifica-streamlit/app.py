@@ -4,6 +4,7 @@ import requests  # ✅ NOVO: para consumir a API do backend
 from components.user_card import exibir_user_card
 from utils.charts import grafico_reputacao
 from services.blockchain_api import listar_transacoes  # ✅ já estava
+from streamlit_autorefresh import st_autorefresh
 
 st.set_page_config(
     page_title="Mifica Dashboard",
@@ -11,6 +12,9 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="expanded"
 )
+
+# Atualiza automaticamente a interface a cada 30 minutos
+st_autorefresh(interval=30 * 60 * 1000, key="mifica_streamlit_autorefresh_30min")
 
 # ✅ NOVO BLOCO: Carregar dados dos usuários direto da API
 def carregar_usuarios_api():
@@ -45,9 +49,44 @@ st.markdown("---")
 usuario_dados = next((u for u in usuarios if u["nome"] == usuario_selecionado), None)
 usuario_logado = st.session_state.get("usuario", {})
 role_logado = usuario_logado.get("role", "")
+email_logado = usuario_logado.get("email", "")
 
 
-def registrar_transacao_dashboard():
+def formatar_moeda(valor):
+    return f"R$ {valor:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+
+
+def calcular_resumo_financeiro(transacoes, email_usuario, role_usuario):
+    if not email_usuario:
+        return {
+            "valor_disponivel": 0.0,
+            "total_movimentado": 0.0,
+            "entrada_total": 0.0,
+            "saida_total": 0.0,
+            "ilimitado": role_usuario == "ROLE_ADMIN",
+        }
+
+    entrada_total = sum(
+        float(tx.get("valor", 0) or 0)
+        for tx in transacoes
+        if tx.get("destinatario") == email_usuario
+    )
+    saida_total = sum(
+        float(tx.get("valor", 0) or 0)
+        for tx in transacoes
+        if tx.get("remetente") == email_usuario
+    )
+
+    return {
+        "valor_disponivel": entrada_total - saida_total,
+        "total_movimentado": entrada_total + saida_total,
+        "entrada_total": entrada_total,
+        "saida_total": saida_total,
+        "ilimitado": role_usuario == "ROLE_ADMIN",
+    }
+
+
+def registrar_transacao_dashboard(valor_disponivel_usuario):
     token = st.session_state.get("token")
     if not token:
         st.info("Faça login para registrar transações.")
@@ -56,20 +95,33 @@ def registrar_transacao_dashboard():
     st.markdown("### 📤 Registrar transação")
     st.caption("O formulário usa apenas destinatário e valor.")
     destinatario = st.text_input("Destinatário", key="dashboard_destinatario")
-    valor = st.number_input("Valor (ETH)", min_value=0.0, step=0.01, key="dashboard_valor")
 
     if role_logado == "ROLE_ADMIN":
-        st.caption("Admin pode transferir para usuários comuns e administradores até o limite total de 1.000.000.")
+        valor = st.number_input("Valor (ETH)", min_value=0.0, step=0.01, key="dashboard_valor")
+        st.caption("Admin pode transferir para usuários comuns e administradores com valor ilimitado.")
     else:
+        limite_disponivel = max(float(valor_disponivel_usuario), 0.0)
+        valor = st.number_input(
+            "Valor (ETH)",
+            min_value=0.0,
+            max_value=limite_disponivel,
+            step=0.01,
+            key="dashboard_valor",
+        )
         st.caption("Usuários comuns só podem transferir para outros usuários comuns.")
 
     if st.button("Registrar transação", key="dashboard_registrar_transacao"):
+        if role_logado != "ROLE_ADMIN" and valor > max(float(valor_disponivel_usuario), 0.0):
+            st.error("Saldo insuficiente para registrar esta transação.")
+            return
+
         payload = {"destinatario": destinatario, "valor": valor}
         headers = {"Authorization": f"Bearer {token}"}
         resposta = requests.post("http://localhost:8080/api/blockchain/transacoes", json=payload, headers=headers)
 
         if resposta.status_code == 201:
             st.success("Transação registrada com sucesso!")
+            st.rerun()
         else:
             st.error(f"Erro ao registrar transação: {resposta.text}")
 
@@ -87,15 +139,24 @@ if opcao == "Dashboard":
     # ✅ Transações Blockchain
     st.markdown("### 🔗 Transações Blockchain")
     transacoes = listar_transacoes()
+    resumo_financeiro = calcular_resumo_financeiro(transacoes, email_logado, role_logado)
+
+    st.metric(
+        "Valor total disponível",
+        "Ilimitado"
+        if resumo_financeiro["ilimitado"]
+        else formatar_moeda(max(resumo_financeiro["valor_disponivel"], 0.0)),
+    )
+    st.metric("Total movimentado", formatar_moeda(resumo_financeiro["total_movimentado"]))
 
     if transacoes:
         for tx in transacoes:
-            st.write(f"• {tx['destinatario']} | R$ {tx['valor']} | {tx['dataTransacao']}")
+            st.write(f"• {tx['remetente']} → {tx['destinatario']} | R$ {tx['valor']} | {tx['dataTransacao']}")
     else:
         st.info("Nenhuma transação registrada ainda.")
 
     st.markdown("---")
-    registrar_transacao_dashboard()
+    registrar_transacao_dashboard(resumo_financeiro["valor_disponivel"])
 
 elif opcao == "Perfil":
     st.subheader(f"👤 Perfil de {usuario_selecionado}" if usuario_selecionado else "👤 Perfil")

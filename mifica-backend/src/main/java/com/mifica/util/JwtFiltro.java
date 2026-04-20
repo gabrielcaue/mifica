@@ -83,8 +83,11 @@ public class JwtFiltro extends OncePerRequestFilter {
                 String role = claims.get("role", String.class);
 
                 if (email != null && role != null) {
-                    // Cria a authority com prefixo ROLE_ para o Spring Security
-                    SimpleGrantedAuthority authority = new SimpleGrantedAuthority("ROLE_" + role);
+                    // Normaliza role para evitar duplicação de prefixo (ROLE_ROLE_ADMIN)
+                    String roleNormalizada = role.toUpperCase().startsWith("ROLE_")
+                        ? role.toUpperCase()
+                        : "ROLE_" + role.toUpperCase();
+                    SimpleGrantedAuthority authority = new SimpleGrantedAuthority(roleNormalizada);
                     // Injeta o usuário autenticado no contexto de segurança
                     UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
                             email, null, List.of(authority)

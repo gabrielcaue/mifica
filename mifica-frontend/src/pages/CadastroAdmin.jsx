@@ -9,6 +9,7 @@ import logo from '../assets/logo.png';
 export default function CadastroAdmin() {
   const [senhaAcesso, setSenhaAcesso] = useState('');
   const [autenticado, setAutenticado] = useState(false);
+  const [mensagemAcesso, setMensagemAcesso] = useState('');
   const { isMobile } = useMediaQuery();
 
   const [nome, setNome] = useState('');
@@ -131,7 +132,7 @@ export default function CadastroAdmin() {
         <MobileMenuAdmin />
 
         <div className={`min-h-screen flex items-center justify-center bg-gray-900 text-white px-3 md:px-4 ${isMobile ? 'py-8' : 'py-4'}`}>
-          <div className="bg-slate-800 p-6 md:p-8 rounded-xl shadow-xl w-full max-w-md">
+          <div className="relative bg-slate-800 p-6 md:p-8 rounded-xl shadow-xl w-full max-w-md">
             <div className="flex flex-col items-center mb-4">
               <img src={logo} alt="Logo Mifica" className="w-10 md:w-12 mb-2 md:mb-3" />
               <h2 className="text-xl md:text-2xl font-bold text-center">🔐 Acesso Restrito</h2>
@@ -140,12 +141,19 @@ export default function CadastroAdmin() {
   <form
     onSubmit={async (e) => {
       e.preventDefault();
+      setMensagemAcesso('');
       try {
         await api.post('/usuarios/validar-acesso-admin', { senhaAcesso });
+        setMensagemAcesso('');
         setAutenticado(true);
       } catch (err) {
-        const msg = err?.response?.data || 'Senha incorreta';
-        alert(typeof msg === 'string' ? msg : 'Senha incorreta');
+        const status = err?.response?.status;
+        if (status === 403) {
+          setMensagemAcesso('Credencial de acesso inválida. Verifique a senha de liberação e tente novamente.');
+          return;
+        }
+
+        setMensagemAcesso('Não foi possível validar o acesso no momento. Tente novamente em instantes.');
       }
     }}
   >
@@ -153,7 +161,10 @@ export default function CadastroAdmin() {
       type="password"
       placeholder="Senha de acesso"
       value={senhaAcesso}
-      onChange={e => setSenhaAcesso(e.target.value)}
+      onChange={e => {
+        setSenhaAcesso(e.target.value);
+        if (mensagemAcesso) setMensagemAcesso('');
+      }}
       className="w-full px-3 md:px-4 py-2 mb-3 md:mb-4 text-sm md:text-base border border-gray-600 rounded-md bg-slate-700 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
     />
     <button
@@ -162,6 +173,12 @@ export default function CadastroAdmin() {
     >
       Entrar
     </button>
+
+    {mensagemAcesso && (
+      <p className="text-xs md:text-sm text-red-300 mt-2 text-center">
+        {mensagemAcesso}
+      </p>
+    )}
   </form>
 
           </div>

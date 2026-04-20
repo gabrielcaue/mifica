@@ -83,14 +83,6 @@ export default function Login() {
             <p className="text-sm md:text-base text-gray-500 text-center">Acesse sua conta para continuar</p>
           </div>
 
-          {mensagemErro && (
-            <div className="bg-red-50 border border-red-300 rounded-md p-3 mb-4">
-              <p className="text-sm text-red-700 font-medium">
-                {mensagemErro}
-              </p>
-            </div>
-          )}
-
           <div className="space-y-3 md:space-y-4">
             <input
               type="email"
@@ -115,12 +107,6 @@ export default function Login() {
                   : 'border-gray-300 focus:ring-blue-500'
               }`}
             />
-
-            {mensagemErro && (
-              <p className="text-xs md:text-sm text-red-600 mt-1">
-                {mensagemErro}
-              </p>
-            )}
           </div>
 
           <button
@@ -129,6 +115,12 @@ export default function Login() {
           >
             Entrar
           </button>
+
+          {mensagemErro && (
+            <p className="text-xs md:text-sm text-red-600 mt-2 text-center">
+              {mensagemErro}
+            </p>
+          )}
 
           <button
             type="button"

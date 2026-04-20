@@ -169,7 +169,7 @@ Temos **boas fundações**, então evitamos a situação de **farmácia**, onde 
 
 O stack está **bem amarrado** (tightly integrated) com Docker, CI/CD no GitHub Actions e observabilidade via Prometheus/Grafana. Isso nos deixa com um **bom ground truth** sobre o que está acontecendo em produção, não no escuro.
 
-### Gírias técnicas que combinam com o projeto
+### Pontos de Atenção para com o Projeto
 
 - **Fogo de artifício:** solução bonita na demo, mas sem sustentação no mundo real.
 - **Farmácia:** ambiente espelhado para testar com segurança, sem afetar produção.
