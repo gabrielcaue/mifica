@@ -29,6 +29,7 @@ Padrão adotado em cada arquivo:
 Documentação criada para todos os pacotes principais em `src/main/java/com/mifica/*` e para o pacote de testes em `src/test/java/com/mifica/*`.
 
 ## Frontend (React)
+- [frontend-assets](frontend-assets.md)
 - [frontend-components](frontend-components.md)
 - [frontend-context](frontend-context.md)
 - [frontend-hooks](frontend-hooks.md)
@@ -40,10 +41,15 @@ Documentação criada para todos os pacotes principais em `src/main/java/com/mif
 
 ## Streamlit (Python)
 - [streamlit-app](streamlit-app.md)
+- [streamlit-assets](streamlit-assets.md)
 - [streamlit-config](streamlit-config.md)
 - [streamlit-components](streamlit-components.md)
+- [streamlit-data](streamlit-data.md)
 - [streamlit-services](streamlit-services.md)
 - [streamlit-utils](streamlit-utils.md)
+
+## Tooling / SpecKit
+- [tools-spec-kit](tools-spec-kit.md)
 
 ## Flutter
 - [flutter-config](flutter-config.md)

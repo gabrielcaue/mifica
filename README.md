@@ -83,7 +83,13 @@ mifica/
 ```bash
 git clone https://github.com/gabrielcaue/mifica.git
 cd mifica
-./start-dev.sh
+./start-local.sh
+```
+
+Se quiser incluir o SonarQube local na mesma máquina, rode:
+
+```bash
+./start-local.sh --with-sonar
 ```
 
 Serviços locais esperados:
@@ -94,6 +100,23 @@ Serviços locais esperados:
 | Frontend | http://localhost:5173 |
 | Streamlit | http://localhost:8501 |
 | Swagger | http://localhost:8080/swagger-ui.html |
+
+## Fluxo de Produção
+
+- Frontend: GitHub Pages em [gabrielcaue.github.io/mifica](https://gabrielcaue.github.io/mifica/)
+- Backend: Railway
+- Prometheus: serviço separado no Railway para coletar métricas do backend
+- Grafana: serviço separado no Railway, acessado pela URL pública gerada pela plataforma
+- SonarQube: apenas local, via `docker compose --profile quality up -d sonarqube-db sonarqube`
+
+Como não há domínio próprio, o Grafana no Railway deve ser acessado pela URL do serviço, algo como `https://<seu-serviço>.up.railway.app`.
+O Grafana precisa apontar para o Prometheus do Railway como datasource.
+O Prometheus do Railway precisa estar configurado com o endereço do backend do Railway no scrape target.
+
+Variáveis úteis no Railway:
+
+- `BACKEND_TARGET=http://<servico-backend>.railway.internal:8080`
+- `PROMETHEUS_URL=http://<servico-prometheus>.railway.internal:9090`
 
 ## Qualidade de Código (SonarQube Community)
 
@@ -129,6 +152,12 @@ docker run --rm \
 ```
 
 > A configuração de análise está no arquivo `sonar-project.properties` na raiz do repositório.
+
+### Produção
+
+- O Grafana deve subir como serviço separado no Railway e apontar para a fonte de métricas da produção.
+- O SonarQube permanece fora da produção e roda só localmente.
+- Se você rodar SonarQube em Linux, lembre de ajustar `vm.max_map_count`.
 
 ## Observabilidade (Prometheus + Grafana)
 

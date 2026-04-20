@@ -51,6 +51,9 @@ usuario_logado = st.session_state.get("usuario", {})
 role_logado = usuario_logado.get("role", "")
 email_logado = usuario_logado.get("email", "")
 
+# ICP-TOTAL: 2
+# ICP-01: Dashboard Streamlit calcula saldos por perfil (admin/comum) com base no histórico de transações.
+
 
 def formatar_moeda(valor):
     return f"R$ {valor:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
@@ -59,12 +62,26 @@ def formatar_moeda(valor):
 def calcular_resumo_financeiro(transacoes, email_usuario, role_usuario):
     if not email_usuario:
         return {
-            "valor_disponivel": 0.0,
+            "saldo_usuario_logado": 0.0,
+            "saldo_admin_disponivel": 1_000_000.0,
+            "saldo_usuarios_comuns": 0.0,
             "total_movimentado": 0.0,
             "entrada_total": 0.0,
             "saida_total": 0.0,
-            "ilimitado": role_usuario == "ROLE_ADMIN",
         }
+
+    def saldo_por_email(email):
+        entrada = sum(
+            float(tx.get("valor", 0) or 0)
+            for tx in transacoes
+            if tx.get("destinatario") == email
+        )
+        saida = sum(
+            float(tx.get("valor", 0) or 0)
+            for tx in transacoes
+            if tx.get("remetente") == email
+        )
+        return entrada, saida, entrada - saida
 
     entrada_total = sum(
         float(tx.get("valor", 0) or 0)
@@ -77,16 +94,31 @@ def calcular_resumo_financeiro(transacoes, email_usuario, role_usuario):
         if tx.get("remetente") == email_usuario
     )
 
+    emails_comuns = {
+        u.get("email")
+        for u in usuarios
+        if u.get("role") == "ROLE_USER" and u.get("email")
+    }
+
+    saldo_comuns = 0.0
+    for email_comum in emails_comuns:
+        _, _, saldo_comum = saldo_por_email(email_comum)
+        saldo_comuns += saldo_comum
+
+    saida_admin = saida_total if role_usuario == "ROLE_ADMIN" else 0.0
+
     return {
-        "valor_disponivel": entrada_total - saida_total,
-        "total_movimentado": entrada_total + saida_total,
+        "saldo_usuario_logado": entrada_total - saida_total,
+        "saldo_admin_disponivel": max(0.0, 1_000_000.0 - saida_admin),
+        "saldo_usuarios_comuns": max(0.0, saldo_comuns),
+        "total_movimentado": saida_total if role_usuario == "ROLE_ADMIN" else (entrada_total + saida_total),
         "entrada_total": entrada_total,
         "saida_total": saida_total,
-        "ilimitado": role_usuario == "ROLE_ADMIN",
     }
 
 
-def registrar_transacao_dashboard(valor_disponivel_usuario):
+def registrar_transacao_dashboard(saldo_usuario_logado):
+    # ICP-02: Após registro bem-sucedido, o rerun garante atualização imediata dos indicadores financeiros.
     token = st.session_state.get("token")
     if not token:
         st.info("Faça login para registrar transações.")
@@ -98,9 +130,9 @@ def registrar_transacao_dashboard(valor_disponivel_usuario):
 
     if role_logado == "ROLE_ADMIN":
         valor = st.number_input("Valor (ETH)", min_value=0.0, step=0.01, key="dashboard_valor")
-        st.caption("Admin pode transferir para usuários comuns e administradores com valor ilimitado.")
+        st.caption("Admin pode transferir para usuários comuns e administradores até o limite total de 1.000.000.")
     else:
-        limite_disponivel = max(float(valor_disponivel_usuario), 0.0)
+        limite_disponivel = max(float(saldo_usuario_logado), 0.0)
         valor = st.number_input(
             "Valor (ETH)",
             min_value=0.0,
@@ -111,7 +143,7 @@ def registrar_transacao_dashboard(valor_disponivel_usuario):
         st.caption("Usuários comuns só podem transferir para outros usuários comuns.")
 
     if st.button("Registrar transação", key="dashboard_registrar_transacao"):
-        if role_logado != "ROLE_ADMIN" and valor > max(float(valor_disponivel_usuario), 0.0):
+        if role_logado != "ROLE_ADMIN" and valor > max(float(saldo_usuario_logado), 0.0):
             st.error("Saldo insuficiente para registrar esta transação.")
             return
 
@@ -141,22 +173,22 @@ if opcao == "Dashboard":
     transacoes = listar_transacoes()
     resumo_financeiro = calcular_resumo_financeiro(transacoes, email_logado, role_logado)
 
-    st.metric(
-        "Valor total disponível",
-        "Ilimitado"
-        if resumo_financeiro["ilimitado"]
-        else formatar_moeda(max(resumo_financeiro["valor_disponivel"], 0.0)),
-    )
-    st.metric("Total movimentado", formatar_moeda(resumo_financeiro["total_movimentado"]))
+    if role_logado == "ROLE_ADMIN":
+        st.metric("Saldo admin (padrão R$ 1.000.000)", formatar_moeda(resumo_financeiro["saldo_admin_disponivel"]))
+        st.metric("Total movimentado", formatar_moeda(resumo_financeiro["total_movimentado"]))
+        st.metric("Saldo total usuários comuns", formatar_moeda(resumo_financeiro["saldo_usuarios_comuns"]))
+    else:
+        st.metric("Seu saldo disponível", formatar_moeda(max(resumo_financeiro["saldo_usuario_logado"], 0.0)))
+        st.metric("Total movimentado", formatar_moeda(resumo_financeiro["total_movimentado"]))
 
     if transacoes:
         for tx in transacoes:
-            st.write(f"• {tx['remetente']} → {tx['destinatario']} | R$ {tx['valor']} | {tx['dataTransacao']}")
+            st.write(f"• {tx['destinatario']} | R$ {tx['valor']}")
     else:
         st.info("Nenhuma transação registrada ainda.")
 
     st.markdown("---")
-    registrar_transacao_dashboard(resumo_financeiro["valor_disponivel"])
+    registrar_transacao_dashboard(resumo_financeiro["saldo_usuario_logado"])
 
 elif opcao == "Perfil":
     st.subheader(f"👤 Perfil de {usuario_selecionado}" if usuario_selecionado else "👤 Perfil")

@@ -20,6 +20,8 @@ Documentar os scripts raiz do painel Streamlit (`app.py`, `dashboard.py`, `block
 - Campos removidos da UI: `hashTransacao`, `remetente`.
 - Campos mantidos para operação: `destinatario`, `valor`.
 - Listagens de transações focam apenas em dados de negócio visíveis ao usuário.
+- Indicadores financeiros seguem regra por perfil: saldo admin base `1.000.000`, total movimentado e saldo agregado de usuários comuns.
+- Após transação registrada com sucesso, o painel executa recarga para refletir valores imediatamente.
 
 ## Critérios de aceitação
 - Formulário registra transação com payload mínimo e autenticação válida.

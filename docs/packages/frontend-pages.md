@@ -17,6 +17,8 @@ Implementar as telas de uso final (login, cadastro, dashboard, perfil, admin).
 - Nos formulários de transação em páginas, foram removidos os campos de entrada `hashTransacao` e `remetente`.
 - A interface exibe e envia apenas `destinatario` e `valor` para registro de nova transação.
 - Nos cards/listagens do dashboard, `hash` e `remetente` não devem ser exibidos ao usuário final.
+- Dashboard aplica regra de saldo admin com base padrão de `1.000.000` e desconto acumulado por transferências.
+- Dashboard exibe abaixo de total movimentado o saldo dos usuários comuns (admin) ou saldo disponível do usuário comum logado.
 
 ## Critérios de aceitação
 - Fluxos principais de navegação e formulários funcionam ponta a ponta.
