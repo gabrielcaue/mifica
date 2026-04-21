@@ -115,7 +115,8 @@ O Prometheus do Railway precisa estar configurado com o endereço do backend do 
 
 Variáveis úteis no Railway:
 
-- `BACKEND_TARGET=http://<servico-backend>.railway.internal:8080`
+- `BACKEND_TARGET=<servico-backend>.railway.internal:8080`
+- `BACKEND_SCHEME=http`
 - `PROMETHEUS_URL=http://<servico-prometheus>.railway.internal:9090`
 
 ## Qualidade de Código (SonarQube Community)

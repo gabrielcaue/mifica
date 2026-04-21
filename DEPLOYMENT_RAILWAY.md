@@ -55,7 +55,13 @@ No Prometheus, ajuste o target do backend em `monitoring/prometheus/prometheus.y
 No ambiente local, o target permanece `mifica-backend:8080`.
 Para o Prometheus no Railway, defina:
 
-- `BACKEND_TARGET=http://<nome-do-servico-backend>.railway.internal:8080`
+- `BACKEND_TARGET=<nome-do-servico-backend>.railway.internal:8080`
+- `BACKEND_SCHEME=http`
+
+Se o backend estiver fora da rede interna do mesmo projeto Railway, use:
+
+- `BACKEND_TARGET=<dominio-publico-backend>:443`
+- `BACKEND_SCHEME=https`
 
 Valores recomendados para este ambiente:
 

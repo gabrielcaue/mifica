@@ -8,6 +8,7 @@ scrape_configs:
       - targets: ["prometheus:9090"]
 
   - job_name: "mifica-backend"
+    scheme: __BACKEND_SCHEME__
     metrics_path: "/actuator/prometheus"
     static_configs:
       - targets: ["__BACKEND_TARGET__"]

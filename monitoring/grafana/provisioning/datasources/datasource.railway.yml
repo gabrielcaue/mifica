@@ -5,6 +5,6 @@ datasources:
     uid: prometheus
     type: prometheus
     access: proxy
-    url: __PROMETHEUS_URL__
+    url: ${PROMETHEUS_URL}
     isDefault: true
     editable: true
