@@ -6,5 +6,4 @@ datasources:
     type: prometheus
     access: proxy
     url: ${PROMETHEUS_URL}
-    isDefault: true
     editable: true
