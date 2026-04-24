@@ -3,15 +3,13 @@ import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
 
 function TransacoesList({ refreshKey = 0 }) {
-  // ICP-TOTAL: 1
-  // ICP-01: Lista exibe contrato visual enxuto de transação (destinatário e valor).
   const [transacoes, setTransacoes] = useState([]);
   const { token } = useAuth();
 
   useEffect(() => {
     if (!token) return;
 
-    api.get('/blockchain/transacoes')
+    api.get('/transacoes')
       .then(response => setTransacoes(response.data))
       .catch(error => console.error('Erro ao buscar transações:', error));
   }, [token, refreshKey]);
@@ -22,7 +20,7 @@ function TransacoesList({ refreshKey = 0 }) {
       <ul>
         {transacoes.map(tx => (
           <li key={tx.id}>
-            {tx.destinatario} | R$ {tx.valor}
+            {tx.remetente} → {tx.destinatario} | R$ {tx.valor} | {tx.dataTransacao}
           </li>
         ))}
       </ul>
