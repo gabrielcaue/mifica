@@ -162,7 +162,7 @@ No contexto do Mifica, a ideia de **farmácia** é positiva: é um ambiente de d
 
 ---
 
-## Gírias e Conceitos da Engenharia
+## Pontos de Atenção para com o Projeto
 
 - **Não é fogo de artifício:** o projeto não é só brilho de demo; tem base para crescer com segurança e manutenção.
 - **Farmácia boa:** ambiente de dev que espelha o negócio e protege produção, em vez de virar gambiarra.

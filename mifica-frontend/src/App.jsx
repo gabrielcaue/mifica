@@ -14,8 +14,13 @@ import RotaAdmin from './components/RotaAdmin.jsx';
 
 // Novo componente para embutir Streamlit
 function AdminPanel() {
+  const apiBaseUrl = import.meta.env.VITE_API_URL || '';
+  const backendBaseUrl = apiBaseUrl.replace(/\/api\/?$/, '');
+
   const streamlitUrl = import.meta.env.VITE_STREAMLIT_URL
-    || (import.meta.env.DEV ? 'http://localhost:8501' : `${window.location.origin}/streamlit`);
+    || (import.meta.env.DEV
+      ? 'http://localhost:8501'
+      : (backendBaseUrl ? `${backendBaseUrl}/streamlit` : `${window.location.origin}/streamlit`));
 
   return (
     <iframe
