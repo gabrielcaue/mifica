@@ -53,7 +53,16 @@ email_logado = usuario_logado.get("email", "")
 
 
 def formatar_moeda(valor):
-    return f"R$ {valor:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+    if valor is None or valor == "" or (isinstance(valor, (int, float)) and valor != valor):  # NaN check
+        return "R$ 0"
+    
+    # Converter para inteiro (ignorar centavos)
+    valor_inteiro = int(valor)
+    
+    # Formatar com ponto de milhar usando locale pt-BR
+    valor_formatado = f"{valor_inteiro:,}".replace(",", ".")
+    
+    return f"R$ {valor_formatado}"
 
 
 def calcular_resumo_financeiro(transacoes, email_usuario, role_usuario):
@@ -136,8 +145,6 @@ if opcao == "Dashboard":
         fig = grafico_reputacao(usuarios)
         st.plotly_chart(fig, use_container_width=True)
 
-    # ✅ Transações Blockchain
-    st.markdown("### 🔗 Transações Blockchain")
     transacoes = listar_transacoes()
     resumo_financeiro = calcular_resumo_financeiro(transacoes, email_logado, role_logado)
 
@@ -149,14 +156,17 @@ if opcao == "Dashboard":
     )
     st.metric("Total movimentado", formatar_moeda(resumo_financeiro["total_movimentado"]))
 
-    if transacoes:
-        for tx in transacoes:
-            st.write(f"• {tx['remetente']} → {tx['destinatario']} | R$ {tx['valor']} | {tx['dataTransacao']}")
-    else:
-        st.info("Nenhuma transação registrada ainda.")
+    # Histórico de transações visível apenas para administrador
+    if role_logado == "ROLE_ADMIN":
+        st.markdown("### 🔗 Transações Blockchain")
+        if transacoes:
+            for tx in transacoes:
+                st.write(f"• {tx['remetente']} → {tx['destinatario']} | {formatar_moeda(tx['valor'])} | {tx['dataTransacao']}")
+        else:
+            st.info("Nenhuma transação registrada ainda.")
 
-    st.markdown("---")
-    registrar_transacao_dashboard(resumo_financeiro["valor_disponivel"])
+        st.markdown("---")
+        registrar_transacao_dashboard(resumo_financeiro["valor_disponivel"])
 
 elif opcao == "Perfil":
     st.subheader(f"👤 Perfil de {usuario_selecionado}" if usuario_selecionado else "👤 Perfil")

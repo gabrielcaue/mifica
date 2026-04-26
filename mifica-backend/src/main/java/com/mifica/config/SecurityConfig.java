@@ -54,6 +54,10 @@ public class SecurityConfig {
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             // Desabilita CSRF — desnecessário em APIs REST stateless com JWT
             .csrf(AbstractHttpConfigurer::disable)
+            // Permite que Streamlit seja embarcado em iframe
+            .headers(headers -> headers
+                .frameOptions(frameOptions -> frameOptions.sameOrigin())
+            )
             .authorizeHttpRequests(auth -> auth
                 // Libera preflight OPTIONS para qualquer rota (exigido pelo CORS)
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
@@ -66,7 +70,8 @@ public class SecurityConfig {
                     "/api/blockchain/**",
                     "/swagger-ui/**",
                     "/v3/api-docs/**",
-                    "/actuator/**"   // 🔑 liberar actuator
+                    "/actuator/**",   // 🔑 liberar actuator
+                    "/streamlit/**"   // ✅ NOVO: libera Streamlit para acesso público
                 ).permitAll()
                 .requestMatchers("/api/transacoes/**").hasAnyRole("USER", "ADMIN")
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")

@@ -39,7 +39,9 @@ import com.mifica.redis.GamificationPublisher;
 @RequestMapping("/api/usuarios")
 public class UsuarioController {
 
-    // ICP-TOTAL: 6
+    // ICP-TOTAL: 11-14
+    // Classe crítica: 8+ endpoints + múltiplos fluxos (cadastro, login, perfil, admin, gamificação).
+    // Candidata a refatoração em: PublicAuthController, UserProfileController, AdminUserController.
     // ICP-01: Orquestra múltiplos fluxos (cadastro, login, perfil e administração) no mesmo controller.
 
     private static final String USUARIO_NAO_ENCONTRADO = "Usuário não encontrado.";

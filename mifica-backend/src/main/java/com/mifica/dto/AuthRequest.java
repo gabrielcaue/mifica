@@ -1,5 +1,7 @@
 package com.mifica.dto;
 
+// ICP-TOTAL: 0
+// DTO trivial: Apenas container de dados (email + senha) para request de autenticação.
 public class AuthRequest {
     private String email;
     private String senha;

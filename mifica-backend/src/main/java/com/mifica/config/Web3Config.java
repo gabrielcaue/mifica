@@ -8,6 +8,9 @@ import org.web3j.protocol.http.HttpService;
 @Configuration
 public class Web3Config {
 
+    // ICP-TOTAL: 0
+    // Classe trivial: Apenas instancia Web3j com URL estática.
+
     @Bean
     public Web3j web3j() {
         return Web3j.build(new HttpService("https://mainnet.infura.io/v3/seu-token-infura"));

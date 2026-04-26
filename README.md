@@ -24,6 +24,18 @@ Plataforma full-stack com arquitetura modular, focada em backend robusto, segura
 - **Streamlit (Python):** painel analítico para acompanhamento de dados da plataforma.
 - **Infraestrutura:** Docker/Docker Compose; Traefik no ambiente local e Railway no ambiente de produção.
 
+## 🎯 Documentação Completa de Backend (CDD/ICP + SDD)
+
+**Para entender e estender o backend, comece aqui:** 👉 **[BACKEND_GUIDE.md](BACKEND_GUIDE.md)**
+
+Este guia inclui:
+- 📋 **Onboarding em 30 minutos** para novos devs
+- 📊 **Análise CDD/ICP de 60 classes** (complexidade percebida)
+- 🔨 **10+ templates de código** para extensão (Service, Controller, Entity, DTO, Repository)
+- 🔄 **7 diagramas de fluxo** (autenticação, Pub/Sub, blockchain, gamificação)
+- 🚀 **Setup local e primeiras tarefas**
+- 📚 **Índice detalhado em** [docs/packages/00-INDEX.md](docs/packages/00-INDEX.md)
+
 ## Destaques Técnicos
 
 - Segurança centralizada com Spring Security + JWT + CORS por variável de ambiente.
@@ -35,6 +47,7 @@ Plataforma full-stack com arquitetura modular, focada em backend robusto, segura
 - Observabilidade base com Actuator.
 - Organização em camadas (`controller`, `service`, `repository`, `dto`, `config`, `util`).
 - Princípios SOLID aplicados na arquitetura (responsabilidade única, aberto/fechado, inversão de dependência).
+- **CDD (Cognitive-Driven Development)** com ICP (Índice de Complexidade Percebida) em classes críticas.
 
 ## Atualizações Recentes (2026)
 

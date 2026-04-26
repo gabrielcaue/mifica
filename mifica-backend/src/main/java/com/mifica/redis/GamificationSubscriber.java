@@ -21,7 +21,9 @@ import java.util.concurrent.ConcurrentLinkedDeque;
 @Component
 public class GamificationSubscriber {
 
-    // ICP-TOTAL: 3
+    // ICP-TOTAL: 8-10
+    // Classe crítica: Parsing + buffer circular + observabilidade + tratamento de erro.
+    // Candidata a refatoração em: GamificationMessageParser, EventBuffer, GamificationSubscriber (orquestra).
     // ICP-01: Subscriber combina observabilidade, buffer em memória e parsing de protocolo textual de eventos.
 
     private static final Logger log = LoggerFactory.getLogger(GamificationSubscriber.class);

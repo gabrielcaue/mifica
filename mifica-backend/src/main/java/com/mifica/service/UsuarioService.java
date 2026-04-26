@@ -28,7 +28,9 @@ import com.mifica.repository.UsuarioRepository;
 @Service
 public class UsuarioService {
 
-    // ICP-TOTAL: 7
+    // ICP-TOTAL: 12-15
+    // Classe crítica: 6 responsabilidades distintas (cadastro, login, perfil, reputação, créditos, conquistas).
+    // Candidata a refatoração em: UsuarioCreationService, UsuarioProfileService, UsuarioAuthService, CreditRequestService.
     // ICP-01: Serviço central concentra regras de autenticação, reputação, recompensas e manutenção de perfil.
 
     @Autowired

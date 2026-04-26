@@ -8,6 +8,9 @@ import org.springframework.stereotype.Service;
 @Service
 public class AuthService {
 
+    // ICP-TOTAL: 1
+    // Classe simples: Apenas consulta repositório e aplica filtro de validação.
+
     @Autowired
     private UsuarioRepository usuarioRepo;
 

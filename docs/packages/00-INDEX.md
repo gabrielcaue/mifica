@@ -12,6 +12,16 @@ Padrão adotado em cada arquivo:
 7. Riscos e trade-offs
 
 ## Backend (Java)
+
+### 📋 Documentação de Arquitetura (SDD/SpecKit)
+**Para novos desenvolvedores - COMECE AQUI:**
+- [backend-quick-reference.md](backend-quick-reference.md) - ⚡ **Cartão de referência rápida** (comandos, stack, classes críticas)
+- [backend-onboarding.md](backend-onboarding.md) - 🚀 Guia de início rápido (setup, conceitos, primeiras tarefas)
+- [backend-cdd-analysis.md](backend-cdd-analysis.md) - 📊 Análise CDD/ICP de 60 classes (complexidade percebida)
+- [backend-code-patterns.md](backend-code-patterns.md) - 🔨 Padrões de código e templates reutilizáveis
+- [backend-workflows.md](backend-workflows.md) - 🔄 Diagramas de fluxo (autenticação, Pub/Sub, blockchain)
+
+### 📦 Especificações de Pacotes (SDD)
 - [backend-app](backend-app.md)
 - [backend-blockchain](backend-blockchain.md)
 - [backend-config](backend-config.md)
@@ -26,7 +36,10 @@ Padrão adotado em cada arquivo:
 - [backend-test](backend-test.md)
 
 ### Cobertura backend
-Documentação criada para todos os pacotes principais em `src/main/java/com/mifica/*` e para o pacote de testes em `src/test/java/com/mifica/*`.
+- **Arquitetura**: Todos os 60+ classes Java analisadas em `src/main/java/com/mifica/*`
+- **Padrões**: 10+ templates de código para extensão futura
+- **Workflows**: 7 fluxos principais documentados com diagramas ASCII
+- **Onboarding**: Guia estruturado para novos desenvolvedores em 30 minutos
 
 ## Frontend (React)
 - [frontend-assets](frontend-assets.md)

@@ -28,7 +28,8 @@ import io.jsonwebtoken.security.Keys;
 @Component
 public class JwtUtil {
 
-    // ICP-TOTAL: 3
+    // ICP-TOTAL: 5-6
+    // Classe moderada: Geração, extração e validação de JWT com cifragem/decifragem.
     // ICP-01: Componente centraliza geração, extração e validação de JWT com dependência de estado externo (secret + repositório).
 
     @Value("${jwt.secret}")
