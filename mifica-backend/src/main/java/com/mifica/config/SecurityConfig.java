@@ -74,12 +74,11 @@ public class SecurityConfig {
                     "/v3/api-docs/**",
                     "/actuator/**"
                 ).permitAll()
-                .requestMatchers("/streamlit/**").hasRole("ADMIN")  // ✅ NOVO: Protegido com JWT + ROLE_ADMIN
+                // Endpoints com autenticação (requer JWT)
+                .requestMatchers("/streamlit/**").hasRole("ADMIN")  // ✅ Streamlit: ADMIN only
                 .requestMatchers("/api/transacoes/**").hasAnyRole("USER", "ADMIN")
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                .anyRequest().authenticated()
-                .requestMatchers("/api/transacoes/**").hasAnyRole("USER", "ADMIN")
-                .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                // Qualquer outra rota requer autenticação
                 .anyRequest().authenticated()
             )
 
