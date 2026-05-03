@@ -72,13 +72,21 @@ public class JwtFiltro extends OncePerRequestFilter {
 
         // ICP-03: Fluxo trata extração de bearer token, validação de claims e criação de autoridade em cadeia.
 
-        // Extrai o header Authorization: Bearer <token>
+        String token = null;
+
+        // ✅ NOVO: Tentar extrair token do header Authorization (Bearer)
         String authHeader = request.getHeader("Authorization");
-
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            // Remove o prefixo "Bearer " para obter apenas o token JWT
-            String token = authHeader.substring(7);
+            token = authHeader.substring(7);
+        }
 
+        // ✅ NOVO: Se não encontrou no header, tenta extrair do query parameter
+        if (token == null) {
+            token = request.getParameter("token");
+        }
+
+        // Se encontrou um token (de qualquer fonte), valida
+        if (token != null) {
             try {
                 // Valida assinatura HMAC-SHA256 e extrai os claims (payload)
                 Claims claims = jwtService.validarToken(token);
