@@ -54,7 +54,9 @@ public class JwtFiltro extends OncePerRequestFilter {
                 path.startsWith("/swagger-ui") ||
                 path.startsWith("/v3/api-docs") ||
                 path.startsWith("/api/auth") ||
-                path.startsWith("/api/blockchain");
+                path.startsWith("/api/blockchain") ||
+                path.startsWith("/actuator");
+        // ✅ /streamlit removido - agora requer JWT + ROLE_ADMIN
     }
 
     /**

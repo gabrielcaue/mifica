@@ -64,6 +64,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 // Endpoints públicos — acessíveis sem autenticação
                 .requestMatchers(
+                    "/",
                     "/api/usuarios/login",
                     "/api/usuarios/cadastro",
                     "/api/usuarios/cadastro-admin",
@@ -71,10 +72,12 @@ public class SecurityConfig {
                     "/api/blockchain/**",
                     "/swagger-ui/**",
                     "/v3/api-docs/**",
-                    "/actuator/**",   // 🔑 liberar actuator
-                    "/streamlit",     // ✅ rota base (sem trailing slash)
-                    "/streamlit/**"   // ✅ rota e subrotas
+                    "/actuator/**"
                 ).permitAll()
+                .requestMatchers("/streamlit/**").hasRole("ADMIN")  // ✅ NOVO: Protegido com JWT + ROLE_ADMIN
+                .requestMatchers("/api/transacoes/**").hasAnyRole("USER", "ADMIN")
+                .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                .anyRequest().authenticated()
                 .requestMatchers("/api/transacoes/**").hasAnyRole("USER", "ADMIN")
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
                 .anyRequest().authenticated()

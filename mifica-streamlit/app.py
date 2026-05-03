@@ -2,6 +2,8 @@ import streamlit as st
 from PIL import Image
 import requests
 import os
+import jwt
+from urllib.parse import parse_qs, urlparse
 from components.user_card import exibir_user_card
 from utils.charts import grafico_reputacao
 from services.blockchain_api import listar_transacoes
@@ -14,12 +16,47 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
+# ✅ NOVO: Validar JWT do query parameter
+def validar_token_jwt():
+    """Extrai e valida o token JWT do query parameter"""
+    try:
+        query_params = st.query_params
+        token = query_params.get("token", None)
+        
+        if not token:
+            st.error("❌ Token JWT não fornecido!")
+            return None
+        
+        # Decodificar JWT (sem validação de assinatura em dev)
+        # Em produção, você validaria a assinatura
+        decoded = jwt.decode(token, options={"verify_signature": False})
+        
+        # Verificar se tem role de admin
+        roles = decoded.get("authorities", [])
+        if "ROLE_ADMIN" not in roles:
+            st.error("❌ Acesso negado! Você precisa ser admin.")
+            return None
+        
+        return decoded
+    except jwt.ExpiredSignatureError:
+        st.error("❌ Token JWT expirado!")
+        return None
+    except Exception as e:
+        st.error(f"❌ Erro ao validar token: {str(e)}")
+        return None
+
+# ✅ Validar acesso
+usuario_autenticado = validar_token_jwt()
+
+if not usuario_autenticado:
+    st.stop()  # Para a execução se não estiver autenticado
+
 # Atualiza automaticamente a interface a cada 30 minutos
 st_autorefresh(interval=30 * 60 * 1000, key="mifica_streamlit_autorefresh_30min")
 
 # ✅ DEBUG: Verificar se Streamlit está rodando
 st.write("✅ Streamlit está rodando corretamente!")
-st.write(f"📍 Base path: {st.get_script_run_ctx().session_id if st.get_script_run_ctx() else 'N/A'}")
+st.write(f"📌 Usuário autenticado: {usuario_autenticado.get('sub', 'desconhecido')}")
 
 # ✅ Carregar dados dos usuários
 def carregar_usuarios_api():

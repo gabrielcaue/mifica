@@ -16,11 +16,19 @@ import RotaAdmin from './components/RotaAdmin.jsx';
 function AdminPanel() {
   const apiBaseUrl = import.meta.env.VITE_API_URL || '';
   const backendBaseUrl = apiBaseUrl.replace(/\/api\/?$/, '');
+  
+  // Obter token do localStorage ou sessionStorage
+  const token = localStorage.getItem('token') || sessionStorage.getItem('token') || '';
 
-  const streamlitUrl = import.meta.env.VITE_STREAMLIT_URL
+  let streamlitUrl = import.meta.env.VITE_STREAMLIT_URL
     || (import.meta.env.DEV
       ? 'http://localhost:8501'
       : (backendBaseUrl ? `${backendBaseUrl}/streamlit` : `${window.location.origin}/streamlit`));
+
+  // ✅ NOVO: Passar token JWT como query parameter
+  if (token) {
+    streamlitUrl += `?token=${encodeURIComponent(token)}`;
+  }
 
   return (
     <iframe
