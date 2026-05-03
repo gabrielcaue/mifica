@@ -54,9 +54,10 @@ public class SecurityConfig {
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             // Desabilita CSRF — desnecessário em APIs REST stateless com JWT
             .csrf(AbstractHttpConfigurer::disable)
-            // Permite que Streamlit seja embarcado em iframe
+            // ✅ Permite Streamlit em iframe de qualquer origem (cross-domain)
             .headers(headers -> headers
-                .frameOptions(frameOptions -> frameOptions.sameOrigin())
+                .frameOptions(frameOptions -> frameOptions.disable())
+                .xssProtection(xss -> xss.disable())
             )
             .authorizeHttpRequests(auth -> auth
                 // Libera preflight OPTIONS para qualquer rota (exigido pelo CORS)
