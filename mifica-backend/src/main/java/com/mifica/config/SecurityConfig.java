@@ -72,7 +72,8 @@ public class SecurityConfig {
                     "/swagger-ui/**",
                     "/v3/api-docs/**",
                     "/actuator/**",   // 🔑 liberar actuator
-                    "/streamlit/**"   // ✅ NOVO: libera Streamlit para acesso público
+                    "/streamlit",     // ✅ rota base (sem trailing slash)
+                    "/streamlit/**"   // ✅ rota e subrotas
                 ).permitAll()
                 .requestMatchers("/api/transacoes/**").hasAnyRole("USER", "ADMIN")
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")

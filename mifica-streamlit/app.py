@@ -1,9 +1,10 @@
 import streamlit as st
 from PIL import Image
-import requests  # ✅ NOVO: para consumir a API do backend
+import requests
+import os
 from components.user_card import exibir_user_card
 from utils.charts import grafico_reputacao
-from services.blockchain_api import listar_transacoes  # ✅ já estava
+from services.blockchain_api import listar_transacoes
 from streamlit_autorefresh import st_autorefresh
 
 st.set_page_config(
@@ -16,20 +17,22 @@ st.set_page_config(
 # Atualiza automaticamente a interface a cada 30 minutos
 st_autorefresh(interval=30 * 60 * 1000, key="mifica_streamlit_autorefresh_30min")
 
-# ✅ NOVO BLOCO: Carregar dados dos usuários direto da API
+# ✅ DEBUG: Verificar se Streamlit está rodando
+st.write("✅ Streamlit está rodando corretamente!")
+st.write(f"📍 Base path: {st.get_script_run_ctx().session_id if st.get_script_run_ctx() else 'N/A'}")
+
+# ✅ Carregar dados dos usuários
 def carregar_usuarios_api():
     try:
-        # Em produção, o backend fica em /api via nginx reverse proxy
-        # Em dev, usa localhost:8080
         api_url = "http://mifica-backend:8080/api/usuarios"
         response = requests.get(api_url, timeout=5)
         if response.status_code == 200:
             return response.json()
         else:
-            st.warning(f"Não foi possível carregar usuários (status {response.status_code})")
+            st.warning(f"⚠️ API retornou status {response.status_code}")
             return []
     except Exception as e:
-        st.warning(f"API não disponível: {str(e)}")
+        st.info(f"ℹ️ Backend indisponível em dev (normal): {str(e)}")
         return []
 
 usuarios = carregar_usuarios_api()
@@ -42,13 +45,15 @@ st.sidebar.title("🔍 Navegação")
 opcao = st.sidebar.radio("Ir para:", ["Dashboard", "Perfil", "Configurações"])
 
 # Logo e título
-try:
-    logo = Image.open("assets/logo.png")
-    st.image(logo, width=120)
-except FileNotFoundError:
-    st.warning("Logo não encontrada em assets/logo.png")
-except Exception as e:
-    st.warning(f"Erro ao carregar logo: {str(e)}")
+logo_path = os.path.join(os.path.dirname(__file__), "assets", "logo.png")
+if os.path.exists(logo_path):
+    try:
+        logo = Image.open(logo_path)
+        st.image(logo, width=120)
+    except Exception as e:
+        st.caption(f"Logo error: {str(e)}")
+else:
+    st.caption("📌 Logo não encontrada")
 
 st.markdown("## Mifica — Inteligência Modular para Software")
 st.markdown("---")
