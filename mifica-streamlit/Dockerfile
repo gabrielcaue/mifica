@@ -8,11 +8,11 @@ COPY requirements.txt .
 # Instala dependências
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copia o restante do código
+# Copia o restante do código, incluindo configuração do Streamlit
 COPY . .
 
 # Expõe a porta padrão do Streamlit
 EXPOSE 8501
 
-# Usa CMD para rodar o Streamlit com baseUrlPath
-CMD ["streamlit", "run", "app.py", "--server.port=8501", "--server.address=0.0.0.0", "--server.baseUrlPath=/streamlit"]
+# Roda o Streamlit com configuração via arquivo config.toml
+CMD ["streamlit", "run", "app.py", "--server.port=8501", "--server.address=0.0.0.0"]

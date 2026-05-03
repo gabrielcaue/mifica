@@ -18,7 +18,7 @@ import org.springframework.stereotype.Service;
 public class GamificationPublisher {
 
     // ICP-TOTAL: 3
-    // Classe simples: Formatação de mensagem + publicação + tratamento de erro assíncrono.
+    // Publicador de eventos com formatação de mensagem, publicação e tratamento de erro assíncrono.
     // ICP-01: Publisher desacopla operação de usuário do processamento de gamificação via evento assíncrono.
 
     private static final Logger log = LoggerFactory.getLogger(GamificationPublisher.class);

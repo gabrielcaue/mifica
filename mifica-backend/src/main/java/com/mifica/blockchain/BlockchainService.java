@@ -22,8 +22,8 @@ public class BlockchainService {
 
     private static final double LIMITE_MOVIMENTACAO_ADMIN = 1_000_000.0;
 
-    // ICP-TOTAL: 6-8
-    // Classe crítica: Validações múltiplas (remetente, destinatário, role, limite), regras de permissão.
+    // ICP-TOTAL: 3
+    // Serviço de blockchain com validações de remetente, destinatário, role, limite e regras de permissão.
     // Candidata a refatoração em: BlockchainValidator (extrai toda validação).
     // ICP-01: Serviço faz transformação bidirecional DTO↔entidade com carimbo temporal de transação.
 

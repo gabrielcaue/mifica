@@ -14,6 +14,10 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @EntityScan(basePackages = {"com.mifica.entity", "com.mifica.blockchain"})
 @EnableJpaRepositories(basePackages = {"com.mifica.repository", "com.mifica.blockchain"})
 public class MificaApplication {
+
+    // ICP-TOTAL: 0
+    // Classe de bootstrap: apenas inicializa o contexto Spring Boot e habilita o escaneamento dos pacotes.
+
     public static void main(String[] args) {
         SpringApplication.run(MificaApplication.class, args);
     }

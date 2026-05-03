@@ -19,15 +19,17 @@ st_autorefresh(interval=30 * 60 * 1000, key="mifica_streamlit_autorefresh_30min"
 # ✅ NOVO BLOCO: Carregar dados dos usuários direto da API
 def carregar_usuarios_api():
     try:
-        response = requests.get("http://traefik/api/usuarios")  
-        # Se preferir, pode usar "http://backend:8080/api/usuarios" dependendo da rede do docker-compose
+        # Em produção, o backend fica em /api via nginx reverse proxy
+        # Em dev, usa localhost:8080
+        api_url = "http://mifica-backend:8080/api/usuarios"
+        response = requests.get(api_url, timeout=5)
         if response.status_code == 200:
             return response.json()
         else:
-            st.error(f"Erro ao carregar usuários: {response.status_code}")
+            st.warning(f"Não foi possível carregar usuários (status {response.status_code})")
             return []
     except Exception as e:
-        st.error(f"Erro de conexão com API: {e}")
+        st.warning(f"API não disponível: {str(e)}")
         return []
 
 usuarios = carregar_usuarios_api()
@@ -40,8 +42,14 @@ st.sidebar.title("🔍 Navegação")
 opcao = st.sidebar.radio("Ir para:", ["Dashboard", "Perfil", "Configurações"])
 
 # Logo e título
-logo = Image.open("assets/logo.png")
-st.image(logo, width=120)
+try:
+    logo = Image.open("assets/logo.png")
+    st.image(logo, width=120)
+except FileNotFoundError:
+    st.warning("Logo não encontrada em assets/logo.png")
+except Exception as e:
+    st.warning(f"Erro ao carregar logo: {str(e)}")
+
 st.markdown("## Mifica — Inteligência Modular para Software")
 st.markdown("---")
 
@@ -126,13 +134,7 @@ def registrar_transacao_dashboard(valor_disponivel_usuario):
 
         payload = {"destinatario": destinatario, "valor": valor}
         headers = {"Authorization": f"Bearer {token}"}
-        resposta = requests.post("http://localhost:8080/api/blockchain/transacoes", json=payload, headers=headers)
-
-        if resposta.status_code == 201:
-            st.success("Transação registrada com sucesso!")
-            st.rerun()
-        else:
-            st.error(f"Erro ao registrar transação: {resposta.text}")
+    resposta = requests.post("http://mifica-backend:8080/api/transacoes", json=payload, headers=headers)
 
 # Conteúdo condicional
 if opcao == "Dashboard":

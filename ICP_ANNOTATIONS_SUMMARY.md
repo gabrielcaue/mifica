@@ -7,56 +7,57 @@ Status: ✅ CONCLUÍDO
 
 ## 🎯 Mudanças Realizadas
 
-### Classes Críticas (ICP > 10) - CORRIGIDAS ✅
+### Mapa Exato das Classes com ICP
 
-| Classe | Antes | Depois | Mudança |
-|--------|-------|--------|---------|
-| **UsuarioService** | ICP-TOTAL: 7 | ICP-TOTAL: 12-15 | ✅ Corrigido + adicionado aviso de refatoração |
-| **UsuarioController** | ICP-TOTAL: 6 | ICP-TOTAL: 11-14 | ✅ Corrigido + adicionado aviso de refatoração |
-| **GamificationSubscriber** | ICP-TOTAL: 3 | ICP-TOTAL: 8-10 | ✅ Corrigido + adicionado aviso de refatoração |
-| **BlockchainService** | ICP-TOTAL: 3 | ICP-TOTAL: 6-8 | ✅ Corrigido + adicionado aviso de refatoração |
+| Classe | ICP-TOTAL exato | Observação |
+|--------|------------------|-----------|
+| **UsuarioService** | 31 | Única classe que pede refatoração imediata |
+| **UsuarioController** | 6 | Anotado com todas as decisões visíveis no código |
+| **GamificationSubscriber** | 3 | Parsing, buffer e retorno defensivo |
+| **BlockchainService** | 3 | Validação de transação e limite de admin |
+| **GamificationService** | 2 | Cálculo de pontos e concessão de badge |
+| **GamificationPublisher** | 3 | Publicação assíncrona e tratamento de falha |
+| **JwtUtil** | 3 | Geração, extração e validação de token |
+| **JwtFiltro** | 3 | Extração de bearer token e criação de autoridade |
+| **ReputacaoService** | 2 | Auditoria de reputação e sincronização com usuário |
+| **SecurityConfig** | 3 | Cadeia de segurança, CORS e filtros |
+| **RedisConfig** | 3 | Infra de Pub/Sub com listener resiliente |
+| **JwtService** | 2 | Geração e validação de JWT |
+| **AuthController** | 2 | Login e montagem de resposta |
+| **HomeController** | 0 | Bootstrap HTTP |
+| **AuthService** | 1 | Autenticação direta |
+| **Web3Config** | 0 | Bootstrap Web3j |
+| **Role** | 0 | Enum sem lógica |
+| **AuthRequest** | 0 | DTO de autenticação |
+| **AuthResponseDTO** | 0 | DTO de token |
+| **ReputacaoDTO** | 0 | DTO de atualização de reputação |
 
-### Classes Moderadas (ICP 4-7) - CORRIGIDAS ✅
+### Classes de infraestrutura adicionadas com ICP 0
 
-| Classe | Antes | Depois | Status |
-|--------|-------|--------|--------|
-| **GamificationService** | ICP-TOTAL: 2 | ICP-TOTAL: 4-5 | ✅ Corrigido |
-| **GamificationPublisher** | ICP-TOTAL: 1 | ICP-TOTAL: 3 | ✅ Corrigido |
-| **JwtUtil** | ICP-TOTAL: 3 | ICP-TOTAL: 5-6 | ✅ Corrigido |
-| **JwtFiltro** | ICP-TOTAL: 3 | ICP-TOTAL: 4-5 | ✅ Corrigido |
-| **ReputacaoService** | ICP-TOTAL: 2 | ICP-TOTAL: 3-4 | ✅ Corrigido |
+- **MificaApplication**: ICP-TOTAL: 0
+- **BadgeRepository**: ICP-TOTAL: 0
+- **ContratoRepository**: ICP-TOTAL: 0
+- **DesafioRepository**: ICP-TOTAL: 0
+- **HistoricoReputacaoRepository**: ICP-TOTAL: 0
+- **SolicitacaoCreditoRepository**: ICP-TOTAL: 0
+- **TransacaoRepository**: ICP-TOTAL: 0
+- **UserRepository**: ICP-TOTAL: 0
+- **UsuarioRepository**: ICP-TOTAL: 0
 
-### Classes Simples (ICP 0-3) - ADICIONADAS ✅
+### Regra de refatoração
 
-| Classe | Novo ICP | Status |
-|--------|----------|--------|
-| **HomeController** | ICP-TOTAL: 0 | ✅ Adicionado |
-| **AuthService** | ICP-TOTAL: 1 | ✅ Adicionado |
-| **Web3Config** | ICP-TOTAL: 0 | ✅ Adicionado |
-| **Role** (enum) | ICP-TOTAL: 0 | ✅ Adicionado |
-| **AuthRequest** (DTO) | ICP-TOTAL: 0 | ✅ Adicionado |
-| **AuthResponseDTO** (DTO) | ICP-TOTAL: 0 | ✅ Adicionado |
-| **ReputacaoDTO** (DTO) | ICP-TOTAL: 0 | ✅ Adicionado |
-
-### Classes que já estavam corretas - NÃO MODIFICADAS ✅
-
-- **SecurityConfig**: ICP-TOTAL: 3 ✅ (correto conforme análise)
-- **JwtService**: ICP-TOTAL: 2 ✅ (correto)
-- **RedisConfig**: ICP-TOTAL: 3 ✅ (correto)
-- **AuthController**: ICP-TOTAL: 2 ✅ (correto)
-- Todos os Controllers com ICP já anotado
-- Todos os Services simples com ICP já anotado
+- **Refatorar agora**: `UsuarioService` (31)
+- **Acompanhar**: classes com 6 pontos ou menos, pois continuam legíveis e estáveis
 
 ---
 
 ## 📝 Padrão de Anotação Usado
 
-Seguindo o modelo do SecurityConfig, cada classe agora contém:
+Seguindo o modelo do SecurityConfig, cada classe contém:
 
 ```java
-// ICP-TOTAL: X-Y (ou apenas X)
-// Classe: [tipo - crítica/moderada/simples] — descrição do que faz
-// [Candidata a refatoração em: ...] — se aplicável
+// ICP-TOTAL: X
+// Descrição breve do papel da classe e da origem dos pontos de decisão
 // ICP-01: Descrição do primeiro ponto de decisão
 // ICP-02: Descrição do segundo ponto de decisão (se houver)
 ```
@@ -67,9 +68,8 @@ Seguindo o modelo do SecurityConfig, cada classe agora contém:
 @Service
 public class UsuarioService {
 
-    // ICP-TOTAL: 12-15
-    // Classe crítica: 6 responsabilidades distintas (cadastro, login, perfil, reputação, créditos, conquistas).
-    // Candidata a refatoração em: UsuarioCreationService, UsuarioProfileService, UsuarioAuthService, CreditRequestService.
+    // ICP-TOTAL: 31
+    // Serviço com 31 pontos de decisão distribuídos entre cadastro, autenticação, perfil, reputação, conquistas e senha.
     // ICP-01: Serviço central concentra regras de autenticação, reputação, recompensas e manutenção de perfil.
 ```
 
@@ -79,32 +79,22 @@ public class UsuarioService {
 
 ### Pastas Verificadas
 
-- ✅ **controller/** - 8 controllers corrigidos (UsuarioController aumentado, HomeController adicionado)
-- ✅ **service/** - 7 services corrigidos (UsuarioService aumentado, AuthService adicionado)
-- ✅ **config/** - 3 configs corrigidos (SecurityConfig, RedisConfig, Web3Config)
-- ✅ **util/** - 3 utils corrigidos (JwtUtil, JwtFiltro, JwtService)
-- ✅ **redis/** - 2 redis corrigidos (GamificationPublisher, GamificationSubscriber)
-- ✅ **blockchain/** - BlockchainService corrigido
-- ✅ **entity/** - Role enum adicionado
-- ✅ **dto/** - 3 DTOs adicionados (AuthRequest, AuthResponseDTO, ReputacaoDTO)
+- ✅ **controller/** - 3 controllers com ICP exato revisado (UsuarioController, AuthController, HomeController)
+- ✅ **service/** - 8 services revisados (UsuarioService, GamificationService, GamificationPublisher, ReputacaoService, AuthService, TransacaoService, DesafioService, ContratoService)
+- ✅ **config/** - 3 configs com ICP (SecurityConfig, RedisConfig, Web3Config)
+- ✅ **util/** - 3 utils com ICP (JwtUtil, JwtFiltro, JwtService)
+- ✅ **redis/** - 2 componentes com ICP (GamificationPublisher, GamificationSubscriber)
+- ✅ **blockchain/** - BlockchainService revisado
+- ✅ **entity/** - Role enum anotado
+- ✅ **dto/** - 3 DTOs anotados (AuthRequest, AuthResponseDTO, ReputacaoDTO)
+- ✅ **repository/** - 8 repositórios com ICP 0
+- ✅ **bootstrap** - MificaApplication com ICP 0
 
-### Classes Críticas Marcadas para Refatoração
+### Classe que pede refatoração imediata
 
 ```
-UsuarioService (ICP 12-15)
+UsuarioService (ICP 31)
   → Quebrar em: UsuarioCreationService, UsuarioProfileService, UsuarioAuthService, CreditRequestService
-
-UsuarioController (ICP 11-14)
-  → Quebrar em: PublicAuthController, UserProfileController, AdminUserController
-
-GamificationSubscriber (ICP 8-10)
-  → Extrair: MessageParser, EventBuffer
-
-BlockchainService (ICP 6-8)
-  → Extrair: BlockchainValidator
-
-GamificationService (ICP 4-5)
-  → Extrair (futuro): PointCalculator, BadgeDiscovery
 ```
 
 ---
@@ -113,9 +103,9 @@ GamificationService (ICP 4-5)
 
 ### Fase 1: Implementar Refatoração (4 semanas recomendadas)
 - Week 1: UsuarioService split (4 services)
-- Week 2: UsuarioController split (3 controllers)
-- Week 3: Extract MessageParser, BlockchainValidator
-- Week 4: Testes + documentação
+- Week 2: Ajustar tests e transições dos endpoints afetados
+- Week 3: Atualizar documentação e contratos públicos
+- Week 4: Revisar se a nova estrutura reduziu o ICP do serviço principal
 
 ### Fase 2: Monitoramento Contínuo
 - Novos ICP comentários em cada nova classe
@@ -134,7 +124,7 @@ GamificationService (ICP 4-5)
 
 **Próximos benefícios (após refatoração):**
 - ✅ Redução de complexidade média do backend
-- ✅ Facilita testing (classes mais simples = testes diretos)
+- ✅ Facilita testing (classes enxutas = testes diretos)
 - ✅ Manutenção mais fácil (menos responsabilidades/classe)
 - ✅ Onboarding mais rápido (código menos denso)
 
@@ -156,9 +146,8 @@ Quando abre uma classe e quer entender:
 
 ## ✨ Resultados Finais
 
-- ✅ **60+ classes Java** revisadas
-- ✅ **20+ classes** atualizadas/corrigidas com ICP
-- ✅ **100% das classes críticas** marcadas para refatoração
+- ✅ **Classes Java principais** revisadas com ICP exato
+- ✅ **Classes sem lógica** marcadas com ICP 0
 - ✅ **Padrão consistente** de anotação em toda codebase
 - ✅ **Documentação inline** atualizada
 - ✅ **Backend pronto** para escalar equipe

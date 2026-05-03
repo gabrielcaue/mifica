@@ -28,9 +28,8 @@ import com.mifica.repository.UsuarioRepository;
 @Service
 public class UsuarioService {
 
-    // ICP-TOTAL: 12-15
-    // Classe crítica: 6 responsabilidades distintas (cadastro, login, perfil, reputação, créditos, conquistas).
-    // Candidata a refatoração em: UsuarioCreationService, UsuarioProfileService, UsuarioAuthService, CreditRequestService.
+    // ICP-TOTAL: 31
+    // Serviço central com 31 pontos de decisão distribuídos entre cadastro, autenticação, perfil, reputação, conquistas e senha.
     // ICP-01: Serviço central concentra regras de autenticação, reputação, recompensas e manutenção de perfil.
 
     @Autowired
@@ -80,9 +79,11 @@ public class UsuarioService {
     }
 
     private Role formatarPapel(String role) {
+        // ICP-04: Normalização do papel aceita valor nulo ou em branco e cai no papel padrão.
         if (role == null || role.isBlank()) {
             return Role.ROLE_USER;
         }
+        // ICP-05: Quando o papel já vem prefixado, a conversão evita duplicar o sufixo ROLE_.
         if (role.toUpperCase().startsWith("ROLE_")) {
             return Role.valueOf(role.toUpperCase());
         }
@@ -104,11 +105,14 @@ public class UsuarioService {
 
     public void atualizarPerfil(String email, Usuario dadosAtualizados) {
         Usuario usuario = buscarPorEmail(email);
+        // ICP-06: Atualização de perfil encerra cedo quando o usuário não existe.
         if (usuario == null) return;
 
+        // ICP-07: Nome só é sobrescrito quando o payload traz um valor explícito.
         if (dadosAtualizados.getNome() != null) {
             usuario.setNome(dadosAtualizados.getNome());
         }
+        // ICP-08: Senha só é recriptografada quando o payload realmente envia nova senha.
         if (dadosAtualizados.getSenha() != null) {
             usuario.setSenha(criptografarSenha(dadosAtualizados.getSenha()));
         }
@@ -118,6 +122,7 @@ public class UsuarioService {
 
     public boolean atualizarReputacao(String email, int novaReputacao) {
         Usuario usuario = buscarPorEmail(email);
+        // ICP-09: Atualização de reputação retorna falso quando o usuário não é encontrado.
         if (usuario == null) return false;
 
         usuario.setReputacao(novaReputacao);
@@ -147,6 +152,7 @@ public class UsuarioService {
 
     public List<SolicitacaoCredito> listarSolicitacoes(String email) {
         Usuario usuario = buscarPorEmail(email);
+        // ICP-10: Consulta de solicitações devolve lista vazia quando o usuário não existe.
         return usuario != null ? usuario.getSolicitacoes() : List.of();
     }
 
@@ -156,23 +162,27 @@ public class UsuarioService {
 
     public List<String> listarConquistas(String email) {
         Usuario usuario = buscarPorEmail(email);
+        // ICP-11: Consulta de conquistas falha explicitamente quando o usuário não existe.
         if (usuario == null) throw new RuntimeException("Usuário não encontrado.");
         return usuario.getConquistas();
     }
 
     public void aplicarRecompensas(String email) {
-        // ICP-04: Aplicação de recompensas depende de estado incremental de conquistas e reputação.
         Usuario usuario = buscarPorEmail(email);
+        // ICP-12: Aplicação de recompensas encerra sem efeito quando o usuário não existe.
         if (usuario == null) return;
 
+        // ICP-13: Estrutura de conquistas é inicializada apenas quando ainda não existe.
         if (usuario.getConquistas() == null) {
             usuario.setConquistas(new ArrayList<>());
         }
 
+        // ICP-14: Primeira solicitação só vira conquista quando há ao menos uma solicitação registrada.
         if (!usuario.getConquistas().contains("Primeira solicitação") && usuario.getSolicitacoes().size() >= 1) {
             usuario.getConquistas().add("Primeira solicitação");
         }
 
+        // ICP-15: Reputação mínima de 5 desbloqueia a conquista correspondente sem duplicar itens.
         if (usuario.getReputacao() >= 5 && !usuario.getConquistas().contains("Reputação 5+")) {
             usuario.getConquistas().add("Reputação 5+");
         }
@@ -181,28 +191,34 @@ public class UsuarioService {
     }
 
     public void aplicarRecompensasCertas(Usuario usuario) {
-        // ICP-05: Regras de progressão usam combinação de missão diária, marcos de reputação e ajuste de nível.
+        // ICP-16: Missão diária concluída incrementa a reputação do usuário.
         boolean cumpriuMissao = verificarMissaoDiaria(usuario);
         if (cumpriuMissao) {
             usuario.setReputacao(usuario.getReputacao() + 1);
         }
 
+        // ICP-17: Lista de conquistas é criada sob demanda para evitar null pointer.
         if (usuario.getConquistas() == null) {
             usuario.setConquistas(new ArrayList<>());
         }
 
+        // ICP-18: Primeira solicitação só é registrada uma vez quando o usuário chega ao marco.
         if (usuario.getSolicitacoes().size() == 1 && !usuario.getConquistas().contains("Primeira solicitação")) {
             usuario.getConquistas().add("Primeira solicitação");
         }
 
+        // ICP-19: Reputação 10+ gera conquista se ainda não existir no conjunto.
         if (usuario.getReputacao() >= 10 && !usuario.getConquistas().contains("Reputação 10+")) {
             usuario.getConquistas().add("Reputação 10+");
         }
 
+        // ICP-20: Nível Expert é aplicado quando a reputação chega a 20 ou mais.
         if (usuario.getReputacao() >= 20) {
             usuario.setNivel("Expert");
+        // ICP-21: Nível Intermediário cobre o intervalo entre 10 e 19 de reputação.
         } else if (usuario.getReputacao() >= 10) {
             usuario.setNivel("Intermediário");
+        // ICP-22: A faixa restante mantém o usuário no nível inicial.
         } else {
             usuario.setNivel("Iniciante");
         }
@@ -220,6 +236,7 @@ public class UsuarioService {
 
     public void deletarPorEmail(String email) {
         Usuario usuario = buscarPorEmail(email);
+        // ICP-23: Exclusão por email falha explicitamente quando o usuário não existe.
         if (usuario == null) throw new RuntimeException("Usuário não encontrado para exclusão.");
         usuarioRepository.delete(usuario);
     }
@@ -253,7 +270,7 @@ public class UsuarioService {
     }
 
     public Optional<UsuarioDTO> atualizar(Long id, UsuarioDTO dto) {
-        // ICP-06: Atualização parcial mantém campos opcionais e aplica transformação de papel/senha quando necessário.
+        // ICP-24: Atualização parcial interrompe o fluxo quando o registro não existe.
         Optional<Usuario> optionalUsuario = usuarioRepository.findById(Objects.requireNonNull(id));
         if (optionalUsuario.isEmpty()) return Optional.empty();
 
@@ -261,14 +278,17 @@ public class UsuarioService {
         usuario.setNome(dto.getNome());
         usuario.setEmail(dto.getEmail());
 
+        // ICP-25: Senha só é atualizada quando o payload traz conteúdo não vazio.
         if (dto.getSenha() != null && !dto.getSenha().isBlank()) {
             usuario.setSenha(criptografarSenha(dto.getSenha()));
         }
 
+        // ICP-26: Reputação só é sobrescrita quando o payload informa novo valor.
         if (dto.getReputacao() != null) {
             usuario.setReputacao(dto.getReputacao());
         }
 
+        // ICP-27: Papel só é convertido quando o payload envia role explícita.
         if (dto.getRole() != null) {
             usuario.setRole(formatarPapel(dto.getRole()));
         }
@@ -284,6 +304,7 @@ public UsuarioDTO atualizarUsuario(Long id, UsuarioDTO dto) {
     usuario.setNome(dto.getNome());
     usuario.setEmail(dto.getEmail());
 
+    // ICP-28: Nova senha só é aplicada quando veio preenchida e diferente de vazio.
     if (dto.getSenha() != null && !dto.getSenha().isBlank()) {
         usuario.setSenha(criptografarSenha(dto.getSenha()));
     }
@@ -291,7 +312,8 @@ public UsuarioDTO atualizarUsuario(Long id, UsuarioDTO dto) {
     usuario.setReputacao(dto.getReputacao());
     usuario.setNivel(dto.getNivel());
 
-    if (dto.getRole() != null) { // ✅ corrigido
+    // ICP-29: Role só é convertida quando o payload envia valor explícito.
+    if (dto.getRole() != null) {
         usuario.setRole(formatarPapel(dto.getRole()));
     }
 
@@ -314,6 +336,7 @@ public UsuarioDTO atualizarUsuario(Long id, UsuarioDTO dto) {
 
     public double mediaReputacao() {
     List<Usuario> usuarios = usuarioRepository.findAll();
+    // ICP-30: Média retorna 0.0 quando não há usuários para evitar divisão por zero.
     if (usuarios.isEmpty()) return 0.0;
     double soma = usuarios.stream()
                           .mapToDouble(Usuario::getReputacao)
@@ -330,10 +353,11 @@ public UsuarioDTO atualizarUsuario(Long id, UsuarioDTO dto) {
 
         // 🔧 Novo método para atualizar senha
 public boolean atualizarSenha(Long id, String senhaAtual, String senhaNova) {
-    // ICP-07: Rotação de senha exige validação da senha antiga antes da escrita do novo hash.
+    // Fluxo de troca de senha valida a senha antiga antes de gravar o novo hash.
     Usuario usuario = usuarioRepository.findById(Objects.requireNonNull(id))
         .orElseThrow(() -> new RuntimeException("Usuário não encontrado."));
 
+    // ICP-31: Troca de senha exige confirmação da senha antiga antes de gravar o novo hash.
     if (!passwordEncoder.matches(senhaAtual, usuario.getSenha())) {
         throw new RuntimeException("Senha atual incorreta.");
     }

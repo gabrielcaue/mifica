@@ -39,8 +39,8 @@ import com.mifica.redis.GamificationPublisher;
 @RequestMapping("/api/usuarios")
 public class UsuarioController {
 
-    // ICP-TOTAL: 11-14
-    // Classe crítica: 8+ endpoints + múltiplos fluxos (cadastro, login, perfil, admin, gamificação).
+    // ICP-TOTAL: 6
+    // Controller de usuários com múltiplos endpoints e fluxos (cadastro, login, perfil, admin, gamificação).
     // Candidata a refatoração em: PublicAuthController, UserProfileController, AdminUserController.
     // ICP-01: Orquestra múltiplos fluxos (cadastro, login, perfil e administração) no mesmo controller.
 

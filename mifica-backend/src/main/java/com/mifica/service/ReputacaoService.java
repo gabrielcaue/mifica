@@ -16,8 +16,8 @@ import java.util.stream.Collectors;
 @Service
 public class ReputacaoService {
 
-    // ICP-TOTAL: 3-4
-    // Classe simples: Registra alteração de reputação + consulta histórico com transformação DTO.
+    // ICP-TOTAL: 2
+    // Serviço de reputação que registra alterações e consulta histórico com transformação DTO.
     // ICP-01: Serviço sincroniza histórico de reputação com atualização da entidade principal.
 
     @Autowired

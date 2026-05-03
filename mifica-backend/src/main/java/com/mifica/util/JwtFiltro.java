@@ -27,8 +27,8 @@ import org.springframework.lang.NonNull;
 @Component
 public class JwtFiltro extends OncePerRequestFilter {
 
-    // ICP-TOTAL: 4-5
-    // Classe moderada: Exclusão de rotas + extração de token + validação + injeção no SecurityContext.
+    // ICP-TOTAL: 3
+    // Filtro JWT com exclusão de rotas, extração de token, validação e injeção no SecurityContext.
     // ICP-01: Filtro combina exclusão de rotas públicas e hidratação do SecurityContext em fluxo único.
 
     private final JwtService jwtService;

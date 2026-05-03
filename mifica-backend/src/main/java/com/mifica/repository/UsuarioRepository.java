@@ -6,6 +6,8 @@ import com.mifica.entity.Usuario;
 
 import java.util.Optional;
 
+// ICP-TOTAL: 0
+// Interface de repositório Spring Data: apenas expõe consultas de usuário.
 public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
     Optional<Usuario> findByEmail(String email);
 }

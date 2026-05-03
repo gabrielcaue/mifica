@@ -17,8 +17,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class GamificationService {
 
-    // ICP-TOTAL: 4-5
-    // Classe moderada: Cálculo de pontos + verificação de limiar + concessão de badge.
+    // ICP-TOTAL: 2
+    // Serviço de gamificação com cálculo de pontos, verificação de limiar e concessão de badge.
     // Pode ser refatorada em: PointCalculator, BadgeDiscovery (futuro).
     // ICP-01: Regra de pontuação possui gatilho de badge e evolução de nível baseada em limiar.
     private final UserRepository userRepository;
