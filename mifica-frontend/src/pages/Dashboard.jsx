@@ -19,36 +19,44 @@ const formatarReal = (valor) => {
   return `R$ ${valorFormatado}`;
 };
 
-const calcularTotalMovimentadoDoUsuario = (lista, emailUsuario) => {
-  if (!emailUsuario) return 0;
+const calcularEntradaSaidaDoUsuario = (lista, emailUsuario) => {
+  if (!emailUsuario) return { entrada: 0, saida: 0, total: 0 };
 
   const emailNormalizado = String(emailUsuario).toLowerCase();
 
-  return lista.reduce((acc, tx) => {
-    const remetente = String(tx?.remetente || '').toLowerCase();
+  const entrada = lista.reduce((acc, tx) => {
     const destinatario = String(tx?.destinatario || '').toLowerCase();
     const valorTx = Number(tx?.valor || 0);
-
-    if (remetente === emailNormalizado || destinatario === emailNormalizado) {
-      return acc + valorTx;
-    }
-
-    return acc;
+    return destinatario === emailNormalizado ? acc + valorTx : acc;
   }, 0);
+
+  const saida = lista.reduce((acc, tx) => {
+    const remetente = String(tx?.remetente || '').toLowerCase();
+    const valorTx = Number(tx?.valor || 0);
+    return remetente === emailNormalizado ? acc + valorTx : acc;
+  }, 0);
+
+  return {
+    entrada,
+    saida,
+    total: entrada + saida
+  };
 };
 
 
 export default function Dashboard() {
   const { usuario } = useAuth();
   const navigate = useNavigate();
-  const valorTotalPerfil = usuario?.role === 'ROLE_ADMIN' ? 1_000_000 : 0;
 
   const [transacoes, setTransacoes] = useState([]);
-  const [totalValor, setTotalValor] = useState(0);
+  const [saldoDisponivel, setSaldoDisponivel] = useState(0);
+  const [totalMovimentado, setTotalMovimentado] = useState(0);
   const [ultimaTransacao, setUltimaTransacao] = useState(null);
   const [destinatario, setDestinatario] = useState('');
   const [valor, setValor] = useState('');
   const [refreshTransacoes, setRefreshTransacoes] = useState(0);
+  const [erroTransacao, setErroTransacao] = useState('');
+  const [sucessoTransacao, setSucessoTransacao] = useState('');
 
   useEffect(() => {
     api.get('/blockchain/transacoes')
@@ -56,8 +64,20 @@ export default function Dashboard() {
         const lista = response.data;
         setTransacoes(lista);
 
-        const total = calcularTotalMovimentadoDoUsuario(lista, usuario?.email);
-        setTotalValor(total);
+        const { entrada, saida } = calcularEntradaSaidaDoUsuario(lista, usuario?.email);
+        const ehAdmin = usuario?.role === 'ROLE_ADMIN';
+
+        // Valor total = saldo disponível
+        if (ehAdmin) {
+          // Admin: 1M - quanto já gastou
+          setSaldoDisponivel(Math.max(0, 1_000_000 - saida));
+        } else {
+          // Comum: quanto recebeu - quanto gastou
+          setSaldoDisponivel(Math.max(0, entrada - saida));
+        }
+
+        // Total movimentado = apenas quanto ele gastou (saida)
+        setTotalMovimentado(saida);
 
         if (lista.length > 0) {
           setUltimaTransacao(lista[lista.length - 1]);
@@ -68,9 +88,11 @@ export default function Dashboard() {
 
   const handleRegistrarTransacao = async (e) => {
     e.preventDefault();
+    setErroTransacao('');
+    setSucessoTransacao('');
 
     if (!destinatario || !valor) {
-      alert('Informe destinatário e valor.');
+      setErroTransacao('Informe destinatário e valor.');
       return;
     }
 
@@ -80,6 +102,7 @@ export default function Dashboard() {
         valor: Number(valor)
       });
 
+      setSucessoTransacao('Transação registrada com sucesso!');
       setDestinatario('');
       setValor('');
       setRefreshTransacoes(prev => prev + 1);
@@ -87,14 +110,30 @@ export default function Dashboard() {
       const response = await api.get('/blockchain/transacoes');
       const lista = response.data;
       setTransacoes(lista);
-      const total = calcularTotalMovimentadoDoUsuario(lista, usuario?.email);
-      setTotalValor(total);
+      
+      const { entrada, saida } = calcularEntradaSaidaDoUsuario(lista, usuario?.email);
+      const ehAdmin = usuario?.role === 'ROLE_ADMIN';
+
+      if (ehAdmin) {
+        setSaldoDisponivel(Math.max(0, 1_000_000 - saida));
+      } else {
+        setSaldoDisponivel(Math.max(0, entrada - saida));
+      }
+
+      setTotalMovimentado(saida);
       if (lista.length > 0) {
         setUltimaTransacao(lista[lista.length - 1]);
       }
+
+      setTimeout(() => setSucessoTransacao(''), 3000);
     } catch (error) {
       console.error('Erro ao registrar transação:', error);
-      alert('Não foi possível registrar a transação.');
+      const mensagemErro = error?.response?.data || 'Não foi possível registrar a transação.';
+      if (typeof mensagemErro === 'string' && (mensagemErro.toLowerCase().includes('destinatário') || mensagemErro.toLowerCase().includes('não encontrado') || mensagemErro.toLowerCase().includes('nao encontrado'))) {
+        setErroTransacao('Destinatário não encontrado.');
+      } else {
+        setErroTransacao(typeof mensagemErro === 'string' ? mensagemErro : 'Não foi possível registrar a transação.');
+      }
     }
   };
 
@@ -152,8 +191,8 @@ export default function Dashboard() {
           {/* Indicadores Blockchain */}
           <div className="bg-white/10 backdrop-blur-md rounded-xl p-4 md:p-6 shadow-lg border border-indigo-500">
             <h2 className="text-xl md:text-2xl font-semibold text-indigo-300 mb-4">Indicadores Blockchain</h2>
-            <p><strong>Valor total:</strong> {formatarReal(valorTotalPerfil)}</p>
-            <p><strong>Total movimentado:</strong> {formatarReal(totalValor)}</p>
+            <p><strong>Valor total:</strong> {formatarReal(saldoDisponivel)}</p>
+            <p><strong>Total movimentado:</strong> {formatarReal(totalMovimentado)}</p>
             {ultimaTransacao && (
               <p className="mt-2">
                 <strong>Última transação:</strong> {ultimaTransacao.destinatario} | {formatarReal(ultimaTransacao.valor)}
@@ -167,22 +206,37 @@ export default function Dashboard() {
           <div className="bg-white/10 backdrop-blur-md rounded-xl p-4 md:p-6 shadow-lg border border-gray-500 mt-8 md:mt-10">
             <h2 className="text-xl md:text-2xl font-semibold text-gray-300 mb-4">Transações Blockchain</h2>
 
-            <form onSubmit={handleRegistrarTransacao} className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-              <input
-                type="text"
-                placeholder="Destinatário"
-                value={destinatario}
-                onChange={(e) => setDestinatario(e.target.value)}
-                className="bg-white text-gray-800 px-4 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-              <input
-                type="number"
-                placeholder="Valor"
-                value={valor}
-                onChange={(e) => setValor(e.target.value)}
-                className="bg-white text-gray-800 px-4 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-              <div className="md:col-span-2">
+            <form onSubmit={handleRegistrarTransacao} className="space-y-4 mb-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <input
+                  type="text"
+                  placeholder="Destinatário"
+                  value={destinatario}
+                  onChange={(e) => setDestinatario(e.target.value)}
+                  className="bg-white text-gray-800 px-4 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+                <input
+                  type="number"
+                  placeholder="Valor"
+                  value={valor}
+                  onChange={(e) => setValor(e.target.value)}
+                  className="bg-white text-gray-800 px-4 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+
+              {erroTransacao && (
+                <div className="p-3 md:p-4 bg-red-900/30 border border-red-500 rounded-md">
+                  <p className="text-red-400 text-sm md:text-base font-semibold">⚠️ {erroTransacao}</p>
+                </div>
+              )}
+
+              {sucessoTransacao && (
+                <div className="p-3 md:p-4 bg-green-900/30 border border-green-500 rounded-md">
+                  <p className="text-green-400 text-sm md:text-base font-semibold">✓ {sucessoTransacao}</p>
+                </div>
+              )}
+
+              <div>
                 <button
                   type="submit"
                   className="w-full md:w-auto px-6 py-2 border border-blue-500 text-blue-500 rounded-md font-semibold hover:bg-blue-500 hover:text-white transition"

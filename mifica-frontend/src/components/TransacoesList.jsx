@@ -29,7 +29,6 @@ function TransacoesList({ refreshKey = 0 }) {
 
   return (
     <div>
-      <h2>Transações Blockchain</h2>
       <ul>
         {transacoes.map(tx => (
           <li key={tx.id}>
