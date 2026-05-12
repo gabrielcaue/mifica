@@ -5,6 +5,7 @@ import com.mifica.entity.Badge;
 import com.mifica.repository.UserRepository;
 import com.mifica.repository.BadgeRepository;
 import com.mifica.repository.FakeUserRepository;
+import com.mifica.repository.FakeBadgeRepository;
 import com.mifica.testhelpers.TestDataFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

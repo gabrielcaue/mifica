@@ -3,6 +3,7 @@ package com.mifica.testhelpers;
 import com.mifica.entity.User;
 import com.mifica.entity.Badge;
 import com.mifica.entity.Usuario;
+import com.mifica.entity.Role;
 import java.time.LocalDateTime;
 
 /**
@@ -42,7 +43,7 @@ public class TestDataFactory {
 
         public User build() {
             User user = new User();
-            user.setId(id);
+            // user.setId(id); - User id is auto-generated
             user.setName(name);
             user.setPoints(points);
             user.setLevel(level);
@@ -105,8 +106,8 @@ public class TestDataFactory {
         private String email = "joao@example.com";
         private String senha = "senha123";
         private int reputacao = 1;
-        private int nivel = 1;
-        private String role = "USER";
+        private String nivel = "INICIANTE";
+        private Role role = Role.USER;
         private Boolean enabled = true;
 
         public UsuarioBuilder withEmail(String email) {
@@ -119,7 +120,7 @@ public class TestDataFactory {
             return this;
         }
 
-        public UsuarioBuilder withRole(String role) {
+        public UsuarioBuilder withRole(Role role) {
             this.role = role;
             return this;
         }

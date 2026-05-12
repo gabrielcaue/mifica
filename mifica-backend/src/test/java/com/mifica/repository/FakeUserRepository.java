@@ -1,6 +1,8 @@
 package com.mifica.repository;
 
 import com.mifica.entity.User;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.Sort;
 import java.util.*;
 
 /**
@@ -22,7 +24,7 @@ public class FakeUserRepository implements UserRepository {
     }
 
     @Override
-    public <S extends User> Iterable<S> saveAll(Iterable<S> entities) {
+    public <S extends User> List<S> saveAll(Iterable<S> entities) {
         List<S> saved = new ArrayList<>();
         for (S entity : entities) {
             saved.add(save(entity));
@@ -41,16 +43,30 @@ public class FakeUserRepository implements UserRepository {
     }
 
     @Override
-    public Iterable<User> findAll() {
+    public List<User> findAll() {
         return new ArrayList<>(database.values());
     }
 
     @Override
-    public Iterable<User> findAllById(Iterable<Long> ids) {
+    public List<User> findAll(Sort sort) {
+        return new ArrayList<>(database.values());
+    }
+
+    @Override
+    public <S extends User> List<S> findAll(Example<S> example, Sort sort) {
+        // Simple implementation returning empty list
+        // In real scenarios, would filter based on example
+        return new ArrayList<>();
+    }
+
+    @Override
+    public List<User> findAllById(Iterable<Long> ids) {
         List<User> result = new ArrayList<>();
         for (Long id : ids) {
-            database.get(id);
-            result.add(database.get(id));
+            User user = database.get(id);
+            if (user != null) {
+                result.add(user);
+            }
         }
         return result;
     }
@@ -93,4 +109,5 @@ public class FakeUserRepository implements UserRepository {
         database.clear();
         idCounter = 1L;
     }
+}
 }

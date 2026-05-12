@@ -1,6 +1,8 @@
 package com.mifica.repository;
 
 import com.mifica.entity.Badge;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.Sort;
 import java.util.*;
 
 /**
@@ -21,7 +23,7 @@ public class FakeBadgeRepository implements BadgeRepository {
     }
 
     @Override
-    public <S extends Badge> Iterable<S> saveAll(Iterable<S> entities) {
+    public <S extends Badge> List<S> saveAll(Iterable<S> entities) {
         List<S> saved = new ArrayList<>();
         for (S entity : entities) {
             saved.add(save(entity));
@@ -40,12 +42,24 @@ public class FakeBadgeRepository implements BadgeRepository {
     }
 
     @Override
-    public Iterable<Badge> findAll() {
+    public List<Badge> findAll() {
         return new ArrayList<>(database.values());
     }
 
     @Override
-    public Iterable<Badge> findAllById(Iterable<Long> ids) {
+    public List<Badge> findAll(Sort sort) {
+        return new ArrayList<>(database.values());
+    }
+
+    @Override
+    public <S extends Badge> List<S> findAll(Example<S> example, Sort sort) {
+        // Simple implementation returning empty list
+        // In real scenarios, would filter based on example
+        return new ArrayList<>();
+    }
+
+    @Override
+    public List<Badge> findAllById(Iterable<Long> ids) {
         List<Badge> result = new ArrayList<>();
         for (Long id : ids) {
             Badge badge = database.get(id);
