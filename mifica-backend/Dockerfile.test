@@ -1,0 +1,18 @@
+# Dockerfile para rodar testes com Java 17 (estável)
+FROM ubuntu:22.04
+
+WORKDIR /app
+
+# Instalar Java 17 e Maven
+RUN apt-get update && \
+    apt-get install -y openjdk-17-jdk-headless maven && \
+    rm -rf /var/lib/apt/lists/*
+
+# Copiar arquivos de build
+COPY pom.xml .
+COPY mvnw .
+COPY .mvn .mvn
+COPY src src
+
+# Rodar testes
+CMD ["mvn", "clean", "test"]
