@@ -1,14 +1,38 @@
 # Tecnologias do Mifica — Resumo Atualizado
 
+## 🏆 Padrões de Teste e Mocking (Fundação de Qualidade)
+
+### Test Doubles e Fake Repositories
+
+| Padrão | Implementação | Função |
+|---|---|---|
+| **Fake Repository** | `FakeUserRepository`, `FakeBadgeRepository` | Implementação in-memory que substitui JpaRepository em testes sem banco real |
+| **Reflection para ID genérico** | `getDeclaredMethod("setId").invoke()` | Atribui ID em entidades genéricas que não expõem setter público |
+| **Eager vs Lazy Loading** | `getById()` vs `getReferenceById()` | Simula comportamento de JPA: getById carrega dados imediatamente, getReferenceById retorna proxy |
+| **Builder Pattern** | `TestDataFactory` | Cria objetos de teste com estado consistente e reutilizável |
+| **H2 In-Memory DB** | `@DataJpaTest`, `spring.h2.console.enabled` | Testes integrados isolados, sem dependência de MySQL ou conexão remota |
+
+### Estratégia de Cobertura
+
+- **Unit Tests:** Testes de serviços isolados com mocks de repositórios.
+- **Integration Tests:** Testes com Spring Boot context completo e H2 database.
+- **Mock vs Real:** Decisão baseada em: Eager carrega dados necessários agora; Lazy carrega sob demanda para evitar queries.
+
+**Documentação Detalhada:**
+- 📖 [TESTING_QUICK_START.md](TESTING_QUICK_START.md) — Guia prático
+- 🏗️ [docs/packages/backend-test-architecture.md](docs/packages/backend-test-architecture.md) — SDD completo
+
+---
+
 ## 1) Backend (foco principal)
 
 ### Linguagem e Base
 
 | Tecnologia | Onde está | Função no projeto |
 |---|---|---|
-| Java 21 | backend | Linguagem principal da API |
+| Java 17 | backend | Linguagem principal da API (LTS com suporte estendido) |
 | Spring Boot 3.5.6 | backend | Bootstrap da aplicação, configuração e runtime |
-| Maven | backend | Build, gerenciamento de dependências e empacotamento |
+| Maven (com mvnw) | backend | Build, gerenciamento de dependências e empacotamento com wrapper |
 
 ### API, Segurança e Autenticação
 
@@ -44,6 +68,17 @@
 | Spring Boot Actuator | backend | Exposição de health, metrics e readiness para a stack de observabilidade |
 | Web3j 4.9.8 | backend | Integração com recursos blockchain e fluxo de transações da plataforma |
 | Hibernate Validator + Jakarta EL | backend | Validação de payloads e regras de entrada antes de persistir ou publicar eventos |
+
+### Testes e Qualidade
+
+| Tecnologia | Onde está | Função no projeto |
+|---|---|---|
+| JUnit 5 (Jupiter) | backend/testes | Framework principal de testes unitários e de integração |
+| Mockito | backend/testes | Mock de dependências para testes isolados |
+| AssertJ | backend/testes | Assertions fluentes e expressivas em testes |
+| Spring Test | backend/testes | MockMvc e contexto Spring para testes de integração |
+| H2 Database (test) | backend/testes | Banco em memória para testes isolados sem necessidade de MySQL |
+| Jacoco | backend/testes | Cobertura de código para análise de testes |
 
 ## 2) Frontend Web
 

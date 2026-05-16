@@ -15,6 +15,8 @@ Padrão adotado em cada arquivo:
 
 ### 📋 Documentação de Arquitetura (SDD/SpecKit)
 **Para novos desenvolvedores - COMECE AQUI:**
+- [../../STACK_VISUAL_2026.md](../../STACK_VISUAL_2026.md) - 🗺️ **Mapa visual da stack** (diagramas, arquitetura, deploy)
+- [../../TESTING_QUICK_START.md](../../TESTING_QUICK_START.md) - 🧪 **Guia rápido de testes** (prático, comandos prontos)
 - [backend-quick-reference.md](backend-quick-reference.md) - ⚡ **Cartão de referência rápida** (comandos, stack, classes críticas)
 - [backend-onboarding.md](backend-onboarding.md) - 🚀 Guia de início rápido (setup, conceitos, primeiras tarefas)
 - [backend-cdd-analysis.md](backend-cdd-analysis.md) - 📊 Análise CDD/ICP de 60 classes (complexidade percebida)
@@ -32,8 +34,9 @@ Padrão adotado em cada arquivo:
 - [backend-redis](backend-redis.md)
 - [backend-repository](backend-repository.md)
 - [backend-service](backend-service.md)
-- [backend-util](backend-util.md)
 - [backend-test](backend-test.md)
+- [backend-test-architecture](backend-test-architecture.md) ⭐ **SDD detalhado de padrões de teste, Fake Repositories e Mock Builders**
+- [backend-util](backend-util.md)
 
 ### Cobertura backend
 - **Arquitetura**: Todos os 60+ classes Java analisadas em `src/main/java/com/mifica/*`

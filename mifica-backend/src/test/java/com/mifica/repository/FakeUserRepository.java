@@ -2,8 +2,13 @@ package com.mifica.repository;
 
 import com.mifica.entity.User;
 import org.springframework.data.domain.Example;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.repository.query.FluentQuery.FetchableFluentQuery;
+
 import java.util.*;
+import java.util.function.Function;
 
 /**
  * FakeUserRepository - Implementação em memória do UserRepository
@@ -76,6 +81,11 @@ public class FakeUserRepository implements UserRepository {
     }
 
     @Override
+    public User getById(Long id) {
+        return database.get(id);
+    }
+
+    @Override
     public List<User> findAllById(Iterable<Long> ids) {
         List<User> result = new ArrayList<>();
         for (Long id : ids) {
@@ -124,5 +134,70 @@ public class FakeUserRepository implements UserRepository {
     public void reset() {
         database.clear();
         idCounter = 1L;
+    }
+
+    @Override
+    public void flush() {
+        throw new UnsupportedOperationException("Unimplemented method 'flush'");
+    }
+
+    @Override
+    public <S extends User> S saveAndFlush(S entity) {
+        throw new UnsupportedOperationException("Unimplemented method 'saveAndFlush'");
+    }
+
+    @Override
+    public <S extends User> List<S> saveAllAndFlush(Iterable<S> entities) {
+        throw new UnsupportedOperationException("Unimplemented method 'saveAllAndFlush'");
+    }
+
+    @Override
+    public void deleteAllInBatch(Iterable<User> entities) {
+        throw new UnsupportedOperationException("Unimplemented method 'deleteAllInBatch'");
+    }
+
+    @Override
+    public void deleteAllByIdInBatch(Iterable<Long> ids) {
+        throw new UnsupportedOperationException("Unimplemented method 'deleteAllByIdInBatch'");
+    }
+
+    @Override
+    public void deleteAllInBatch() {
+        throw new UnsupportedOperationException("Unimplemented method 'deleteAllInBatch'");
+    }
+
+    @Override
+    public User getOne(Long id) {
+        throw new UnsupportedOperationException("Unimplemented method 'getOne'");
+    }
+
+    @Override
+    public Page<User> findAll(Pageable pageable) {
+        throw new UnsupportedOperationException("Unimplemented method 'findAll'");
+    }
+
+    @Override
+    public <S extends User> Optional<S> findOne(Example<S> example) {
+        throw new UnsupportedOperationException("Unimplemented method 'findOne'");
+    }
+
+    @Override
+    public <S extends User> Page<S> findAll(Example<S> example, Pageable pageable) {
+        throw new UnsupportedOperationException("Unimplemented method 'findAll'");
+    }
+
+    @Override
+    public <S extends User> long count(Example<S> example) {
+        throw new UnsupportedOperationException("Unimplemented method 'count'");
+    }
+
+    @Override
+    public <S extends User> boolean exists(Example<S> example) {
+        throw new UnsupportedOperationException("Unimplemented method 'exists'");
+    }
+
+    @Override
+    public <S extends User, R> R findBy(Example<S> example, Function<FetchableFluentQuery<S>, R> queryFunction) {
+        throw new UnsupportedOperationException("Unimplemented method 'findBy'");
     }
 }

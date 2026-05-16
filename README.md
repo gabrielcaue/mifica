@@ -2,31 +2,58 @@
 
 Plataforma full-stack com arquitetura modular, focada em backend robusto, segurança e operação em produção.
 
+## 📌 Comece Aqui — Índices de Navegação
+
+> **Importante:** O projeto está bem documentado. Use os **índices como guia** para encontrar exatamente o que precisa.
+> 
+> **📂 Veja [ESTRUTURA_PROJETO.md](ESTRUTURA_PROJETO.md) para entender como o projeto está organizado**
+>
+> **🔗 Veja [TECHNOLOGY_INTEGRATION_MAP.md](TECHNOLOGY_INTEGRATION_MAP.md) para entender como as tecnologias se integram** (Camunda BPM Style)
+
+| 🎯 Nível | 📍 Índice | Para Quem |
+|----------|-----------|----------|
+| **Iniciante** | [docs/reference/INDEX_COMPLETO.md](docs/reference/INDEX_COMPLETO.md) | Novo no projeto — Visão geral de tudo |
+| **Arquitetura** | [docs/packages/00-INDEX.md](docs/packages/00-INDEX.md) | Arquitetos, líderes tech |
+| **Visual/Rápido** | [docs/reference/STACK_VISUAL_2026.md](docs/reference/STACK_VISUAL_2026.md) | Todos — Mapa da stack com diagramas |
+| **Testes** | [docs/reference/TESTING_QUICK_START.md](docs/reference/TESTING_QUICK_START.md) | Desenvolvedores — Guia prático de testes |
+
+---
+
 ## Status
 
 - Em manutenção evolutiva
 - Frontend publicado no GitHub Pages
 - Backend com perfil de produção no Railway
 
-## Acesso e Documentação
+## 📚 Documentação Organizada
 
-| Recurso | Link |
-|---|---|
-| Frontend (GitHub Pages) | [gabrielcaue.github.io/mifica](https://gabrielcaue.github.io/mifica/) |
-| Repositório | [github.com/gabrielcaue/mifica](https://github.com/gabrielcaue/mifica) |
-| Índice técnico | [docs/packages/00-INDEX.md](docs/packages/00-INDEX.md) |
-| Resumo de tecnologias | [TECNOLOGIAS_RESUMO.md](TECNOLOGIAS_RESUMO.md) |
+### 🎯 Guias (Como fazer / Começar)
+- [docs/guide/BACKEND_GUIDE.md](docs/guide/BACKEND_GUIDE.md) — Guia completo de backend (CDD/ICP, onboarding, padrões)
+- [docs/guide/DEPLOYMENT_RAILWAY.md](docs/guide/DEPLOYMENT_RAILWAY.md) — Como fazer deploy em Railway
+- [docs/guide/IMPLEMENTATION_CHECKLIST.md](docs/guide/IMPLEMENTATION_CHECKLIST.md) — Checklist de implementação
+- [docs/guide/TESTING_OVERVIEW.md](docs/guide/TESTING_OVERVIEW.md) — Visão geral de testes
+
+### 📖 Referência Técnica (Consulta rápida)
+- [docs/reference/TECNOLOGIAS_RESUMO.md](docs/reference/TECNOLOGIAS_RESUMO.md) — Stack de tecnologias completa
+- [docs/reference/STACK_VISUAL_2026.md](docs/reference/STACK_VISUAL_2026.md) — Arquitetura visual com diagramas
+- [docs/reference/TESTING_QUICK_START.md](docs/reference/TESTING_QUICK_START.md) — Atalhos de testes
+
+### 📦 Especificações de Arquitetura (Detalhado)
+- [docs/packages/00-INDEX.md](docs/packages/00-INDEX.md) — Índice de especificações por pacote
+- [docs/packages/backend-quick-reference.md](docs/packages/backend-quick-reference.md) — Cartão de referência
+- [docs/packages/backend-test-architecture.md](docs/packages/backend-test-architecture.md) — SDD de testes
 
 ## Visão Geral da Solução
 
-- **Backend (Spring Boot 3 + Java 21):** API REST, autenticação JWT, regras de reputação e gamificação, integração Redis Pub/Sub e blockchain.
-- **Frontend (React + Vite + Tailwind):** SPA com login, cadastro, dashboard e rotas protegidas.
+- **Backend (Spring Boot 3.5.6 + Java 17 LTS):** API REST, autenticação JWT, regras de reputação e gamificação, integração Redis Pub/Sub e blockchain.
+- **Frontend (React 18 + Vite 7 + Tailwind):** SPA com login, cadastro, dashboard e rotas protegidas.
+- **Mobile (Flutter + Dart):** Cliente nativo iOS/Android com armazenamento seguro de token.
 - **Streamlit (Python):** painel analítico para acompanhamento de dados da plataforma.
-- **Infraestrutura:** Docker/Docker Compose; Traefik no ambiente local e Railway no ambiente de produção.
+- **Infraestrutura:** Docker/Docker Compose; Traefik no ambiente local; Railway + Nginx no ambiente de produção.
 
 ## 🎯 Documentação Completa de Backend (CDD/ICP + SDD)
 
-**Para entender e estender o backend, comece aqui:** 👉 **[BACKEND_GUIDE.md](BACKEND_GUIDE.md)**
+**Para entender e estender o backend, comece aqui:** 👉 **[docs/guide/BACKEND_GUIDE.md](docs/guide/BACKEND_GUIDE.md)**
 
 Este guia inclui:
 - 📋 **Onboarding em 30 minutos** para novos devs
