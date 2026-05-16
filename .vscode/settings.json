@@ -1,11 +1,11 @@
 {
     "java.configuration.updateBuildConfiguration": "interactive",
     "java.compile.nullAnalysis.mode": "automatic",
-    "java.jdt.ls.java.home": "/usr/local/Cellar/openjdk@21/21.0.10/libexec/openjdk.jdk/Contents/Home",
+    "java.jdt.ls.java.home": "/usr/local/opt/openjdk@17/libexec/openjdk.jdk/Contents/Home",
     "java.configuration.runtimes": [
         {
-            "name": "JavaSE-21",
-            "path": "/usr/local/Cellar/openjdk@21/21.0.10/libexec/openjdk.jdk/Contents/Home",
+            "name": "JavaSE-17",
+            "path": "/usr/local/opt/openjdk@17/libexec/openjdk.jdk/Contents/Home",
             "default": true
         }
     ],

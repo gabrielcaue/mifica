@@ -110,4 +110,3 @@ public class FakeUserRepository implements UserRepository {
         idCounter = 1L;
     }
 }
-}
