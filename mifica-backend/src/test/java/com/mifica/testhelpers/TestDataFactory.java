@@ -107,7 +107,7 @@ public class TestDataFactory {
         private String senha = "senha123";
         private int reputacao = 1;
         private String nivel = "INICIANTE";
-        private Role role = Role.USER;
+        private Role role = Role.ROLE_USER;
         private Boolean enabled = true;
 
         public UsuarioBuilder withEmail(String email) {

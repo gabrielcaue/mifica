@@ -52,6 +52,11 @@ public class FakeBadgeRepository implements BadgeRepository {
     }
 
     @Override
+    public <S extends Badge> List<S> findAll(Example<S> example) {
+        return new ArrayList<>();
+    }
+
+    @Override
     public <S extends Badge> List<S> findAll(Example<S> example, Sort sort) {
         // Simple implementation returning empty list
         // In real scenarios, would filter based on example
