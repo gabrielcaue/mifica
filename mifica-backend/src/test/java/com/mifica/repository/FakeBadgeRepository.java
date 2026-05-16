@@ -15,8 +15,14 @@ public class FakeBadgeRepository implements BadgeRepository {
 
     @Override
     public <S extends Badge> S save(S entity) {
+        // Note: In this fake implementation, we simulate ID assignment
+        // In real JPA, @GeneratedValue(IDENTITY) is handled by the database
         if (entity.getId() == null) {
-            entity.setId(idCounter++);
+            try {
+                entity.getClass().getDeclaredMethod("setId", Long.class).invoke(entity, idCounter++);
+            } catch (Exception e) {
+                // If setId is not available, entity comes with ID already set
+            }
         }
         database.put(entity.getId(), entity);
         return entity;
@@ -61,6 +67,11 @@ public class FakeBadgeRepository implements BadgeRepository {
         // Simple implementation returning empty list
         // In real scenarios, would filter based on example
         return new ArrayList<>();
+    }
+
+    @Override
+    public Badge getReferenceById(Long id) {
+        return database.get(id);
     }
 
     @Override
