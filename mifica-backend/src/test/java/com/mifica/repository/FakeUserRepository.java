@@ -23,13 +23,28 @@ public class FakeUserRepository implements UserRepository {
     public <S extends User> S save(S entity) {
         // Note: In this fake implementation, we simulate ID assignment
         // In real JPA, @GeneratedValue(IDENTITY) is handled by the database
+        
+        // ✅ CRITICAL: Always assign ID if null
         if (entity.getId() == null) {
             try {
                 entity.getClass().getDeclaredMethod("setId", Long.class).invoke(entity, idCounter++);
             } catch (Exception e) {
-                // If setId is not available, entity comes with ID already set
+                // Fallback: se setId não existir, tenta com reflexão alternativa
+                try {
+                    var field = entity.getClass().getDeclaredField("id");
+                    field.setAccessible(true);
+                    field.set(entity, idCounter++);
+                } catch (Exception ex) {
+                    throw new RuntimeException("Cannot assign ID to entity", ex);
+                }
             }
         }
+        
+        // ✅ Validate ID is not null before storing
+        if (entity.getId() == null) {
+            throw new RuntimeException("Entity must have a non-null ID after save");
+        }
+        
         database.put(entity.getId(), entity);
         return entity;
     }

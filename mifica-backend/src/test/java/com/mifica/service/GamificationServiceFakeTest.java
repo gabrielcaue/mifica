@@ -41,13 +41,8 @@ class GamificationServiceFakeTest {
             .withLevel(1)
             .build();
         
-        // ✅ CRITICAL FIX: Salvar antes de usar - FakeUserRepository atribui ID
-        // Sem isso, user.getId() pode retornar null, causando NullPointerException
-        // em GamificationService.addPoints() quando tenta Objects.requireNonNull(userId)
+        // ✅ Salvar ANTES de usar - FakeUserRepository atribui ID
         user = fakeUserRepository.save(user);
-        
-        // Verificar que ID foi atribuído corretamente
-        assertThat(user.getId()).isNotNull().isPositive();
 
         // ACT - Adiciona pontos que atingem o limiar
         gamificationService.addPoints(user.getId(), 100);
@@ -70,9 +65,6 @@ class GamificationServiceFakeTest {
         User user = fakeUserRepository.save(
             TestDataFactory.userBuilder().withPoints(0).build()
         );
-        
-        // ✅ CRITICAL FIX: Verificar que ID foi atribuído
-        assertThat(user.getId()).isNotNull().isPositive();
 
         // ACT - Múltiplas adições
         gamificationService.addPoints(user.getId(), 30);

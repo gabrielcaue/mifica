@@ -2,15 +2,17 @@ spring:
   profiles:
     active: test
 
-  # ✅ Desativar Security Auto-Configuration
-  # Evita: ApplicationContext failure threshold exceeded
+  # ✅ Desativar TODAS as auto-configurations de segurança
   autoconfigure:
     exclude:
       - org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration
+      - org.springframework.boot.autoconfigure.security.servlet.SecurityFilterAutoConfiguration
       - org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientAutoConfiguration
+      - org.springframework.boot.autoconfigure.security.oauth2.client.servlet.OAuth2ClientWebSecurityAutoConfiguration
+      - org.springframework.boot.autoconfigure.security.oauth2.resource.servlet.OAuth2ResourceServerAutoConfiguration
       - org.springframework.boot.autoconfigure.security.saml2.Saml2RelyingPartyAutoConfiguration
 
-  # ✅ H2 Em Memória (NÃO USA MYSQL)
+  # ✅ H2 Em Memória
   datasource:
     url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=false
     driver-class-name: org.h2.Driver
@@ -28,11 +30,9 @@ spring:
         show_sql: false
         dialect: org.hibernate.dialect.H2Dialect
 
-  # ✅ Redis desativado para testes (usar Testcontainers em futuro)
+  # ✅ Redis desativado explicitamente
   redis:
-    host: localhost
-    port: 6379
-    timeout: 60000ms
+    enabled: false
 
 # ✅ Logs para debug
 logging:
