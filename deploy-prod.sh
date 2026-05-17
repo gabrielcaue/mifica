@@ -115,7 +115,7 @@ git push origin master
 echo ""
 echo "${GREEN}✅ Deploy initiated!${NC}"
 echo "${BLUE}📊 GitHub Actions will now:${NC}"
-echo "   1. Build backend with Maven (Java 21)"
+echo "   1. Build backend with Maven (Java 17 LTS)"
 echo "   2. Run tests and SonarQube analysis"
 echo "   3. Trigger Railway auto-deployment"
 echo ""
