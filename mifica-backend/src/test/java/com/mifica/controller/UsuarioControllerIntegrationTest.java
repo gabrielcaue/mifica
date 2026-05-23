@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
@@ -29,7 +30,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * ✅ @TestPropertySource força carregamento de application-test.yml
  */
 @SpringBootTest(
-    classes = com.mifica.TestApplication.class,
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
 )
 @AutoConfigureMockMvc
@@ -66,6 +66,7 @@ class UsuarioControllerIntegrationTest {
     }
 
     @Test
+    @WithMockUser
     @DisplayName("Deve cadastrar novo usuário com sucesso")
     void testCadastrarUsuario_Success() throws Exception {
         // ACT & ASSERT
@@ -81,6 +82,7 @@ class UsuarioControllerIntegrationTest {
     }
 
     @Test
+    @WithMockUser
     @DisplayName("Não deve cadastrar usuário com email duplicado")
     void testCadastrarUsuario_EmailDuplicado() throws Exception {
         // ARRANGE - Cria primeiro usuário
@@ -95,6 +97,7 @@ class UsuarioControllerIntegrationTest {
     }
 
     @Test
+    @WithMockUser
     @DisplayName("Deve normalizar email para lowercase")
     void testCadastrarUsuario_EmailNormalizado() throws Exception {
         // ARRANGE
@@ -116,6 +119,7 @@ class UsuarioControllerIntegrationTest {
     }
 
     @Test
+    @WithMockUser
     @DisplayName("Deve buscar usuário por email com sucesso")
     void testBuscarUsuarioPorEmail_Success() throws Exception {
         // ARRANGE
@@ -129,6 +133,7 @@ class UsuarioControllerIntegrationTest {
     }
 
     @Test
+    @WithMockUser
     @DisplayName("Deve retornar 404 quando usuário não encontrado")
     void testBuscarUsuarioPorEmail_NaoEncontrado() throws Exception {
         // ACT & ASSERT
@@ -137,6 +142,7 @@ class UsuarioControllerIntegrationTest {
     }
 
     @Test
+    @WithMockUser
     @DisplayName("Deve validar login com credenciais corretas")
     void testValidarLogin_Sucesso() throws Exception {
         // ARRANGE
@@ -154,6 +160,7 @@ class UsuarioControllerIntegrationTest {
     }
 
     @Test
+    @WithMockUser
     @DisplayName("Deve rejeitar login com senha incorreta")
     void testValidarLogin_SenhaInvalida() throws Exception {
         // ARRANGE
@@ -172,6 +179,7 @@ class UsuarioControllerIntegrationTest {
     }
 
     @Test
+    @WithMockUser
     @DisplayName("Deve rejeitar login com usuário inexistente")
     void testValidarLogin_UsuarioNaoEncontrado() throws Exception {
         // ARRANGE
@@ -187,6 +195,7 @@ class UsuarioControllerIntegrationTest {
     }
 
     @Test
+    @WithMockUser
     @DisplayName("Deve listar todos os usuários")
     void testListarTodosUsuarios_Success() throws Exception {
         // ARRANGE
@@ -206,6 +215,7 @@ class UsuarioControllerIntegrationTest {
     }
 
     @Test
+    @WithMockUser
     @DisplayName("Deve buscar usuário por ID")
     void testBuscarUsuarioPorId_Success() throws Exception {
         // ARRANGE
@@ -219,6 +229,7 @@ class UsuarioControllerIntegrationTest {
     }
 
     @Test
+    @WithMockUser
     @DisplayName("Deve atualizar perfil do usuário")
     void testAtualizarPerfil_Success() throws Exception {
         // ARRANGE
@@ -237,6 +248,7 @@ class UsuarioControllerIntegrationTest {
     }
 
     @Test
+    @WithMockUser
     @DisplayName("Deve deletar usuário com sucesso")
     void testDeletarUsuario_Success() throws Exception {
         // ARRANGE
@@ -252,6 +264,7 @@ class UsuarioControllerIntegrationTest {
     }
 
     @Test
+    @WithMockUser
     @DisplayName("Deve retornar reputação do usuário")
     void testObterReputacao_Success() throws Exception {
         // ARRANGE

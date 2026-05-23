@@ -1,26 +1,34 @@
 package com.mifica;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientAutoConfiguration;
+import org.springframework.boot.autoconfigure.security.oauth2.client.servlet.OAuth2ClientWebSecurityAutoConfiguration;
+import org.springframework.boot.autoconfigure.security.oauth2.resource.servlet.OAuth2ResourceServerAutoConfiguration;
+import org.springframework.boot.autoconfigure.security.saml2.Saml2RelyingPartyAutoConfiguration;
+import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
+import org.springframework.boot.autoconfigure.security.servlet.SecurityFilterAutoConfiguration;
+import org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration;
+import org.springframework.context.annotation.Configuration;
 
 /**
- * Test application class that excludes security auto-configurations
+ * Test configuration class that excludes security auto-configurations
  * that cause issues in integration tests.
  * 
- * Used in @SpringBootTest(classes = TestApplication.class) to ensure
- * proper test context initialization without OAuth2/SAML2 auto-configs.
+ * Used in @SpringBootTest(classes = {MificaApplication.class, TestApplication.class})
+ * to exclude problematic auto-configs while keeping the main app context.
  */
-@SpringBootApplication(
+@Configuration
+@EnableAutoConfiguration(
     exclude = {
-        org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientAutoConfiguration.class,
-        org.springframework.boot.autoconfigure.security.oauth2.client.servlet.OAuth2ClientWebSecurityAutoConfiguration.class,
-        org.springframework.boot.autoconfigure.security.oauth2.resource.servlet.OAuth2ResourceServerAutoConfiguration.class,
-        org.springframework.boot.autoconfigure.security.saml2.Saml2RelyingPartyAutoConfiguration.class
+        OAuth2ClientAutoConfiguration.class,
+        OAuth2ClientWebSecurityAutoConfiguration.class,
+        OAuth2ResourceServerAutoConfiguration.class,
+        Saml2RelyingPartyAutoConfiguration.class,
+        SecurityAutoConfiguration.class,
+        SecurityFilterAutoConfiguration.class,
+        UserDetailsServiceAutoConfiguration.class
     }
 )
 public class TestApplication {
 
-    public static void main(String[] args) {
-        SpringApplication.run(TestApplication.class, args);
-    }
 }

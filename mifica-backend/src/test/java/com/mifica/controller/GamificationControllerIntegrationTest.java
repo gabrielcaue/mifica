@@ -9,6 +9,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
@@ -25,7 +26,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * ✅ @TestPropertySource força carregamento de application-test.yml
  */
 @SpringBootTest(
-    classes = com.mifica.TestApplication.class,
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
 )
 @AutoConfigureMockMvc
@@ -60,6 +60,7 @@ class GamificationControllerIntegrationTest {
     }
 
     @Test
+    @WithMockUser
     @DisplayName("POST /api/gamification/add-points - Deve adicionar pontos com sucesso")
     void testAddPointsEndpoint() throws Exception {
         // ACT
@@ -75,6 +76,7 @@ class GamificationControllerIntegrationTest {
     }
 
     @Test
+    @WithMockUser
     @DisplayName("POST /api/gamification/add-points - Deve criar badge ao atingir 100 pontos")
     void testAddPointsCreatesBADGE() throws Exception {
         // ARRANGE - usuário tem 70 pontos
@@ -99,6 +101,7 @@ class GamificationControllerIntegrationTest {
     }
 
     @Test
+    @WithMockUser
     @DisplayName("GET /api/gamification/user/{id} - Deve retornar dados do usuário")
     void testGetUserStats() throws Exception {
         // ACT & ASSERT
@@ -110,6 +113,7 @@ class GamificationControllerIntegrationTest {
     }
 
     @Test
+    @WithMockUser
     @DisplayName("POST /api/gamification/add-points - Deve retornar 404 para usuário inexistente")
     void testAddPointsUserNotFound() throws Exception {
         // ACT & ASSERT
