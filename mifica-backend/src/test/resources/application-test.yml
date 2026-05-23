@@ -26,13 +26,17 @@ spring:
     console:
       enabled: false
 
-  # ✅ CRÍTICO: Desabilitar OAuth2 e SAML2 para testes
-  # Mantém Spring Security mas sem complexidade
+  # ✅ CRÍTICO: Desabilitar TODAS as auto-configs de segurança OAuth2/SAML2
+  # Permite que @ActiveProfiles(test) funcione + H2 + MockMvc sem conflitos
   autoconfigure:
     exclude:
       - org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientAutoConfiguration
+      - org.springframework.boot.autoconfigure.security.oauth2.client.servlet.OAuth2ClientWebSecurityAutoConfiguration
       - org.springframework.boot.autoconfigure.security.oauth2.resource.servlet.OAuth2ResourceServerAutoConfiguration
       - org.springframework.boot.autoconfigure.security.saml2.Saml2RelyingPartyAutoConfiguration
+      - org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration
+      - org.springframework.boot.autoconfigure.security.servlet.SecurityFilterAutoConfiguration
+      - org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration
 
   # ✅ Redis desativado para testes
   redis:
