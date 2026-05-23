@@ -69,9 +69,7 @@ public class ProfessionalTestSecurityConfig {
             )
             
             // Autenticação HTTP basic para testes (alternativa ao JWT)
-            .httpBasic(httpBasic -> {})
-            
-            .build();
+            .httpBasic(httpBasic -> {});
         
         return http.build();
     }
