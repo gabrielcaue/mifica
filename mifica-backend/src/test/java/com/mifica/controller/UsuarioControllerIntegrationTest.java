@@ -13,6 +13,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
@@ -25,12 +26,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * Usa @SpringBootTest com H2 em memória
  * Testa fluxo completo: Controller → Service → Repository
  * 
- * ✅ IMPORTANTE: @Import(ProfessionalTestSecurityConfig.class)
- * Garante que Spring detecte a configuração de segurança para teste
+ * ✅ @TestPropertySource força carregamento de application-test.yml
  */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
+@TestPropertySource(locations = "classpath:application-test.yml")
 @DisplayName("UsuarioController - Testes de Integração")
 class UsuarioControllerIntegrationTest {
 

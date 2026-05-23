@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -21,12 +22,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * Usa @SpringBootTest com H2 em memória
  * Testa fluxo completo: Controller → Service → Repository
  * 
- * ✅ IMPORTANTE: @Import(ProfessionalTestSecurityConfig.class)
- * Garante que Spring detecte a configuração de segurança para teste
+ * ✅ @TestPropertySource força carregamento de application-test.yml
  */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
+@TestPropertySource(locations = "classpath:application-test.yml")
 @DisplayName("GamificationController - Testes de Integração")
 class GamificationControllerIntegrationTest {
 
