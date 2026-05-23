@@ -1,6 +1,5 @@
 package com.mifica.controller;
 
-import com.mifica.config.ProfessionalTestSecurityConfig;
 import com.mifica.entity.User;
 import com.mifica.repository.UserRepository;
 import com.mifica.repository.BadgeRepository;
@@ -10,10 +9,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -30,7 +27,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
-@Import(ProfessionalTestSecurityConfig.class)  // ✅ CRÍTICO: Force descoberta da config de teste
 @DisplayName("GamificationController - Testes de Integração")
 class GamificationControllerIntegrationTest {
 

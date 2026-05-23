@@ -1,11 +1,8 @@
 package com.mifica.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mifica.config.ProfessionalTestSecurityConfig;
 import com.mifica.dto.UsuarioDTO;
 import com.mifica.dto.LoginDTO;
-import com.mifica.entity.Usuario;
-import com.mifica.entity.Role;
 import com.mifica.repository.UsuarioRepository;
 import com.mifica.service.UsuarioService;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,7 +11,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
@@ -35,7 +31,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
-@Import(ProfessionalTestSecurityConfig.class)  // ✅ CRÍTICO: Force descoberta da config de teste
 @DisplayName("UsuarioController - Testes de Integração")
 class UsuarioControllerIntegrationTest {
 
