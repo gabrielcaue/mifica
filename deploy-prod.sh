@@ -135,15 +135,15 @@ COMMIT_MSG=$(generate_commit_message "$CHANGED_FILES")
 
 # Display summary with file counts
 echo "${BLUE}📊 Change Summary:${NC}"
-TOTAL_FILES=$(echo "$CHANGED_FILES" | wc -l | tr -d ' ')
+TOTAL_FILES=$(echo "$CHANGED_FILES" | wc -l)
 BACKEND_FILES=$(echo "$CHANGED_FILES" | grep -c "mifica-backend/" || echo 0)
 FRONTEND_FILES=$(echo "$CHANGED_FILES" | grep -c "mifica-frontend/" || echo 0)
-TESTS_FILES=$(echo "$CHANGED_FILES" | grep -c "test\|spec" || echo 0)
+TESTS_FILES=$(echo "$CHANGED_FILES" | grep -cE "test|spec" || echo 0)
 
-echo "   Total files changed: $TOTAL_FILES"
-[ "$BACKEND_FILES" -gt 0 ] && echo "   Backend: $BACKEND_FILES files"
-[ "$FRONTEND_FILES" -gt 0 ] && echo "   Frontend: $FRONTEND_FILES files"
-[ "$TESTS_FILES" -gt 0 ] && echo "   Tests: $TESTS_FILES files"
+echo "   Total de arquivos alterados: $TOTAL_FILES"
+[ "$BACKEND_FILES" -gt 0 ] && echo "   Backend: $BACKEND_FILES arquivos"
+[ "$FRONTEND_FILES" -gt 0 ] && echo "   Frontend: $FRONTEND_FILES arquivos"
+[ "$TESTS_FILES" -gt 0 ] && echo "   Testes: $TESTS_FILES arquivos"
 echo ""
 
 echo "${BLUE}💬 Generated commit message:${NC}"
@@ -174,4 +174,4 @@ echo ""
 echo "${YELLOW}🔗 Monitore em:${NC} https://github.com/gabrielcaue/mifica/actions"
 echo ""
 echo "${BLUE}📨 Commit Message:${NC}"
-echo "   ${GREEN}$COMMIT_MSG${NC}""
+echo "   ${GREEN}$COMMIT_MSG${NC}"
