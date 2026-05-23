@@ -24,20 +24,15 @@ spring:
   # ✅ H2 Console para Debug (opcional)
   h2:
     console:
-      enabled: false  # true se necessário debugar no h2-console
+      enabled: false
 
-  # ✅ Security: Mantém ativo mas configurado via ProfessionalTestSecurityConfig
-  security:
-    user:
-      name: testuser
-      password: testpass
-    oauth2:
-      resourceserver:
-        jwt:
-          issuer-uri: http://localhost:8080
-      client:
-        registration:
-          # OAuth2 client removed for tests - use ProfessionalTestSecurityConfig instead
+  # ✅ CRÍTICO: Desabilitar OAuth2 e SAML2 para testes
+  # Mantém Spring Security mas sem complexidade
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientAutoConfiguration
+      - org.springframework.boot.autoconfigure.security.oauth2.resource.servlet.OAuth2ResourceServerAutoConfiguration
+      - org.springframework.boot.autoconfigure.security.saml2.Saml2RelyingPartyAutoConfiguration
 
   # ✅ Redis desativado para testes
   redis:
@@ -48,6 +43,14 @@ jwt:
   secret: test-secret-key-for-testing-purposes-only
   expiration: 86400000
   refresh-token-expiration: 604800000
+
+# ✅ Logs para debug
+logging:
+  level:
+    com.mifica: DEBUG
+    org.springframework.security: DEBUG
+    org.springframework.test: DEBUG
+
 
 # ✅ Logs para debug
 logging:
