@@ -7,9 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.http.HttpMethod;
@@ -26,8 +26,12 @@ import com.mifica.util.JwtFiltro;
  *
  * Padrão: Stateless — não mantém sessão no servidor, toda autenticação
  * é feita via token JWT no header Authorization.
+ * 
+ * Nota: Esta configuração é desabilitada durante testes (profile=test)
+ * em favor do TestSecurityConfig que fornece uma configuração minimalista.
  */
 @Configuration
+@Profile("!test")
 public class SecurityConfig {
 
     // ICP-TOTAL: 3
@@ -112,11 +116,5 @@ public class SecurityConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
-    }
-
-    /** Encoder BCrypt para criptografia de senhas (fator de custo padrão: 10). */
-    @Bean
-    public BCryptPasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
     }
 }

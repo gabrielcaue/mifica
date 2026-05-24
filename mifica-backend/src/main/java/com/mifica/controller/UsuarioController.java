@@ -103,6 +103,7 @@ public class UsuarioController {
 
         Map<String, Object> resposta = new HashMap<>();
         resposta.put("id", novo.getId());
+        resposta.put("nome", novo.getNome());
         resposta.put("email", novo.getEmail());
         resposta.put("mensagem", "Cadastro realizado com sucesso!");
         return ResponseEntity.ok(resposta);
@@ -147,12 +148,16 @@ public class UsuarioController {
     public ResponseEntity<?> loginPost(@RequestBody LoginDTO dto) {
         // ICP-03: Login combina validação de credenciais, geração de JWT e montagem de payload para frontend.
         try {
-            boolean valido = usuarioService.validarLogin(dto.getEmail(), dto.getSenha());
+            Usuario usuario = usuarioService.buscarPorEmail(dto.getEmail());
+            if (usuario == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(USUARIO_NAO_ENCONTRADO);
+            }
+
+            boolean valido = usuarioService.senhaCorreta(dto.getSenha(), usuario.getSenha());
             if (!valido) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciais inválidas.");
             }
 
-            Usuario usuario = usuarioService.buscarPorEmail(dto.getEmail());
             // Gera token JWT assinado com HMAC-SHA256 contendo email e role
             String token = jwtUtil.gerarToken(usuario.getEmail());
 
@@ -174,6 +179,16 @@ public class UsuarioController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<UsuarioDTO>> listarTodos() {
         return ResponseEntity.ok(usuarioService.listarTodos());
+    }
+
+    // 🔧 Buscar por email
+    @GetMapping("/email/{email}")
+    public ResponseEntity<?> buscarPorEmail(@PathVariable String email) {
+        UsuarioDTO usuario = usuarioService.buscarPorEmailDTO(email);
+        if (usuario == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(USUARIO_NAO_ENCONTRADO);
+        }
+        return ResponseEntity.ok(usuario);
     }
 
     // 🔧 Buscar por ID
@@ -212,6 +227,19 @@ public class UsuarioController {
         return ResponseEntity.ok(atualizado);
     }
 
+    // 🔧 Deletar usuário por ID (admin)
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<String> deletarUsuario(@PathVariable Long id) {
+        try {
+            Usuario usuario = usuarioService.buscarUsuarioPorId(id);
+            usuarioService.excluir(usuario);
+            return ResponseEntity.ok("Usuário excluído com sucesso.");
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(USUARIO_NAO_ENCONTRADO);
+        }
+    }
+
     // 🔧 Atualizar reputação
     @PatchMapping("/perfil/reputacao")
     public ResponseEntity<String> atualizarReputacao(@RequestHeader("Authorization") String token,
@@ -223,6 +251,18 @@ public class UsuarioController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(TOKEN_INVALIDO);
         }
+    }
+
+    // 🔧 Obter reputação por ID
+    @GetMapping("/{id}/reputacao")
+    public ResponseEntity<?> obterReputacao(@PathVariable Long id) {
+        Optional<UsuarioDTO> usuario = usuarioService.buscarPorId(id);
+        if (usuario.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(USUARIO_NAO_ENCONTRADO);
+        }
+        Map<String, Object> resposta = new HashMap<>();
+        resposta.put("reputacao", usuario.get().getReputacao());
+        return ResponseEntity.ok(resposta);
     }
 
     // 🔧 Missão diária

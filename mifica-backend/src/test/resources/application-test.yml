@@ -25,12 +25,15 @@ spring:
 
   # ✅ CRÍTICO: Desabilitar APENAS OAuth2/SAML2 auto-configs
   # que causam problemas de contexto duplicado nos testes
+  # SecurityAutoConfiguration e SecurityFilterAutoConfiguration devem estar HABILITADOS
+  # para que HttpSecurity seja fornecido pelo auto-config
   autoconfigure:
     exclude:
       - org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientAutoConfiguration
       - org.springframework.boot.autoconfigure.security.oauth2.client.servlet.OAuth2ClientWebSecurityAutoConfiguration
       - org.springframework.boot.autoconfigure.security.oauth2.resource.servlet.OAuth2ResourceServerAutoConfiguration
       - org.springframework.boot.autoconfigure.security.saml2.Saml2RelyingPartyAutoConfiguration
+      - org.springframework.boot.actuate.autoconfigure.security.servlet.ManagementWebSecurityAutoConfiguration
 
   # ✅ Redis desativado para testes
   redis:

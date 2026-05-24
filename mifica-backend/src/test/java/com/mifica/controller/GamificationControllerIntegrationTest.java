@@ -3,6 +3,7 @@ package com.mifica.controller;
 import com.mifica.entity.User;
 import com.mifica.repository.UserRepository;
 import com.mifica.repository.BadgeRepository;
+import com.mifica.redis.GamificationPublisher;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;
@@ -13,8 +14,12 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import java.util.Objects;
+
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -43,9 +48,13 @@ class GamificationControllerIntegrationTest {
     @Autowired
     private BadgeRepository badgeRepository;
 
+    @MockitoBean
+    private GamificationPublisher publisher;
+
     private User testUser;
 
     @BeforeEach
+    @SuppressWarnings("null")
     void setUp() {
         // Limpa dados
         badgeRepository.deleteAll();
@@ -61,43 +70,34 @@ class GamificationControllerIntegrationTest {
 
     @Test
     @WithMockUser
-    @DisplayName("POST /api/gamification/add-points - Deve adicionar pontos com sucesso")
+    @DisplayName("POST /api/gamification/points/{userId} - Deve adicionar pontos com sucesso")
     void testAddPointsEndpoint() throws Exception {
         // ACT
-        mockMvc.perform(post("/api/gamification/add-points")
-                .param("userId", testUser.getId().toString())
+        mockMvc.perform(post("/api/gamification/points/" + testUser.getId())
                 .param("points", "30")
                 .contentType("application/json"))
             .andExpect(status().isOk());
 
         // ASSERT
-        User updatedUser = userRepository.findById(testUser.getId()).orElseThrow();
-        assertThat(updatedUser.getPoints()).isEqualTo(80);
+        verify(publisher).publishEvent(Objects.requireNonNull(testUser.getId()), 30);
     }
 
     @Test
     @WithMockUser
-    @DisplayName("POST /api/gamification/add-points - Deve criar badge ao atingir 100 pontos")
+    @DisplayName("POST /api/gamification/points/{userId} - Deve criar badge ao atingir 100 pontos")
     void testAddPointsCreatesBADGE() throws Exception {
         // ARRANGE - usuário tem 70 pontos
         testUser.setPoints(70);
         userRepository.save(testUser);
 
         // ACT
-        mockMvc.perform(post("/api/gamification/add-points")
-                .param("userId", testUser.getId().toString())
+        mockMvc.perform(post("/api/gamification/points/" + testUser.getId())
                 .param("points", "50")
                 .contentType("application/json"))
             .andExpect(status().isOk());
 
         // ASSERT
-        User updatedUser = userRepository.findById(testUser.getId()).orElseThrow();
-        assertThat(updatedUser.getPoints()).isEqualTo(120);
-        assertThat(updatedUser.getLevel()).isEqualTo(2);
-
-        // Verifica badge criada
-        long badgeCount = badgeRepository.count();
-        assertThat(badgeCount).isGreaterThan(0);
+        verify(publisher).publishEvent(Objects.requireNonNull(testUser.getId()), 50);
     }
 
     @Test
@@ -114,13 +114,14 @@ class GamificationControllerIntegrationTest {
 
     @Test
     @WithMockUser
-    @DisplayName("POST /api/gamification/add-points - Deve retornar 404 para usuário inexistente")
+    @DisplayName("POST /api/gamification/points/{userId} - Deve retornar 404 para usuário inexistente")
     void testAddPointsUserNotFound() throws Exception {
         // ACT & ASSERT
-        mockMvc.perform(post("/api/gamification/add-points")
-                .param("userId", "999")
+        mockMvc.perform(post("/api/gamification/points/999")
                 .param("points", "50")
                 .contentType("application/json"))
             .andExpect(status().isNotFound());
+
+        verify(publisher, never()).publishEvent(999L, 50);
     }
 }

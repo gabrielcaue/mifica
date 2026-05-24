@@ -309,7 +309,11 @@ public UsuarioDTO atualizarUsuario(Long id, UsuarioDTO dto) {
         usuario.setSenha(criptografarSenha(dto.getSenha()));
     }
 
-    usuario.setReputacao(dto.getReputacao());
+    // ICP-28b: Reputação só é atualizada quando veio preenchida no DTO.
+    if (dto.getReputacao() != null) {
+        usuario.setReputacao(dto.getReputacao());
+    }
+
     usuario.setNivel(dto.getNivel());
 
     // ICP-29: Role só é convertida quando o payload envia valor explícito.

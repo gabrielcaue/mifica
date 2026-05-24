@@ -16,7 +16,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
+import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -36,6 +36,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ActiveProfiles("test")
 @TestPropertySource(locations = "classpath:application-test.yml")
 @DisplayName("UsuarioController - Testes de Integração")
+@SuppressWarnings("null")
 class UsuarioControllerIntegrationTest {
 
     @Autowired
@@ -99,6 +100,7 @@ class UsuarioControllerIntegrationTest {
     @Test
     @WithMockUser
     @DisplayName("Deve normalizar email para lowercase")
+    @SuppressWarnings("null")
     void testCadastrarUsuario_EmailNormalizado() throws Exception {
         // ARRANGE
         UsuarioDTO usuarioComEmailMaiusculo = new UsuarioDTO();
@@ -123,7 +125,7 @@ class UsuarioControllerIntegrationTest {
     @DisplayName("Deve buscar usuário por email com sucesso")
     void testBuscarUsuarioPorEmail_Success() throws Exception {
         // ARRANGE
-        UsuarioDTO usuarioCriado = usuarioService.criar(usuarioDTOValido);
+        usuarioService.criar(usuarioDTOValido);
 
         // ACT & ASSERT
         mockMvc.perform(get("/api/usuarios/email/joao@test.com"))
@@ -171,7 +173,7 @@ class UsuarioControllerIntegrationTest {
         loginDTO.setSenha("senhaErrada");
 
         // ACT & ASSERT
-        MvcResult result = mockMvc.perform(post("/api/usuarios/login")
+        mockMvc.perform(post("/api/usuarios/login")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(loginDTO)))
             .andExpect(status().isUnauthorized())
@@ -195,7 +197,7 @@ class UsuarioControllerIntegrationTest {
     }
 
     @Test
-    @WithMockUser
+    @WithMockUser(roles = "ADMIN")
     @DisplayName("Deve listar todos os usuários")
     void testListarTodosUsuarios_Success() throws Exception {
         // ARRANGE
@@ -209,7 +211,7 @@ class UsuarioControllerIntegrationTest {
         usuarioService.criar(usuario2);
 
         // ACT & ASSERT
-        mockMvc.perform(get("/api/usuarios"))
+        mockMvc.perform(get("/api/usuarios/admin/usuarios"))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.length()").value(2));
     }
@@ -248,7 +250,7 @@ class UsuarioControllerIntegrationTest {
     }
 
     @Test
-    @WithMockUser
+    @WithMockUser(roles = "ADMIN")
     @DisplayName("Deve deletar usuário com sucesso")
     void testDeletarUsuario_Success() throws Exception {
         // ARRANGE
@@ -260,7 +262,7 @@ class UsuarioControllerIntegrationTest {
             .andExpect(status().isOk());
 
         // ASSERT - Verifica se foi deletado
-        assertThat(usuarioRepository.findById(usuarioId)).isEmpty();
+        assertThat(usuarioRepository.findById(Objects.requireNonNull(usuarioId))).isEmpty();
     }
 
     @Test
