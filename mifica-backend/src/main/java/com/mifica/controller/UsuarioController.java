@@ -18,12 +18,14 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import jakarta.validation.Valid;
 import com.mifica.dto.EstatisticasDTO;
 import com.mifica.dto.LoginDTO;
 import com.mifica.dto.UsuarioDTO;
 import com.mifica.entity.Role;
 import com.mifica.entity.Usuario;
 import com.mifica.repository.UsuarioRepository;
+import com.mifica.service.ReputacaoService;
 import com.mifica.service.UsuarioService;
 import com.mifica.util.JwtUtil;
 import com.mifica.redis.GamificationPublisher;
@@ -54,6 +56,9 @@ public class UsuarioController {
     private JwtUtil jwtUtil;
 
     @Autowired
+    private ReputacaoService reputacaoService;
+
+    @Autowired
     private UsuarioRepository usuarioRepository;
 
     @Autowired
@@ -82,9 +87,12 @@ public class UsuarioController {
      * Cadastro público de usuário.
      * Verifica duplicidade de email antes de criar a conta.
      * Senha é criptografada com BCrypt no UsuarioService.
+     * 
+     * Guardrail: @Valid ativa validação do DTO antes de processar.
+     * Erro de validação é capturado por GlobalExceptionHandler.
      */
     @PostMapping("/cadastro")
-    public ResponseEntity<?> cadastrarUsuario(@RequestBody UsuarioDTO dto) {
+    public ResponseEntity<?> cadastrarUsuario(@Valid @RequestBody UsuarioDTO dto) {
         // ICP-02: Cadastro possui bifurcação para reenvio de confirmação e tratamento de consistência transacional de e-mail.
         if (dto.getEmail() != null) {
             dto.setEmail(dto.getEmail().trim().toLowerCase());
@@ -143,9 +151,12 @@ public class UsuarioController {
     /**
      * Autenticação de usuário — valida credenciais e retorna token JWT.
      * O frontend armazena o token e envia no header Authorization.
+     * 
+     * Guardrail: @Valid ativa validação do DTO antes de processar.
+     * Erro de validação é capturado por GlobalExceptionHandler.
      */
     @PostMapping("/login")
-    public ResponseEntity<?> loginPost(@RequestBody LoginDTO dto) {
+    public ResponseEntity<?> loginPost(@Valid @RequestBody LoginDTO dto) {
         // ICP-03: Login combina validação de credenciais, geração de JWT e montagem de payload para frontend.
         try {
             Usuario usuario = usuarioService.buscarPorEmail(dto.getEmail());
@@ -246,7 +257,10 @@ public class UsuarioController {
                                                      @RequestBody int novaReputacao) {
         try {
             String email = jwtUtil.extrairEmail(token.replace("Bearer ", ""));
-            usuarioService.atualizarReputacao(email, novaReputacao);
+            boolean atualizado = reputacaoService.registrarAlteracao(email, novaReputacao);
+            if (!atualizado) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(USUARIO_NAO_ENCONTRADO);
+            }
             return ResponseEntity.ok("Reputação atualizada com sucesso.");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(TOKEN_INVALIDO);

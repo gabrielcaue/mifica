@@ -22,7 +22,7 @@ docker compose down             # Derruba tudo
 ## 🏗️ Stack em 1 Slide
 
 ```text
-Java 21 + Spring Boot 3.5.6 + Maven
+Java 17 + Spring Boot 3.5.6 + Maven
 ├─ Spring Security (JWT via jjwt 0.11.5)
 ├─ Spring Data JPA + Hibernate 6 (ORM)
 ├─ MySQL/PostgreSQL (persistence)

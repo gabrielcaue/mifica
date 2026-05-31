@@ -17,6 +17,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import com.mifica.filter.SecurityAuditFilter;
 import com.mifica.util.JwtFiltro;
 
 /**
@@ -39,6 +40,9 @@ public class SecurityConfig {
 
     @Autowired
     private JwtFiltro jwtFiltro;
+
+    @Autowired
+    private SecurityAuditFilter securityAuditFilter;
 
     @Value("${app.cors.allowed-origin-patterns:*}")
     private String allowedOriginPatterns;
@@ -86,7 +90,8 @@ public class SecurityConfig {
                 .anyRequest().authenticated()
             )
 
-            .addFilterBefore(jwtFiltro, UsernamePasswordAuthenticationFilter.class);
+            .addFilterBefore(jwtFiltro, UsernamePasswordAuthenticationFilter.class)
+            .addFilterAfter(securityAuditFilter, JwtFiltro.class);
 
         return http.build();
     }

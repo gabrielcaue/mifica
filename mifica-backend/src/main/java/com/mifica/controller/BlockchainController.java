@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
+import jakarta.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -22,9 +23,13 @@ public class BlockchainController {
     @Autowired
     private JwtUtil jwtUtil;
 
+    /**
+     * Guardrail: @Valid ativa validação do DTO antes de processar.
+     * Erro de validação é capturado por GlobalExceptionHandler.
+     */
     @PostMapping("/transacoes")
     public ResponseEntity<?> registrar(@RequestHeader("Authorization") String token,
-                                       @RequestBody TransacaoBlockchainDTO dto) {
+                                       @Valid @RequestBody TransacaoBlockchainDTO dto) {
         try {
             String jwt = token.replace("Bearer ", "");
             String emailRemetente = jwtUtil.extrairEmail(jwt);

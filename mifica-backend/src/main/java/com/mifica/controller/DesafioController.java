@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
+import jakarta.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -18,8 +19,12 @@ public class DesafioController {
     @Autowired
     private DesafioService desafioService;
 
+    /**
+     * Guardrail: @Valid ativa validação do DTO antes de processar.
+     * Erro de validação é capturado por GlobalExceptionHandler.
+     */
     @PostMapping
-    public ResponseEntity<DesafioDTO> criar(@RequestBody DesafioDTO dto) {
+    public ResponseEntity<DesafioDTO> criar(@Valid @RequestBody DesafioDTO dto) {
         DesafioDTO criado = desafioService.criarDesafio(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(criado);
     }

@@ -63,7 +63,7 @@ mifica-backend/
 │   ├── blockchain/        # Web3 Integration
 │   └── util/              # Helpers (JWT, BCrypt, etc)
 ├── src/test/java/         # Testes unitários
-├── pom.xml               # Maven (Spring Boot 3.5.6, Java 21)
+├── pom.xml               # Maven (Spring Boot 3.5.6, Java 17)
 └── README.md             # Instruções locais
 ```
 
@@ -184,7 +184,7 @@ Detalhes completos em [Backend Onboarding](docs/packages/backend-onboarding.md#s
 ## 🐛 Troubleshooting
 
 **P: Maven build falha?**
-A: Verifique Java 21 com `java -version`. Se não tiver: `export JAVA_HOME=/path/to/jdk21`
+A: Verifique Java 17 com `java -version`. Se não tiver: `export JAVA_HOME=/path/to/jdk17`
 
 **P: Redis connection refused?**
 A: Verifique se `docker-compose up` está rodando: `docker ps | grep redis`

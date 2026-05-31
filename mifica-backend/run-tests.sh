@@ -1,7 +1,7 @@
 #!/bin/bash
-# Script para rodar testes com Java 21 do Homebrew
+# Script para rodar testes com OpenJDK 17 (compatível com CI local)
 
-export JAVA_HOME="/usr/local/opt/openjdk@21/libexec/openjdk.jdk/Contents/Home"
+export JAVA_HOME="/usr/local/opt/openjdk@17/libexec/openjdk.jdk/Contents/Home"
 export PATH="$JAVA_HOME/bin:$PATH"
 
 # Opções JVM para contornar problema de certificados do Homebrew

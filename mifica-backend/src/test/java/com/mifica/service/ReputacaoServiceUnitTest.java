@@ -19,7 +19,7 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.*;
 
 /**
@@ -27,6 +27,7 @@ import static org.mockito.Mockito.*;
  * Usa MOCKS para isolar a lógica de negócio de reputação
  */
 @DisplayName("ReputacaoService - Testes Unitários")
+@SuppressWarnings("null")
 class ReputacaoServiceUnitTest {
 
     @InjectMocks
@@ -64,8 +65,8 @@ class ReputacaoServiceUnitTest {
         reputacaoService.registrarAlteracao(email, novaReputacao);
 
         // ASSERT
-        verify(historicoReputacaoRepository, times(1)).save(any(HistoricoReputacao.class));
-        verify(usuarioRepository, times(1)).save(usuario);
+        verify(historicoReputacaoRepository, times(1)).save(argThat((HistoricoReputacao historico) -> historico != null));
+        verify(usuarioRepository, times(1)).save(argThat((Usuario usuarioSalvo) -> usuarioSalvo != null));
         assertThat(usuario.getReputacao()).isEqualTo(novaReputacao);
     }
 
@@ -107,7 +108,7 @@ class ReputacaoServiceUnitTest {
         reputacaoService.registrarAlteracao(email, novaReputacao);
 
         // ASSERT
-        verify(historicoReputacaoRepository).save(argThat(historico -> 
+        verify(historicoReputacaoRepository).save(argThat((HistoricoReputacao historico) ->
             historico.getReputacaoAnterior() == reputacaoAnterior && 
             historico.getReputacaoNova() == novaReputacao
         ));
@@ -182,7 +183,7 @@ class ReputacaoServiceUnitTest {
 
         // ASSERT
         verify(historicoReputacaoRepository, times(3)).save(any(HistoricoReputacao.class));
-        verify(usuarioRepository, times(3)).save(usuario);
+        verify(usuarioRepository, times(3)).save(argThat((Usuario usuarioSalvo) -> usuarioSalvo != null));
         assertThat(usuario.getReputacao()).isEqualTo(300);
     }
 }

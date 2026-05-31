@@ -7,7 +7,7 @@ Bem-vindo ao backend Mifica! Este guia acelera sua entrada no projeto.
 ## 1. Setup Local (5 minutos)
 
 ### Pré-requisitos
-- Java 21 (verifique: `java -version`)
+- Java 17 (verifique: `java -version`)
 - Maven 3.9+ (verifique: `mvn -version`)
 - Docker & Docker Compose
 - Git
@@ -401,7 +401,7 @@ cd /Users/user/mifica
 ## 11. Dúvidas Frequentes
 
 **P: Qual versão Java devo usar?**  
-R: Java 21. Spring Boot 3.5.6 suporta 21 nativamente.
+R: Java 17. Spring Boot 3.5.6 suporta 17 nativamente.
 
 **P: Como adicionar nova dependência Maven?**  
 R: Edite `pom.xml`, adicione `<dependency>`, rode `mvn clean install`.

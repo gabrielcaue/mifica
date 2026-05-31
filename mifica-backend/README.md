@@ -1,4 +1,4 @@
-# ⚙️ Mifica Backend — Spring Boot 3 + Java 21
+# ⚙️ Mifica Backend — Spring Boot 3 + Java 17
 
 > ✅ **Status: Online** — Infraestrutura preparada para Railway em produção e Redis Pub/Sub (Upstash).
 
@@ -6,7 +6,7 @@ API REST do projeto Mifica. Responsável por toda a lógica de reputação, gami
 
 ## Stack
 
-- **Java 21** + **Spring Boot 3.5**
+- **Java 17** + **Spring Boot 3.5**
 - **Spring Security** + JWT customizado
 - **Spring Data JPA** + Hibernate + MySQL
 - **Flyway** para migrations versionadas de banco

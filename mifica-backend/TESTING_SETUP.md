@@ -214,7 +214,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-java@v2
         with:
-          java-version: '21'
+          java-version: '17'
       - run: mvn clean test
       - run: mvn jacoco:report
       - uses: codecov/codecov-action@v2

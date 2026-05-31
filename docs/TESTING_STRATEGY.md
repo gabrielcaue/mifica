@@ -3,7 +3,7 @@
 ## 🎯 Contexto do Projeto
 
 O projeto Mifica é uma **aplicação full-stack complexa** com:
-- **Backend**: Spring Boot 3.5 + Java 21 com JPA/Hibernate
+- **Backend**: Spring Boot 3.5 + Java 17 com JPA/Hibernate
 - **Banco de dados**: MySQL (primário) + H2 (testes) + Redis (Pub/Sub)
 - **Blockchain**: Web3j para integração smart contracts
 - **Segurança**: Spring Security + JWT

@@ -27,6 +27,7 @@ import static org.mockito.Mockito.*;
  * - Detecção de erros
  */
 @DisplayName("UsuarioService - Testes Unitários")
+@SuppressWarnings("null")
 class UsuarioServiceUnitTest {
 
     private UsuarioService usuarioService;

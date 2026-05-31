@@ -1,10 +1,14 @@
 package com.mifica.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mifica.dto.HistoricoReputacaoDTO;
+import com.mifica.entity.Usuario;
 import com.mifica.dto.UsuarioDTO;
 import com.mifica.dto.LoginDTO;
+import com.mifica.repository.HistoricoReputacaoRepository;
 import com.mifica.repository.UsuarioRepository;
 import com.mifica.service.UsuarioService;
+import com.mifica.util.JwtUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;
@@ -17,6 +21,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import java.util.Objects;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -47,6 +52,12 @@ class UsuarioControllerIntegrationTest {
 
     @Autowired
     private UsuarioService usuarioService;
+
+    @Autowired
+    private HistoricoReputacaoRepository historicoReputacaoRepository;
+
+    @Autowired
+    private JwtUtil jwtUtil;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -276,5 +287,63 @@ class UsuarioControllerIntegrationTest {
         mockMvc.perform(get("/api/usuarios/" + usuarioCriado.getId() + "/reputacao"))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.reputacao").exists());
+    }
+
+    @Test
+    @WithMockUser
+    @DisplayName("Deve atualizar reputação e registrar histórico")
+    void testAtualizarReputacao_Success() throws Exception {
+        // ARRANGE
+        UsuarioDTO usuarioCriado = usuarioService.criar(usuarioDTOValido);
+        String token = jwtUtil.gerarToken(usuarioDTOValido.getEmail());
+
+        // ACT
+        mockMvc.perform(patch("/api/usuarios/perfil/reputacao")
+                .header("Authorization", "Bearer " + token)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("150"))
+            .andExpect(status().isOk())
+            .andExpect(content().string("Reputação atualizada com sucesso."));
+
+        // ASSERT
+        Usuario usuarioAtualizado = usuarioRepository.findById(Objects.requireNonNull(usuarioCriado.getId()))
+            .orElseThrow();
+        assertThat(usuarioAtualizado.getReputacao()).isEqualTo(150);
+
+        List<HistoricoReputacaoDTO> historico = historicoReputacaoRepository
+            .findByEmailUsuario(usuarioDTOValido.getEmail())
+            .stream()
+            .map(item -> {
+                HistoricoReputacaoDTO dto = new HistoricoReputacaoDTO();
+                dto.setId(item.getId());
+                dto.setEmailUsuario(item.getEmailUsuario());
+                dto.setReputacaoAnterior(item.getReputacaoAnterior());
+                dto.setReputacaoNova(item.getReputacaoNova());
+                dto.setDataAlteracao(item.getDataAlteracao());
+                return dto;
+            })
+            .toList();
+
+        assertThat(historico).hasSize(1);
+        assertThat(historico.get(0).getReputacaoAnterior()).isEqualTo(1);
+        assertThat(historico.get(0).getReputacaoNova()).isEqualTo(150);
+    }
+
+    @Test
+    @WithMockUser
+    @DisplayName("Deve retornar 404 ao atualizar reputação de usuário inexistente")
+    void testAtualizarReputacao_UsuarioNaoEncontrado() throws Exception {
+        // ARRANGE
+        usuarioService.criar(usuarioDTOValido);
+        String token = jwtUtil.gerarToken(usuarioDTOValido.getEmail());
+        usuarioRepository.deleteAll();
+
+        // ACT & ASSERT
+        mockMvc.perform(patch("/api/usuarios/perfil/reputacao")
+                .header("Authorization", "Bearer " + token)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("150"))
+            .andExpect(status().isNotFound())
+            .andExpect(content().string("Usuário não encontrado."));
     }
 }

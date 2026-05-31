@@ -1,0 +1,13 @@
+{
+  "name": "bpmn-exporter",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "export": "node render-bpmn.mjs ../../docs/guardrails.bpmn ../../docs/guardrails"
+  },
+  "dependencies": {
+    "bpmn-js": "^18.5.0",
+    "puppeteer": "^24.10.2"
+  }
+}

@@ -26,22 +26,27 @@ public class ReputacaoService {
     @Autowired
     private UsuarioRepository usuarioRepo;
 
-    public void registrarAlteracao(String email, int novaReputacao) {
+    public boolean registrarAlteracao(String email, int novaReputacao) {
         // ICP-02: Fluxo condicional preserva atomicidade lógica entre auditoria e reputação atual.
         Optional<Usuario> usuarioOpt = usuarioRepo.findByEmail(email);
 
-        usuarioOpt.ifPresent(usuario -> {
-            HistoricoReputacao historico = new HistoricoReputacao();
-            historico.setEmailUsuario(email);
-            historico.setReputacaoAnterior(usuario.getReputacao());
-            historico.setReputacaoNova(novaReputacao);
-            historico.setDataAlteracao(LocalDateTime.now());
+        if (usuarioOpt.isEmpty()) {
+            return false;
+        }
 
-            historicoRepo.save(historico);
+        Usuario usuario = usuarioOpt.get();
 
-            usuario.setReputacao(novaReputacao);
-            usuarioRepo.save(usuario);
-        });
+        HistoricoReputacao historico = new HistoricoReputacao();
+        historico.setEmailUsuario(email);
+        historico.setReputacaoAnterior(usuario.getReputacao());
+        historico.setReputacaoNova(novaReputacao);
+        historico.setDataAlteracao(LocalDateTime.now());
+
+        historicoRepo.save(historico);
+
+        usuario.setReputacao(novaReputacao);
+        usuarioRepo.save(usuario);
+        return true;
     }
 
     public List<HistoricoReputacaoDTO> listarHistorico(String email) {

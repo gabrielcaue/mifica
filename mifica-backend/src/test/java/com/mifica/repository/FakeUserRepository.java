@@ -14,6 +14,7 @@ import java.util.function.Function;
  * FakeUserRepository - Implementação em memória do UserRepository
  * Útil para testes de integração sem banco de dados real
  */
+@SuppressWarnings("null")
 public class FakeUserRepository implements UserRepository {
     
     private Map<Long, User> database = new HashMap<>();

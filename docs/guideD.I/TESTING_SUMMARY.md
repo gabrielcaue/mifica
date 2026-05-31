@@ -182,7 +182,7 @@ mifica-backend/src/test/java/com/mifica/
 ### 🔵 MÊS 2 (Completo)
 8. Testes E2E com Docker Compose
 9. Testes de performance/carga
-10. Matriz de compatibilidade (Java 21 + Spring 3.5)
+10. Matriz de compatibilidade (Java 17 + Spring 3.5)
 
 ---
 

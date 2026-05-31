@@ -2,8 +2,6 @@ package com.mifica.service;
 
 import com.mifica.entity.User;
 import com.mifica.entity.Badge;
-import com.mifica.repository.UserRepository;
-import com.mifica.repository.BadgeRepository;
 import com.mifica.repository.FakeUserRepository;
 import com.mifica.repository.FakeBadgeRepository;
 import com.mifica.testhelpers.TestDataFactory;
@@ -18,6 +16,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Testa lógica de negócio com persistência em memória
  */
 @DisplayName("GamificationService - Testes com Fake Repository")
+@SuppressWarnings("null")
 class GamificationServiceFakeTest {
 
     private GamificationService gamificationService;

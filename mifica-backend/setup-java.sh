@@ -8,8 +8,8 @@ echo "🔍 Procurando JDK do VS Code..."
 VSCODE_JDK_PATHS=(
     "$HOME/.vscode/extensions/vscjava.vscode-java-pack-*/java-pack-jdk"
     "$HOME/.vscode/extensions/*/embedded-jdk"
-    "/Library/Java/JavaVirtualMachines/temurin-21.jdk/Contents/Home"
-    "/usr/libexec/java_home -v 21"
+    "/Library/Java/JavaVirtualMachines/temurin-17.jdk/Contents/Home"
+    "/usr/libexec/java_home -v 17"
 )
 
 FOUND_JDK=""
@@ -32,9 +32,9 @@ if [ -z "$FOUND_JDK" ]; then
     echo "Procurando todos os JDKs instalados..."
     
     if command -v /usr/libexec/java_home &> /dev/null; then
-        FOUND_JDK=$(/usr/libexec/java_home -v 21)
+        FOUND_JDK=$(/usr/libexec/java_home -v 17)
         if [ ! -z "$FOUND_JDK" ]; then
-            echo "✅ JDK 21 encontrado em: $FOUND_JDK"
+            echo "✅ JDK 17 encontrado em: $FOUND_JDK"
         fi
     fi
 fi
@@ -62,5 +62,5 @@ else
     echo "❌ Nenhum JDK encontrado!"
     echo ""
     echo "Solução: Instale o Extension Pack for Java no VS Code"
-    echo "ou instale manualmente um JDK 21 (Temurin, OpenJDK, etc)"
+    echo "ou instale manualmente um JDK 17 (Temurin, OpenJDK, etc)"
 fi

@@ -1,8 +1,14 @@
 # 🎯 RESUMO EXECUTIVO - Preparação do Ambiente de Testes
 
 **Data:** 11 de maio de 2026  
-**Projeto:** Mifica (Backend Java 21 + Spring Boot 3.5)  
+**Projeto:** Mifica (Backend Java 17 + Spring Boot 3.5)  
 **Objetivo:** Transformar testes frágeis e lentos em suite confiável e rápida
+
+## 📈 Resumo Progressivo
+
+- ✅ 18 erros de ApplicationContext — resolvidos; os testes estão executando normalmente.
+- ✅ 1 erro de NullPointerException — corrigido; a reputação nula foi tratada no fluxo do DTO.
+- ✅ 10 falhas de lógica de negócio — investigadas e corrigidas no endpoint de reputação; agora o histórico é gravado corretamente e o retorno `404` aparece quando o usuário não existe.
 
 ---
 

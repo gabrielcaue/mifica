@@ -22,6 +22,7 @@ import static org.mockito.Mockito.*;
  * Usa MOCKS para isolar a lógica de negócio
  */
 @DisplayName("GamificationService - Testes Unitários")
+@SuppressWarnings("null")
 class GamificationServiceUnitTest {
 
     private GamificationService gamificationService;

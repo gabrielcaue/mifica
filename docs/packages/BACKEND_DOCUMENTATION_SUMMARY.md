@@ -158,4 +158,4 @@ public class GamificationSubscriber { ... }
 ---
 
 **Última atualização:** Abril 2026
-**Versão:** Backend 1.0.0 | Java 21 | Spring Boot 3.5.6
+**Versão:** Backend 1.0.0 | Java 17 | Spring Boot 3.5.6
