@@ -1,4 +1,45 @@
-# 🔗 Mappa de Integração de Tecnologias — Camunda BPM Style
+# 🔗 Technology Integration Map — Camunda BPM
+
+Este documento é o guia textual do mapa visual principal do projeto. A versão canônica do fluxo está em [docs/technology-integration.bpmn](docs/technology-integration.bpmn) e pode ser aberta no Camunda Modeler.
+
+Visuais gerados:
+- [docs/technology-integration.svg](docs/technology-integration.svg)
+- [docs/technology-integration.png](docs/technology-integration.png)
+
+## Como visualizar
+
+- Abra o Camunda Modeler.
+- Use `File > Open File...`.
+- Selecione [docs/technology-integration.bpmn](docs/technology-integration.bpmn).
+
+## Fluxo macro
+
+1. Clientes web, mobile e analytics.
+2. Proxy/edge com Nginx ou Traefik.
+3. API Spring Boot em Java 17.
+4. Segurança, validação e headers.
+5. Persistência, eventos e integrações externas.
+6. Observabilidade com Actuator, Prometheus e Grafana.
+7. Entrega via Docker, Kubernetes e Railway.
+
+## Matriz de integração
+
+| Camada | Tecnologias | Responsabilidade |
+|---|---|---|
+| Cliente | React, Flutter, Streamlit | Interfaces e consumo da API |
+| Edge | Nginx, Traefik | Roteamento, TLS e CORS |
+| Aplicação | Spring Boot, JWT, Jakarta Validation | Regras de negócio e segurança |
+| Dados | MySQL, Redis, Flyway, Web3j | Persistência, cache, eventos e blockchain |
+| Operação | Actuator, Prometheus, Grafana, Docker, Kubernetes, Railway | Observabilidade e deploy |
+
+## Relação com outros diagramas
+
+- O desenho segue o mesmo padrão do BPMN de guardrails em [docs/guardrails.bpmn](docs/guardrails.bpmn).
+- O objetivo é facilitar onboarding, discussão arquitetural e leitura rápida da stack.
+
+## Legacy Reference
+
+O guia Camunda oficial está no topo deste arquivo e em [docs/technology-integration.bpmn](docs/technology-integration.bpmn). A seção abaixo preserva o mapa detalhado original como referência histórica.
 
 **Documento Especialista de Fluxos e Conexões Tecnológicas**
 

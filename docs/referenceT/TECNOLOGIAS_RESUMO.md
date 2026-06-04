@@ -133,12 +133,24 @@
 | SonarQube Community | Qualidade de código do backend Java, apoiando revisão técnica e redução de dívida |
 | Actuator | Ponto de integração do backend com a telemetria e health checks |
 
+## 7) Documentação Visual e BPMN
+
+| Tecnologia | Função no projeto |
+|---|---|
+| Camunda Modeler / BPMN 2.0 | Modelagem visual dos fluxos principais do projeto |
+| BPMN XML (`.bpmn`) | Artefato canônico dos diagramas de processo e integração |
+| bpmn-js | Renderização e visualização dos diagramas BPMN em SVG |
+| Puppeteer | Exportação automatizada para PNG/SVG a partir do modelo BPMN |
+| `docs/technology-integration.bpmn` | Mapa visual da integração tecnológica do projeto |
+| `docs/guardrails.bpmn` | Fluxo visual dos guardrails implementados no backend |
+
 ### Como essas peças trabalham juntas
 
 - O backend publica saúde e métricas via `Actuator`.
 - O `Prometheus` coleta esses dados e também lê os contêineres via `cAdvisor`.
 - O `Grafana` consolida tudo em painéis para o time enxergar tendência e problema real.
 - O `SonarQube` entra no fluxo de qualidade para evitar que código ruim vire incidente depois.
+- O `Camunda Modeler` abre os BPMNs e o `bpmn-js` ajuda a gerar as saídas visuais usadas na documentação.
 
 ---
 
@@ -147,6 +159,7 @@
 - **Flyway** e **Envers** presentes para governança de dados (migração + auditoria).
 - **Redis Pub/Sub com listener container** consolidado para eventos assíncronos.
 - **CORS por `allowed-origin-patterns`** e filtros JWT centralizados no backend.
+- **Camunda BPMN** consolidado para documentação visual de guardrails e integrações.
 
 ---
 

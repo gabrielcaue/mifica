@@ -165,7 +165,6 @@ public class ResilienceConfig {
     public Retry retryRedis(RetryRegistry retryRegistry) {
         RetryConfig config = RetryConfig.custom()
                 .maxAttempts(3)
-                .waitDuration(Duration.ofMillis(500))
                 .intervalFunction(io.github.resilience4j.core.IntervalFunction.ofExponentialBackoff(500, 2))
                 .retryExceptions(Exception.class)
                 .build();

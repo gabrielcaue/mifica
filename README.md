@@ -8,7 +8,7 @@ Plataforma full-stack com arquitetura modular, focada em backend robusto, segura
 > 
 > **📂 Veja [ESTRUTURA_PROJETO.md](ESTRUTURA_PROJETO.md) para entender como o projeto está organizado**
 >
-> **🔗 Veja [TECHNOLOGY_INTEGRATION_MAP.md](TECHNOLOGY_INTEGRATION_MAP.md) para entender como as tecnologias se integram** (Camunda BPM Style)
+> **🔗 Veja [TECHNOLOGY_INTEGRATION_MAP.md](TECHNOLOGY_INTEGRATION_MAP.md) para entender o mapa de integração** e [docs/technology-integration.bpmn](docs/technology-integration.bpmn) para abrir o fluxo no Camunda Modeler.
 
 | 🎯 Nível | 📍 Índice | Para Quem |
 |----------|-----------|----------|
@@ -36,6 +36,8 @@ Plataforma full-stack com arquitetura modular, focada em backend robusto, segura
 ### 📖 Referência Técnica (Consulta rápida)
 - [docs/reference/TECNOLOGIAS_RESUMO.md](docs/reference/TECNOLOGIAS_RESUMO.md) — Stack de tecnologias completa
 - [docs/reference/STACK_VISUAL_2026.md](docs/reference/STACK_VISUAL_2026.md) — Arquitetura visual com diagramas
+- [docs/technology-integration.bpmn](docs/technology-integration.bpmn) — Mapa visual da integração tecnológica (Camunda)
+- [docs/technology-integration.svg](docs/technology-integration.svg) — Exportação visual do BPMN
 - [docs/reference/TESTING_QUICK_START.md](docs/reference/TESTING_QUICK_START.md) — Atalhos de testes
 
 ### 📦 Especificações de Arquitetura (Detalhado)
@@ -90,6 +92,7 @@ Este guia inclui:
 ### Engenharia e Documentação
 - Aplicação de CDD/ICP em classes críticas do backend.
 - Estruturação de documentação técnica em pacotes (SDD) em [docs/packages/](docs/packages/).
+- Mapa tecnológico com versão BPMN em [docs/technology-integration.bpmn](docs/technology-integration.bpmn).
 
 ## Arquitetura (alto nível)
 
