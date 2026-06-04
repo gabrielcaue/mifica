@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import useMediaQuery from '../hooks/useMediaQuery';
 import MobileMenuAdmin from '../components/MobileMenuAdmin';
+import InputField from '../components/InputField';
 import logo from '../assets/logo.png';
 
 export default function CadastroAdmin() {
@@ -157,14 +158,16 @@ export default function CadastroAdmin() {
       }
     }}
   >
-    <input
+    <InputField
+      label="Senha de acesso"
       type="password"
-      placeholder="Senha de acesso"
       value={senhaAcesso}
       onChange={e => {
         setSenhaAcesso(e.target.value);
         if (mensagemAcesso) setMensagemAcesso('');
       }}
+      required
+      placeholder="Senha de acesso"
       className="w-full px-3 md:px-4 py-2 mb-3 md:mb-4 text-sm md:text-base border border-gray-600 rounded-md bg-slate-700 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
     />
     <button
@@ -204,58 +207,61 @@ export default function CadastroAdmin() {
           </div>
 
           <div className="space-y-3 md:space-y-4">
-            <input
+            <InputField
+              label="Nome completo"
               type="text"
-              placeholder="Nome completo"
               value={nome}
               onChange={e => setNome(e.target.value)}
               required
+              placeholder="Nome completo"
               className="w-full px-3 md:px-4 py-2 text-sm md:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
-            <input
+            <InputField
+              label="Email institucional"
               type="email"
-              placeholder="Email institucional"
               value={email}
               onChange={e => setEmail(e.target.value)}
               required
+              placeholder="Email institucional"
               className="w-full px-3 md:px-4 py-2 text-sm md:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
-            <input
+            <InputField
+              label="Senha segura"
               type="password"
-              placeholder="Senha segura"
               value={senha}
               onChange={e => setSenha(e.target.value)}
               required
+              placeholder="Senha segura"
               className="w-full px-3 md:px-4 py-2 text-sm md:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
             {mensagemCampoSenha && (
               <p className="text-xs md:text-sm text-green-700 mt-1">{mensagemCampoSenha}</p>
             )}
-            <input
+            <InputField
+              label="Telefone"
               type="text"
-              placeholder="Telefone"
               value={telefone}
               onChange={e => setTelefone(e.target.value)}
               required
+              placeholder="Telefone"
               className="w-full px-3 md:px-4 py-2 text-sm md:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
             <div>
-              <input
+              <InputField
+                label="Data de nascimento (DD/MM/AAAA)"
                 type="text"
-                placeholder="Data de nascimento (DD/MM/AAAA)"
                 value={dataNascimento}
                 onChange={handleDataChange}
                 maxLength={10}
                 required
+                placeholder="DD/MM/AAAA"
+                error={erroData}
                 className={`w-full px-3 md:px-4 py-2 text-sm md:text-base border rounded-md focus:outline-none focus:ring-2 ${
                   erroData
                     ? 'border-red-500 focus:ring-red-500'
                     : 'border-gray-300 focus:ring-indigo-500'
                 }`}
               />
-              {erroData && (
-                <p className="text-red-500 text-xs md:text-sm mt-1">{erroData}</p>
-              )}
             </div>
             <select
               value={role}

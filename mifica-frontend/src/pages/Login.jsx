@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
 import useMediaQuery from '../hooks/useMediaQuery';
 import MobileMenuCadastro from '../components/MobileMenuCadastro';
+import InputField from '../components/InputField';
 import logo from '../assets/logo.png';
 import { jwtDecode } from 'jwt-decode';
 
@@ -84,26 +85,30 @@ export default function Login() {
           </div>
 
           <div className="space-y-3 md:space-y-4">
-            <input
+            <InputField
+              label="Email"
               type="email"
-              name="email" // ✅ necessário para FormData
+              name="email"
               placeholder="Email"
               required
+              autoComplete="email"
               className={`w-full px-3 md:px-4 py-2 text-sm md:text-base border rounded-md focus:outline-none focus:ring-2 ${
-                mensagemErro 
-                  ? 'border-red-500 focus:ring-red-500' 
+                mensagemErro
+                  ? 'border-red-500 focus:ring-red-500'
                   : 'border-gray-300 focus:ring-blue-500'
               }`}
             />
 
-            <input
+            <InputField
+              label="Senha"
               type="password"
-              name="senha" // ✅ necessário para FormData
+              name="senha"
               placeholder="Senha"
               required
+              autoComplete="current-password"
               className={`w-full px-3 md:px-4 py-2 text-sm md:text-base border rounded-md focus:outline-none focus:ring-2 ${
-                mensagemErro 
-                  ? 'border-red-500 focus:ring-red-500' 
+                mensagemErro
+                  ? 'border-red-500 focus:ring-red-500'
                   : 'border-gray-300 focus:ring-blue-500'
               }`}
             />

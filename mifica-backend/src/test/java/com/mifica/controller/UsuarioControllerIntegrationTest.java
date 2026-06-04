@@ -22,6 +22,7 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import java.util.Objects;
 import java.util.List;
+import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -74,6 +75,8 @@ class UsuarioControllerIntegrationTest {
         usuarioDTOValido.setNome("João Silva");
         usuarioDTOValido.setEmail("joao@test.com");
         usuarioDTOValido.setSenha("senha123456");
+        usuarioDTOValido.setDataNascimento(LocalDate.of(1995, 5, 20));
+        usuarioDTOValido.setTelefone("11987654321");
         usuarioDTOValido.setRole("USER");
     }
 
@@ -118,6 +121,8 @@ class UsuarioControllerIntegrationTest {
         usuarioComEmailMaiusculo.setNome("Maria Santos");
         usuarioComEmailMaiusculo.setEmail("MARIA@TEST.COM");
         usuarioComEmailMaiusculo.setSenha("senha123456");
+        usuarioComEmailMaiusculo.setDataNascimento(LocalDate.of(1993, 8, 14));
+        usuarioComEmailMaiusculo.setTelefone("11912345678");
         usuarioComEmailMaiusculo.setRole("USER");
 
         // ACT

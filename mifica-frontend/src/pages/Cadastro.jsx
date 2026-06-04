@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import useMediaQuery from '../hooks/useMediaQuery';
 import MobileMenuCadastro from '../components/MobileMenuCadastro';
+import InputField from '../components/InputField';
 import logo from '../assets/logo.png';
 
 export default function Cadastro() {
@@ -67,28 +68,31 @@ export default function Cadastro() {
         </div>
 
         <div className="space-y-3 md:space-y-4">
-          <input
+          <InputField
+            label="Nome completo"
             type="text"
-            placeholder="Nome completo"
             value={nome}
             onChange={e => setNome(e.target.value)}
             required
+            placeholder="Nome completo"
             className="w-full px-3 md:px-4 py-2 text-sm md:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
-          <input
+          <InputField
+            label="Email"
             type="email"
-            placeholder="Email"
             value={email}
             onChange={e => setEmail(e.target.value)}
             required
+            placeholder="Email"
             className="w-full px-3 md:px-4 py-2 text-sm md:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
-          <input
+          <InputField
+            label="Senha"
             type="password"
-            placeholder="Senha"
             value={senha}
             onChange={e => setSenha(e.target.value)}
             required
+            placeholder="Senha"
             className="w-full px-3 md:px-4 py-2 text-sm md:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
           {mensagemCampoSenha && (

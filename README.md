@@ -40,6 +40,8 @@ Plataforma full-stack com arquitetura modular, focada em backend robusto, segura
 - [docs/technology-integration.svg](docs/technology-integration.svg) — Exportação visual do BPMN
 - [docs/reference/TESTING_QUICK_START.md](docs/reference/TESTING_QUICK_START.md) — Atalhos de testes
 
+**Convenção visual:** campos obrigatórios aparecem com <span style="color:red">*</span> na documentação e nos formulários.
+
 ### 📦 Especificações de Arquitetura (Detalhado)
 - [docs/packages/00-INDEX.md](docs/packages/00-INDEX.md) — Índice de especificações por pacote
 - [docs/packages/backend-quick-reference.md](docs/packages/backend-quick-reference.md) — Cartão de referência
