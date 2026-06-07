@@ -3,8 +3,8 @@
 ## Fase 1: Setup (1-2 horas)
 
 - [ ] **Ler documentação**
-  - [ ] Ler [TESTING_QUICK_REFERENCE.md](docs/TESTING_QUICK_REFERENCE.md) (5 min)
-  - [ ] Ler [TESTING_STRATEGY.md](docs/TESTING_STRATEGY.md) (15 min)
+  - [ ] Ler [TESTING_QUICK_REFERENCE.md](../TESTING_QUICK_REFERENCE.md) (5 min)
+  - [ ] Ler [TESTING_STRATEGY.md](../TESTING_STRATEGY.md) (15 min)
   - [ ] Entender pirâmide de testes
 
 - [ ] **Configurar pom.xml**
@@ -31,7 +31,7 @@
 ### Dia 1: GamificationService
 
 - [ ] **Estudar exemplo**
-  - [ ] Abrir [GamificationServiceUnitTest.java](mifica-backend/src/test/java/com/mifica/service/GamificationServiceUnitTest.java)
+  - [ ] Abrir [GamificationServiceUnitTest.java](../../mifica-backend/src/test/java/com/mifica/service/GamificationServiceUnitTest.java)
   - [ ] Entender cada @Test
   - [ ] Entender uso de Mockito
 
@@ -48,7 +48,7 @@
 ### Dia 2: UsuarioService
 
 - [ ] **Estudar exemplo**
-  - [ ] Abrir [UsuarioServiceUnitTest.java](mifica-backend/src/test/java/com/mifica/service/UsuarioServiceUnitTest.java)
+  - [ ] Abrir [UsuarioServiceUnitTest.java](../../mifica-backend/src/test/java/com/mifica/service/UsuarioServiceUnitTest.java)
   - [ ] Entender testes de autenticação
   - [ ] Entender testes de validação
 
@@ -90,7 +90,7 @@
 ### Dia 1: GamificationController
 
 - [ ] **Estudar exemplo**
-  - [ ] Abrir [GamificationControllerIntegrationTest.java](mifica-backend/src/test/java/com/mifica/controller/GamificationControllerIntegrationTest.java)
+  - [ ] Abrir [GamificationControllerIntegrationTest.java](../../mifica-backend/src/test/java/com/mifica/controller/GamificationControllerIntegrationTest.java)
   - [ ] Entender @SpringBootTest + H2
   - [ ] Entender MockMvc
 
@@ -260,5 +260,5 @@ cat IMPLEMENTATION_CHECKLIST.md
 **Boa sorte! 🚀**
 
 Qualquer dúvida, releia:
-- [TESTING_QUICK_REFERENCE.md](docs/TESTING_QUICK_REFERENCE.md) - Rápido (5 min)
-- [TESTING_STRATEGY.md](docs/TESTING_STRATEGY.md) - Detalhado (20 min)
+- [TESTING_QUICK_REFERENCE.md](../TESTING_QUICK_REFERENCE.md) - Rápido (5 min)
+- [TESTING_STRATEGY.md](../TESTING_STRATEGY.md) - Detalhado (20 min)

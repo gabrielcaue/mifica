@@ -4,18 +4,21 @@ Plataforma full-stack com arquitetura modular, focada em backend robusto, segura
 
 ## 📌 Comece Aqui — Índices de Navegação
 
-> **Importante:** O projeto está bem documentado. Use os **índices como guia** para encontrar exatamente o que precisa.
-> 
-> **📂 Veja [ESTRUTURA_PROJETO.md](ESTRUTURA_PROJETO.md) para entender como o projeto está organizado**
+> **Importante:** O projeto está bem documentado. Use os **índices como guia** para encontrar exatamente o que precisa.>
+> **📁 Toda a documentação está em:** [docs/](docs/) — Veja todos os `.md` organizados em pastas temáticas> 
+> **� Perdido? Abra [docs/referenceT/GUIA_NAVEGACAO.md](docs/referenceT/GUIA_NAVEGACAO.md) para um mapa visual com caminhos por perfil**
+>
+> **�📂 Veja [ESTRUTURA_PROJETO.md](ESTRUTURA_PROJETO.md) para entender como o projeto está organizado**
 >
 > **🔗 Veja [TECHNOLOGY_INTEGRATION_MAP.md](TECHNOLOGY_INTEGRATION_MAP.md) para entender o mapa de integração** e [docs/technology-integration.bpmn](docs/technology-integration.bpmn) para abrir o fluxo no Camunda Modeler.
 
 | 🎯 Nível | 📍 Índice | Para Quem |
 |----------|-----------|----------|
-| **Iniciante** | [docs/reference/INDEX_COMPLETO.md](docs/reference/INDEX_COMPLETO.md) | Novo no projeto — Visão geral de tudo |
+| **Iniciante** | [docs/referenceT/INDEX_COMPLETO.md](docs/referenceT/INDEX_COMPLETO.md) | Novo no projeto — Visão geral de tudo |
 | **Arquitetura** | [docs/packages/00-INDEX.md](docs/packages/00-INDEX.md) | Arquitetos, líderes tech |
-| **Visual/Rápido** | [docs/reference/STACK_VISUAL_2026.md](docs/reference/STACK_VISUAL_2026.md) | Todos — Mapa da stack com diagramas |
-| **Testes** | [docs/reference/TESTING_QUICK_START.md](docs/reference/TESTING_QUICK_START.md) | Desenvolvedores — Guia prático de testes |
+| **Visual/Rápido** | [docs/referenceT/STACK_VISUAL_2026.md](docs/referenceT/STACK_VISUAL_2026.md) | Todos — Mapa da stack com diagramas |
+| **Stack Tecnológico** | [docs/referenceT/TECNOLOGIAS_RESUMO.md](docs/referenceT/TECNOLOGIAS_RESUMO.md) | Todos — Stack completo, padrões e roadmap |
+| **Testes** | [docs/referenceT/TESTING_QUICK_START.md](docs/referenceT/TESTING_QUICK_START.md) | Desenvolvedores — Guia prático de testes |
 
 ---
 
@@ -28,17 +31,17 @@ Plataforma full-stack com arquitetura modular, focada em backend robusto, segura
 ## 📚 Documentação Organizada
 
 ### 🎯 Guias (Como fazer / Começar)
-- [docs/guide/BACKEND_GUIDE.md](docs/guide/BACKEND_GUIDE.md) — Guia completo de backend (CDD/ICP, onboarding, padrões)
-- [docs/guide/DEPLOYMENT_RAILWAY.md](docs/guide/DEPLOYMENT_RAILWAY.md) — Como fazer deploy em Railway
-- [docs/guide/IMPLEMENTATION_CHECKLIST.md](docs/guide/IMPLEMENTATION_CHECKLIST.md) — Checklist de implementação
-- [docs/guide/TESTING_OVERVIEW.md](docs/guide/TESTING_OVERVIEW.md) — Visão geral de testes
+- [docs/guideD.I/BACKEND_GUIDE.md](docs/guideD.I/BACKEND_GUIDE.md) — Guia completo de backend (CDD/ICP, onboarding, padrões)
+- [docs/guideD.I/DEPLOYMENT_RAILWAY.md](docs/guideD.I/DEPLOYMENT_RAILWAY.md) — Como fazer deploy em Railway
+- [docs/guideD.I/IMPLEMENTATION_CHECKLIST.md](docs/guideD.I/IMPLEMENTATION_CHECKLIST.md) — Checklist de implementação
+- [docs/guideD.I/TESTING_OVERVIEW.md](docs/guideD.I/TESTING_OVERVIEW.md) — Visão geral de testes
 
 ### 📖 Referência Técnica (Consulta rápida)
-- [docs/reference/TECNOLOGIAS_RESUMO.md](docs/reference/TECNOLOGIAS_RESUMO.md) — Stack de tecnologias completa
-- [docs/reference/STACK_VISUAL_2026.md](docs/reference/STACK_VISUAL_2026.md) — Arquitetura visual com diagramas
+- [docs/referenceT/TECNOLOGIAS_RESUMO.md](docs/referenceT/TECNOLOGIAS_RESUMO.md) — Stack de tecnologias completa (Java, Spring Boot, React, Docker, Observabilidade)
+- [docs/referenceT/STACK_VISUAL_2026.md](docs/referenceT/STACK_VISUAL_2026.md) — Arquitetura visual com diagramas
 - [docs/technology-integration.bpmn](docs/technology-integration.bpmn) — Mapa visual da integração tecnológica (Camunda)
 - [docs/technology-integration.svg](docs/technology-integration.svg) — Exportação visual do BPMN
-- [docs/reference/TESTING_QUICK_START.md](docs/reference/TESTING_QUICK_START.md) — Atalhos de testes
+- [docs/referenceT/TESTING_QUICK_START.md](docs/referenceT/TESTING_QUICK_START.md) — Atalhos de testes
 
 **Convenção visual:** campos obrigatórios aparecem com <span style="color:red">*</span> na documentação e nos formulários.
 
@@ -251,6 +254,25 @@ O stack está **bem amarrado** (tightly integrated) com Docker, CI/CD no GitHub 
 - **Churrasco de bug:** quando os erros começam pequenos e viram bagunça generalizada.
 - **Frankenstein:** stack colada de qualquer jeito, sem integração de verdade.
 - **Ground truth:** a visão real do sistema via métricas, logs e dashboards.
+
+## 🗺️ Mapa de Navegação da Documentação
+
+Para facilitar a localização de documentação específica:
+
+| O que procuro | Onde encontro |
+|---|---|
+| **Tecnologias usadas** | [docs/referenceT/TECNOLOGIAS_RESUMO.md](docs/referenceT/TECNOLOGIAS_RESUMO.md) |
+| **Começar no backend** | [docs/guideD.I/BACKEND_GUIDE.md](docs/guideD.I/BACKEND_GUIDE.md) |
+| **Setup e primeiras tarefas** | [docs/packages/backend-onboarding.md](docs/packages/backend-onboarding.md) |
+| **Análise de complexidade** | [docs/packages/backend-cdd-analysis.md](docs/packages/backend-cdd-analysis.md) |
+| **Padrões de código** | [docs/packages/backend-code-patterns.md](docs/packages/backend-code-patterns.md) |
+| **Diagramas de fluxo** | [docs/packages/backend-workflows.md](docs/packages/backend-workflows.md) |
+| **Testes (prático)** | [docs/referenceT/TESTING_QUICK_START.md](docs/referenceT/TESTING_QUICK_START.md) |
+| **Testes (SDD)** | [docs/packages/backend-test-architecture.md](docs/packages/backend-test-architecture.md) |
+| **Deploy em Railway** | [docs/guideD.I/DEPLOYMENT_RAILWAY.md](docs/guideD.I/DEPLOYMENT_RAILWAY.md) |
+| **Arquitetura visual** | [docs/referenceT/STACK_VISUAL_2026.md](docs/referenceT/STACK_VISUAL_2026.md) |
+| **Guardrails e segurança** | [docs/GUARDRAILS.md](docs/GUARDRAILS.md) |
+| **Índice completo de pacotes** | [docs/packages/00-INDEX.md](docs/packages/00-INDEX.md) |
 
 ## Roadmap Técnico
 

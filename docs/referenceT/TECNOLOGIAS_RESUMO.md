@@ -19,8 +19,8 @@
 - **Mock vs Real:** Decisão baseada em: Eager carrega dados necessários agora; Lazy carrega sob demanda para evitar queries.
 
 **Documentação Detalhada:**
-- 📖 [TESTING_QUICK_START.md](TESTING_QUICK_START.md) — Guia prático
-- 🏗️ [docs/packages/backend-test-architecture.md](docs/packages/backend-test-architecture.md) — SDD completo
+- 📖 [TESTING_QUICK_START.md](./TESTING_QUICK_START.md) — Guia prático
+- 🏗️ [backend-test-architecture.md](../packages/backend-test-architecture.md) — SDD completo
 
 ---
 
@@ -137,12 +137,23 @@
 
 | Tecnologia | Função no projeto |
 |---|---|
-| Camunda Modeler / BPMN 2.0 | Modelagem visual dos fluxos principais do projeto |
+| Camunda Modeler / BPMN 2.0 | **Design e documentação** visual dos fluxos principais (não é BPM Engine) |
 | BPMN XML (`.bpmn`) | Artefato canônico dos diagramas de processo e integração |
-| bpmn-js | Renderização e visualização dos diagramas BPMN em SVG |
+| bpmn-js | Renderização e visualização dos diagramas BPMN em SVG/HTML |
 | Puppeteer | Exportação automatizada para PNG/SVG a partir do modelo BPMN |
 | `docs/technology-integration.bpmn` | Mapa visual da integração tecnológica do projeto |
 | `docs/guardrails.bpmn` | Fluxo visual dos guardrails implementados no backend |
+
+### Nota Importante: BPMN como Documentação, Não Execução
+
+**O projeto usa BPMN 2.0 para documentação e visualização visual**, não para orquestração de processos em runtime:
+- ✅ **Camunda Modeler:** ferramenta de design dos diagramas (instância local no dev, não containerizada).
+- ✅ **BPMN XML:** padrão aberto para representar fluxos graficamente.
+- ✅ **bpmn-js:** biblioteca para renderizar diagramas BPMN em navegadores ou ferramentas.
+- ✅ **Puppeteer:** automatiza exportação para imagens estáticas (PNG/SVG) para documentação.
+- ❌ **Não há:** Camunda BPM Engine, orquestração de processos em runtime, ou REST API em `http://localhost:8080/rest`.
+
+A orquestração real de fluxos (gamificação, reputação, blockchain) é feita no backend via **Spring Boot controllers, services e eventos assíncronos (Redis Pub/Sub)**, não via BPMN executável.
 
 ### Como essas peças trabalham juntas
 
@@ -151,6 +162,42 @@
 - O `Grafana` consolida tudo em painéis para o time enxergar tendência e problema real.
 - O `SonarQube` entra no fluxo de qualidade para evitar que código ruim vire incidente depois.
 - O `Camunda Modeler` abre os BPMNs e o `bpmn-js` ajuda a gerar as saídas visuais usadas na documentação.
+- **Fluxos reais:** implementados em Java/Spring Boot (controllers → services → eventos Redis) e em React (frontend).
+
+### Setup automático para exportar BPMN
+
+O repositório já traz um exportador pronto em `tools/bpmn-exporter` para gerar `SVG` e `PNG` automaticamente a partir de qualquer arquivo `.bpmn`.
+
+#### Passo a passo
+
+```bash
+cd /Users/user/mifica/tools/bpmn-exporter
+npm install
+npm run export
+```
+
+Isso gera os artefatos padrão de documentação:
+
+- `docs/guardrails.png`
+- `docs/guardrails.svg`
+
+#### Exportar outro diagrama
+
+```bash
+node render-bpmn.mjs ../../docs/technology-integration.bpmn ../../docs/technology-integration
+```
+
+O comando acima cria:
+
+- `docs/technology-integration.png`
+- `docs/technology-integration.svg`
+
+#### Dependências usadas
+
+- `bpmn-js` para renderizar o diagrama no navegador automatizado.
+- `puppeteer` para abrir o modelo, capturar a imagem e salvar o SVG.
+
+Se quiser, também posso transformar isso em um script único na raiz do projeto para exportar todos os BPMNs de uma vez.
 
 ---
 

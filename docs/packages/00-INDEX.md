@@ -15,8 +15,9 @@ Padrão adotado em cada arquivo:
 
 ### 📋 Documentação de Arquitetura (SDD/SpecKit)
 **Para novos desenvolvedores - COMECE AQUI:**
-- [../../STACK_VISUAL_2026.md](../../STACK_VISUAL_2026.md) - 🗺️ **Mapa visual da stack** (diagramas, arquitetura, deploy)
-- [../../TESTING_QUICK_START.md](../../TESTING_QUICK_START.md) - 🧪 **Guia rápido de testes** (prático, comandos prontos)
+- [../referenceT/STACK_VISUAL_2026.md](../referenceT/STACK_VISUAL_2026.md) - 🗺️ **Mapa visual da stack** (diagramas, arquitetura, deploy)
+- [../referenceT/TESTING_QUICK_START.md](../referenceT/TESTING_QUICK_START.md) - 🧪 **Guia rápido de testes** (prático, comandos prontos)
+- [../referenceT/TECNOLOGIAS_RESUMO.md](../referenceT/TECNOLOGIAS_RESUMO.md) - 💻 **Stack de tecnologias completa** (Java 17, Spring Boot, React, Docker, Observabilidade)
 - [backend-quick-reference.md](backend-quick-reference.md) - ⚡ **Cartão de referência rápida** (comandos, stack, classes críticas)
 - [backend-onboarding.md](backend-onboarding.md) - 🚀 Guia de início rápido (setup, conceitos, primeiras tarefas)
 - [backend-cdd-analysis.md](backend-cdd-analysis.md) - 📊 Análise CDD/ICP de 60 classes (complexidade percebida)

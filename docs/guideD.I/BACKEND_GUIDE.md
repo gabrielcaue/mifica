@@ -5,7 +5,7 @@ Bem-vindo ao backend da Mifica! Este guia ajuda você a entender, estender e man
 ## 📖 Comece por aqui
 
 ### 1️⃣ **Novo no projeto?** (~30 minutos)
-👉 [Backend Onboarding Guide](docs/packages/backend-onboarding.md)
+👉 [Backend Onboarding Guide](../packages/backend-onboarding.md)
 - Setup do projeto em 5 minutos
 - Arquitetura em 10 minutos
 - SOLID e CDD em 5 minutos
@@ -13,14 +13,14 @@ Bem-vindo ao backend da Mifica! Este guia ajuda você a entender, estender e man
 - FAQ
 
 ### 2️⃣ **Entender a Complexidade** (~20 minutos)
-👉 [CDD/ICP Analysis](docs/packages/backend-cdd-analysis.md)
+👉 [CDD/ICP Analysis](../packages/backend-cdd-analysis.md)
 - **ICP**: Índice de Complexidade Percebida de 60 classes
 - **Classes Críticas**: UsuarioService (ICP 12-15), UsuarioController (ICP 11-14)
 - **Padrões de Refatoração**: Como quebrar classes grandes
 - **Roadmap de Melhorias**: 4 fases de refatoração planejadas
 
 ### 3️⃣ **Entender os Fluxos** (~25 minutos)
-👉 [Workflows & Diagrams](docs/packages/backend-workflows.md)
+👉 [Workflows & Diagrams](../packages/backend-workflows.md)
 - 🔐 Fluxo de Autenticação JWT
 - 🛡️ Proteção de Requests (JwtFiltro)
 - 🎮 Gamificação com Redis Pub/Sub
@@ -29,7 +29,7 @@ Bem-vindo ao backend da Mifica! Este guia ajuda você a entender, estender e man
 - ⚠️ Tratamento de Erros
 
 ### 4️⃣ **Copiar Padrões** (~15 minutos)
-👉 [Code Patterns & Templates](docs/packages/backend-code-patterns.md)
+👉 [Code Patterns & Templates](../packages/backend-code-patterns.md)
 - 📋 Template: Nova Service
 - 🎯 Template: Novo Controller
 - 🗄️ Template: Nova Entity
@@ -39,11 +39,11 @@ Bem-vindo ao backend da Mifica! Este guia ajuda você a entender, estender e man
 - 📝 Logging Padronizado
 
 ### 5️⃣ **Especificações Detalhadas** (conforme necessário)
-- [backend-controller.md](docs/packages/backend-controller.md) - Lista de todos os endpoints
-- [backend-service.md](docs/packages/backend-service.md) - Detalhes de cada serviço
-- [backend-entity.md](docs/packages/backend-entity.md) - Diagrama de entidades
-- [backend-config.md](docs/packages/backend-config.md) - Configuração do projeto
-- [backend-repository.md](docs/packages/backend-repository.md) - Acesso a dados
+- [backend-controller.md](../packages/backend-controller.md) - Lista de todos os endpoints
+- [backend-service.md](../packages/backend-service.md) - Detalhes de cada serviço
+- [backend-entity.md](../packages/backend-entity.md) - Diagrama de entidades
+- [backend-config.md](../packages/backend-config.md) - Configuração do projeto
+- [backend-repository.md](../packages/backend-repository.md) - Acesso a dados
 
 ---
 
@@ -107,7 +107,7 @@ mifica-backend/
 ## 🚦 Como Estender
 
 ### Adicionar Novo Endpoint
-1. Leia o template em [Code Patterns → Controller](docs/packages/backend-code-patterns.md#novo-controller)
+1. Leia o template em [Code Patterns → Controller](../packages/backend-code-patterns.md#novo-controller)
 2. Crie a DTO de request/response
 3. Crie o serviço (ou reutilize existente)
 4. Crie o controller com `@PostMapping` / `@GetMapping`
@@ -115,14 +115,14 @@ mifica-backend/
 6. Documente no Swagger via `@Operation`
 
 ### Adicionar Novo Serviço
-1. Leia o template em [Code Patterns → Service](docs/packages/backend-code-patterns.md#novo-service)
+1. Leia o template em [Code Patterns → Service](../packages/backend-code-patterns.md#novo-service)
 2. Defina a responsabilidade única
 3. Injete as dependências (Repository, outro Service)
 4. Implemente métodos públicos (contrato)
 5. Implemente métodos privados (lógica interna)
 
 ### Adicionar Nova Entidade
-1. Leia o template em [Code Patterns → Entity](docs/packages/backend-code-patterns.md#nova-entity)
+1. Leia o template em [Code Patterns → Entity](../packages/backend-code-patterns.md#nova-entity)
 2. Crie a classe com `@Entity` e `@Table`
 3. Adicione `@Audited` se precisar rastrear mudanças (Envers)
 4. Crie o Repository correspondente
@@ -143,7 +143,7 @@ mvn test -Dtest=UsuarioServiceTest
 mvn test jacoco:report
 ```
 
-Ver detalhes em [backend-test.md](docs/packages/backend-test.md)
+Ver detalhes em [backend-test.md](../packages/backend-test.md)
 
 ---
 
@@ -162,7 +162,7 @@ cd mifica
 # 5. Health check em http://localhost:8080/actuator/health
 ```
 
-Detalhes completos em [Backend Onboarding](docs/packages/backend-onboarding.md#setup)
+Detalhes completos em [Backend Onboarding](../packages/backend-onboarding.md#setup)
 
 ---
 
@@ -177,7 +177,7 @@ Detalhes completos em [Backend Onboarding](docs/packages/backend-onboarding.md#s
 | **SecurityConfig** | 6-7 | JWT + CORS + autorização | `config/SecurityConfig.java` |
 | **JwtFiltro** | 5-6 | Intercepta requests e valida tokens | `filter/JwtFiltro.java` |
 
-👉 Veja análise completa em [CDD/ICP Analysis](docs/packages/backend-cdd-analysis.md)
+👉 Veja análise completa em [CDD/ICP Analysis](../packages/backend-cdd-analysis.md)
 
 ---
 
@@ -193,7 +193,7 @@ A: Verifique se `docker-compose up` está rodando: `docker ps | grep redis`
 A: Tokens válidos por 24h. Re-login para novo token.
 
 **P: Qual classe editar para...?**
-A: Veja [Workflows & Diagrams](docs/packages/backend-workflows.md) ou FAQ em [Backend Onboarding](docs/packages/backend-onboarding.md#faq)
+A: Veja [Workflows & Diagrams](../packages/backend-workflows.md) ou FAQ em [Backend Onboarding](../packages/backend-onboarding.md#faq)
 
 ---
 

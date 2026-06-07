@@ -8,6 +8,8 @@ Este é o **guia de navegação completo** do projeto Mifica. Use este índice p
 - 📚 Acessar tutoriais, padrões e referências
 - ✅ Verificar o que foi documentado
 
+**👉 Se está perdido, comece por:** [GUIA_NAVEGACAO.md](./GUIA_NAVEGACAO.md) — Mapa visual com caminhos por perfil
+
 **Você tem:**
 - ✅ Documentação de teste (1000+ linhas)
 - ✅ SDD de arquitetura (700+ linhas)
