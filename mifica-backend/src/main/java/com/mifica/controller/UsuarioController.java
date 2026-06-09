@@ -56,6 +56,9 @@ public class UsuarioController {
     private JwtUtil jwtUtil;
 
     @Autowired
+    private com.mifica.service.AuthService authService;
+
+    @Autowired
     private ReputacaoService reputacaoService;
 
     @Autowired
@@ -159,26 +162,7 @@ public class UsuarioController {
     public ResponseEntity<?> loginPost(@Valid @RequestBody LoginDTO dto) {
         // ICP-03: Login combina validação de credenciais, geração de JWT e montagem de payload para frontend.
         try {
-            Usuario usuario = usuarioService.buscarPorEmail(dto.getEmail());
-            if (usuario == null) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(USUARIO_NAO_ENCONTRADO);
-            }
-
-            boolean valido = usuarioService.senhaCorreta(dto.getSenha(), usuario.getSenha());
-            if (!valido) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciais inválidas.");
-            }
-
-            // Gera token JWT assinado com HMAC-SHA256 contendo email e role
-            String token = jwtUtil.gerarToken(usuario.getEmail());
-
-            // Retorna token + dados do usuário para o frontend armazenar
-            Map<String, Object> resposta = new HashMap<>();
-            resposta.put("token", token);
-            resposta.put("id", usuario.getId());
-            resposta.put("nome", usuario.getNome());
-            resposta.put("reputacao", usuario.getReputacao());
-            resposta.put("conquistas", usuario.getConquistas());
+            Map<String, Object> resposta = authService.authenticate(dto.getEmail(), dto.getSenha());
             return ResponseEntity.ok(resposta);
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());

@@ -15,13 +15,32 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.lang.NonNull;
+import org.springframework.stereotype.Component;
 
+@Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     // ICP-TOTAL: 2
     // ICP-01: Filtro extrai token bearer e injeta autenticação no contexto de segurança.
 
-    private final JwtService jwtService = new JwtService();
+    /**
+     * Observação importante:
+     * Esta classe agora é um componente Spring e injeta `JwtService` via construtor.
+     * Contudo, atualmente ela NÃO é registrada na cadeia de filtros definida em
+     * `SecurityConfig` — o projeto utiliza o filtro `JwtFiltro` (bean) na configuração
+     * de segurança. Manter esta classe sem registro pode confundir a manutenção.
+     *
+     * Opções recomendadas:
+     * - Registrar explicitamente este filtro em `SecurityConfig.filterChain(...)`
+     *   (por exemplo: `http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)`),
+     * - OU remover/arquivar esta classe se não for necessária.
+     */
+
+    private final JwtService jwtService;
+
+    public JwtAuthenticationFilter(JwtService jwtService) {
+        this.jwtService = jwtService;
+    }
 
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request,

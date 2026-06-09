@@ -21,6 +21,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import com.mifica.filter.SecurityAuditFilter;
 import com.mifica.util.JwtFiltro;
+import com.mifica.filter.JwtAuthenticationFilter;
 
 /**
  * Configuração central de segurança da aplicação.
@@ -42,6 +43,9 @@ public class SecurityConfig {
 
     @Autowired
     private JwtFiltro jwtFiltro;
+
+    @Autowired
+    private JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @Autowired
     private SecurityAuditFilter securityAuditFilter;
@@ -92,6 +96,7 @@ public class SecurityConfig {
                 .anyRequest().authenticated()
             )
 
+            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
             .addFilterBefore(jwtFiltro, UsernamePasswordAuthenticationFilter.class)
             .addFilterAfter(securityAuditFilter, JwtFiltro.class);
 

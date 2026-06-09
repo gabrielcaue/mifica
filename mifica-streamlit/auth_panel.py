@@ -38,7 +38,7 @@ def render():
 
         if st.button("Entrar"):
             with st.spinner("Autenticando..."):
-                r = requests.post("http://localhost:8080/api/auth/login", json={"email": email, "senha": senha})
+                r = requests.post("http://localhost:8080/api/usuarios/login", json={"email": email, "senha": senha})
 
             if r.status_code == 200:
                 token = r.json()["token"]

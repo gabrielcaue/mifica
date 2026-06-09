@@ -11,6 +11,8 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import com.mifica.repository.UsuarioRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 
 
 /**
@@ -29,8 +31,11 @@ public class JwtService {
     @Value("${jwt.secret}")
     private String secret;
 
-    /** Tempo de expiração do token: 1 hora (em milissegundos). */
-    private final long expiracaoMillis = 1000 * 60 * 60;
+    /** Tempo de expiração do token: 24 horas (em milissegundos). */
+    private final long expiracaoMillis = 24L * 60 * 60 * 1000;
+
+    @Autowired
+    private UsuarioRepository usuarioRepository;
 
     /** Gera a chave HMAC a partir do secret para assinar/validar tokens. */
     private Key getSigningKey() {
@@ -57,6 +62,15 @@ public class JwtService {
     }
 
     /**
+     * Gera token a partir do email — busca o usuário no banco para incluir claims.
+     */
+    public String gerarToken(String email) {
+        Usuario usuario = usuarioRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado para geração de token."));
+        return gerarToken(usuario);
+    }
+
+    /**
      * Valida a assinatura do token e retorna os claims (payload).
      * Lança exceção se o token for inválido, expirado ou adulterado.
      *
@@ -70,5 +84,31 @@ public class JwtService {
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
+    }
+
+    // Extrai o email (subject) do token
+    public String extrairEmail(String token) {
+        return validarToken(token).getSubject();
+    }
+
+    // Extrai a role do token
+    public String extrairRole(String token) {
+        return validarToken(token).get("role", String.class);
+    }
+
+    // Verifica se o token é válido (assinatura + expiração)
+    public boolean tokenValido(String token) {
+        try {
+            validarToken(token);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    // Verifica se o token está expirado
+    public boolean tokenExpirado(String token) {
+        Date expiration = validarToken(token).getExpiration();
+        return expiration.before(new Date());
     }
 }
