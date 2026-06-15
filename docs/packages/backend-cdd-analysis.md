@@ -27,7 +27,7 @@ Este documento mapeia a complexidade cognitiva de cada classe, permitindo que no
 | Classe | ICP | Linhas | Problema | Recomendação |
 |---|---|---|---|---|
 | `UsuarioService` | 12-15 | 343 | Acumula cadastro, login, reputação, solicitações de crédito | Quebrar em: `UsuarioCreationService`, `UsuarioProfileService`, `CreditRequestService` |
-| `UsuarioController` | 11-14 | 349 | Orquestra 8+ endpoints e múltiplos fluxos | Quebrar em: `AuthController`, `ProfileController`, `AdminUserController` |
+| `UsuarioController` | 11-14 | 349 | Orquestra 8+ endpoints e múltiplos fluxos | Manter login oficial centralizado e avaliar split apenas por coesão |
 | `GamificationSubscriber` | 8-10 | 84 | Parsing de mensagens + buffer + delegação + logging | Extrair parsing em `MessageParser`, buffer em `EventBuffer` |
 | `RedisConfig` | 7-9 | 91 | Configuração customizada com fallbacks e listener setup | Documentar bem, deixar como está (setup crítico) |
 | `BlockchainService` | 6-8 | 110 | Validações múltiplas, regra de limite do admin, transformação DTO | Extrair validação em `BlockchainValidator` |
@@ -112,7 +112,7 @@ UsuarioService
 
 ```
 UsuarioController (público)
-├── PublicAuthController (cadastro, login — @PostMapping("/auth/..."))
+├── Login oficial centralizado em UsuarioController (@PostMapping("/api/usuarios/login"))
 ├── UserProfileController (perfil protegido — @GetMapping("/profile/..."))
 └── AdminUserController (CRUD admin — @RestController("@PreAuthorize("hasRole('ADMIN')")"))
 ```
@@ -319,7 +319,7 @@ public TransacaoBlockchainDTO registrarTransacao(...) {
 
 ### Fase 2 (Semana 2) — Controllers
 - [ ] Quebrar `UsuarioController` em 3 controllers
-- [ ] Criar `PublicAuthController`, `UserProfileController`, `AdminUserController`
+- [ ] Avaliar split de `UsuarioController` apenas se melhorar coesão real
 - [ ] Atualizar rotas no `docker-compose` se necessário
 
 ### Fase 3 (Semana 3) — Redis & Blockchain

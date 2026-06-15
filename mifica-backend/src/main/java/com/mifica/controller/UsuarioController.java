@@ -43,7 +43,6 @@ public class UsuarioController {
 
     // ICP-TOTAL: 6
     // Controller de usuários com múltiplos endpoints e fluxos (cadastro, login, perfil, admin, gamificação).
-    // Candidata a refatoração em: PublicAuthController, UserProfileController, AdminUserController.
     // ICP-01: Orquestra múltiplos fluxos (cadastro, login, perfil e administração) no mesmo controller.
 
     private static final String USUARIO_NAO_ENCONTRADO = "Usuário não encontrado.";
@@ -165,6 +164,9 @@ public class UsuarioController {
             Map<String, Object> resposta = authService.authenticate(dto.getEmail(), dto.getSenha());
             return ResponseEntity.ok(resposta);
         } catch (RuntimeException e) {
+            if (USUARIO_NAO_ENCONTRADO.equals(e.getMessage())) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+            }
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         }
     }

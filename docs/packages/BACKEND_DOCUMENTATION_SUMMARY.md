@@ -131,7 +131,7 @@ public class GamificationSubscriber { ... }
 
 ### Fase 2: Refatoração (4 semanas)
 - **Week 1**: UsuarioService split (UsuarioCreationService, UsuarioProfileService, etc)
-- **Week 2**: UsuarioController split (PublicAuthController, UserProfileController, AdminUserController)
+- **Week 2**: UsuarioController split apenas se houver ganho real de coesão; manter login oficial centralizado
 - **Week 3**: MessageParser extraction, BlockchainValidator extraction
 - **Week 4**: Testes unitários, documentação atualizada
 

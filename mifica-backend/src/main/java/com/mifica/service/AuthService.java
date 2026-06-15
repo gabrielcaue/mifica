@@ -27,8 +27,12 @@ public class AuthService {
      */
     public Map<String, Object> authenticate(String email, String senha) {
         Usuario usuario = usuarioService.buscarPorEmail(email);
-        if (usuario == null || !passwordEncoder.matches(senha, usuario.getSenha())) {
-            throw new RuntimeException("Credenciais inválidas");
+        if (usuario == null) {
+            throw new RuntimeException("Usuário não encontrado.");
+        }
+
+        if (!passwordEncoder.matches(senha, usuario.getSenha())) {
+            throw new RuntimeException("Credenciais inválidas.");
         }
 
         String token = jwtService.gerarToken(usuario);

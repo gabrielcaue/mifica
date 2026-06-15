@@ -77,17 +77,7 @@ public class SecurityConfig {
                 // Libera preflight OPTIONS para qualquer rota (exigido pelo CORS)
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 // Endpoints públicos — acessíveis sem autenticação
-                .requestMatchers(
-                    "/",
-                    "/api/usuarios/login",
-                    "/api/usuarios/cadastro",
-                    "/api/usuarios/cadastro-admin",
-                    "/api/usuarios/validar-acesso-admin",
-                    "/api/blockchain/**",
-                    "/swagger-ui/**",
-                    "/v3/api-docs/**",
-                    "/actuator/**"
-                ).permitAll()
+                .requestMatchers(PublicPaths.PERMIT_ALL).permitAll()
                 // Endpoints com autenticação (requer JWT)
                 .requestMatchers("/streamlit/**").hasRole("ADMIN")  // ✅ Streamlit: ADMIN only
                 .requestMatchers("/api/transacoes/**").hasAnyRole("USER", "ADMIN")

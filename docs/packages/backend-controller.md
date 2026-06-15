@@ -11,7 +11,6 @@ Camada de entrada HTTP da aplicação. Converte requisições REST em chamadas p
 ## Classes do pacote
 | Classe | Domínio principal |
 |---|---|
-| `AuthController` | autenticação/login/cadastro |
 | `UsuarioController` | gestão de usuário/perfil |
 | `ContratoController` | operações de contratos |
 | `DesafioController` | desafios e progresso |

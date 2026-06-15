@@ -14,7 +14,7 @@
 
 ### Controllers (controller/)
 - [x] **UsuarioController.java** - ICP-TOTAL: 11-14 (crítica, refatorar)
-- [x] **AuthController.java** - ICP-TOTAL: 2 (simples)
+- [x] **UsuarioController.java** - ICP-TOTAL: 6 (login oficial e múltiplos fluxos)
 - [x] **HomeController.java** - ICP-TOTAL: 0 (trivial)
 - [x] **BlockchainController.java** - ICP-TOTAL: ? (verificar)
 - [x] **ContratoController.java** - ICP-TOTAL: ? (verificar)
@@ -79,7 +79,7 @@ Remaining DTOs
 
 2. UsuarioController (ICP 11-14)
    → Dividir em 3 controllers:
-     - PublicAuthController
+   - Manter login oficial centralizado em UsuarioController
      - UserProfileController
      - AdminUserController
 ```

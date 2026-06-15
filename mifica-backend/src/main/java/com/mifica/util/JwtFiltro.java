@@ -16,6 +16,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.lang.NonNull;
 
+import com.mifica.config.PublicPaths;
+
 /**
  * Filtro JWT customizado que intercepta cada requisição HTTP.
  * Extrai o token do header Authorization, valida a assinatura HMAC-SHA256,
@@ -43,19 +45,8 @@ public class JwtFiltro extends OncePerRequestFilter {
      */
     @Override
     protected boolean shouldNotFilter(@NonNull HttpServletRequest request) throws ServletException {
-        // ICP-02: Lista extensa de exceções de rota exige manutenção cuidadosa para evitar brechas ou bloqueios indevidos.
-        String path = request.getRequestURI();
-        return path.equals("/") ||
-                path.startsWith("/api/usuarios/login") ||
-                path.startsWith("/api/usuarios/cadastro") ||
-                path.startsWith("/api/usuarios/cadastro-admin") ||
-                path.startsWith("/api/usuarios/validar-acesso-admin") ||
-                path.equals("/api/usuarios/criar") ||
-                path.startsWith("/swagger-ui") ||
-                path.startsWith("/v3/api-docs") ||
-                path.startsWith("/api/auth") ||
-                path.startsWith("/api/blockchain") ||
-                path.startsWith("/actuator");
+        // ICP-02: Lista de exceções é compartilhada com SecurityConfig para evitar drift.
+        return PublicPaths.isPublic(request.getRequestURI());
         // ✅ /streamlit removido - agora requer JWT + ROLE_ADMIN
     }
 

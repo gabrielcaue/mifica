@@ -6,7 +6,6 @@ Camada de entrada HTTP/REST da aplicação.
 - Expor endpoints e delegar regras para os serviços.
 
 ## Componentes
-- `AuthController`
 - `UsuarioController`
 - `ContratoController`
 - `DesafioController`

@@ -86,18 +86,18 @@
 
 ```
 1. CLIENTE
-   └─ POST /api/auth/login {username, password}
+   └─ POST /api/usuarios/login {email, senha}
 
 2. CONTROLLER
-   └─ AuthController.login()
+   └─ UsuarioController.loginPost()
 
 3. SERVICE
-   ├─ UsuarioService.buscarPorUsername()
+   ├─ UsuarioService.buscarPorEmail()
    ├─ BCryptPasswordEncoder.matches()
-   └─ JwtTokenProvider.gerarToken()
+   └─ AuthService.authenticate() -> JwtService.gerarToken()
 
 4. REPOSITORY
-   └─ UserRepository.findByUsername() [BD: SELECT]
+   └─ UsuarioRepository.findByEmail() [BD: SELECT]
 
 5. PERSISTÊNCIA
    └─ MySQL: usuario table
