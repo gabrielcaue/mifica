@@ -187,41 +187,4 @@ public class Usuario {
             .anyMatch(s -> s.getDataCriacao().toLocalDate().equals(LocalDate.now()));
     }
 
-    public List<String> verificarConquistas() {
-        List<String> conquistas = new ArrayList<>();
-
-        if (solicitacoes.size() >= 1) {
-            conquistas.add("🏆 Primeira solicitação criada");
-        }
-
-        if (reputacao >= 90) {
-            conquistas.add("🏆 Reputação de Elite");
-        }
-
-        if (avaliacoesRecebidas.size() >= 5) {
-            conquistas.add("🏆 Avaliado por 5 usuários diferentes");
-        }
-
-        return conquistas;
-    }
-
-    public void aplicarRecompensas() {
-        // ICP-04: Recompensas combinam múltiplas condições com efeitos cumulativos na reputação.
-        if (cumpriuMissaoHoje()) {
-            this.reputacao += 5;
-            System.out.println("🎁 Recompensa: +5 de reputação por missão diária!");
-        }
-
-        if (solicitacoes.size() == 1) {
-            this.reputacao += 10;
-            System.out.println("🎁 Recompensa: Primeira solicitação criada!");
-        }
-
-        if (avaliacoesRecebidas.size() == 5) {
-            this.reputacao += 15;
-            System.out.println("🎁 Recompensa: Avaliado por 5 usuários!");
-        }
-
-        atualizarNivel();
-    }
 }
