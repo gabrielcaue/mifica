@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
 import com.mifica.dto.EstatisticasDTO;
 import com.mifica.dto.LoginDTO;
+import com.mifica.dto.UsuarioCadastroDTO;
 import com.mifica.dto.UsuarioDTO;
 import com.mifica.entity.Role;
 import com.mifica.entity.Usuario;
@@ -69,6 +70,13 @@ public class UsuarioController {
     @Value("${admin.cadastro.senha}")
     private String senhaCadastroAdmin;
 
+    private final GamificationPublisher publisher;
+
+    @Autowired
+    public UsuarioController(GamificationPublisher publisher) {
+        this.publisher = publisher;
+    }
+
     @PostMapping("/validar-acesso-admin")
     public ResponseEntity<?> validarAcessoAdmin(@RequestBody Map<String, String> payload) {
         String senhaAcesso = payload.get("senhaAcesso");
@@ -94,7 +102,7 @@ public class UsuarioController {
      * Erro de validação é capturado por GlobalExceptionHandler.
      */
     @PostMapping("/cadastro")
-    public ResponseEntity<?> cadastrarUsuario(@Valid @RequestBody UsuarioDTO dto) {
+    public ResponseEntity<?> cadastrarUsuario(@Valid @RequestBody UsuarioCadastroDTO dto) {
         // ICP-02: Cadastro possui bifurcação para reenvio de confirmação e tratamento de consistência transacional de e-mail.
         if (dto.getEmail() != null) {
             dto.setEmail(dto.getEmail().trim().toLowerCase());
@@ -106,7 +114,11 @@ public class UsuarioController {
 
         UsuarioDTO novo;
         try {
-            novo = usuarioService.criar(dto);
+            UsuarioDTO dadosCadastro = new UsuarioDTO();
+            dadosCadastro.setNome(dto.getNome());
+            dadosCadastro.setEmail(dto.getEmail());
+            dadosCadastro.setSenha(dto.getSenha());
+            novo = usuarioService.criar(dadosCadastro);
         } catch (DataIntegrityViolationException e) {
             return ResponseEntity.badRequest().body("Email já cadastrado.");
         }
@@ -178,7 +190,7 @@ public class UsuarioController {
         return ResponseEntity.ok(usuarioService.listarTodos());
     }
 
-    // 🔧 Buscar por email
+    // 🔧 Buscar por email (ESPECÍFICO - vai antes de /{id})
     @GetMapping("/email/{email}")
     public ResponseEntity<?> buscarPorEmail(@PathVariable String email) {
         UsuarioDTO usuario = usuarioService.buscarPorEmailDTO(email);
@@ -188,13 +200,15 @@ public class UsuarioController {
         return ResponseEntity.ok(usuario);
     }
 
-    // 🔧 Buscar por ID
-    @GetMapping("/{id}")
-    public ResponseEntity<?> buscarPorId(@PathVariable Long id) {
-        Optional<UsuarioDTO> usuario = usuarioService.buscarPorId(id);
-        return usuario.<ResponseEntity<?>>map(ResponseEntity::ok)
-                      .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(USUARIO_NAO_ENCONTRADO));
+    // 🔧 Estatísticas (ESPECÍFICO - vai antes de /{id})
+    @GetMapping("/estatisticas")
+    public EstatisticasDTO getEstatisticas() {
+        int totalUsuarios = usuarioService.contarUsuarios();
+        double mediaReputacao = usuarioService.mediaReputacao();
+        return new EstatisticasDTO(totalUsuarios, mediaReputacao);
     }
+
+    // ========== ENDPOINTS /perfil/* (ESPECÍFICOS - VÃO ANTES DE /{id}) ==========
 
     // 🔧 Perfil do usuário autenticado
     /**
@@ -217,23 +231,15 @@ public class UsuarioController {
         }
     }
 
-    // 🔧 Atualizar usuário
-    @PutMapping("/{id}")
-    public ResponseEntity<UsuarioDTO> atualizarUsuario(@PathVariable Long id, @RequestBody UsuarioDTO dto) {
-        UsuarioDTO atualizado = usuarioService.atualizarUsuario(id, dto);
-        return ResponseEntity.ok(atualizado);
-    }
-
-    // 🔧 Deletar usuário por ID (admin)
-    @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<String> deletarUsuario(@PathVariable Long id) {
+    // 🔧 Deletar conta
+    @DeleteMapping("/perfil")
+    public ResponseEntity<String> deletarConta(@RequestHeader("Authorization") String token) {
         try {
-            Usuario usuario = usuarioService.buscarUsuarioPorId(id);
-            usuarioService.excluir(usuario);
-            return ResponseEntity.ok("Usuário excluído com sucesso.");
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(USUARIO_NAO_ENCONTRADO);
+            String email = jwtUtil.extrairEmail(token.replace("Bearer ", ""));
+            usuarioService.deletarPorEmail(email);
+            return ResponseEntity.ok("Conta excluída com sucesso.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(TOKEN_INVALIDO);
         }
     }
 
@@ -251,18 +257,6 @@ public class UsuarioController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(TOKEN_INVALIDO);
         }
-    }
-
-    // 🔧 Obter reputação por ID
-    @GetMapping("/{id}/reputacao")
-    public ResponseEntity<?> obterReputacao(@PathVariable Long id) {
-        Optional<UsuarioDTO> usuario = usuarioService.buscarPorId(id);
-        if (usuario.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(USUARIO_NAO_ENCONTRADO);
-        }
-        Map<String, Object> resposta = new HashMap<>();
-        resposta.put("reputacao", usuario.get().getReputacao());
-        return ResponseEntity.ok(resposta);
     }
 
     // 🔧 Missão diária
@@ -307,15 +301,82 @@ public class UsuarioController {
         }
     }
 
-    // 🔧 Deletar conta
-    @DeleteMapping("/perfil")
-    public ResponseEntity<String> deletarConta(@RequestHeader("Authorization") String token) {
+    // ========== ENDPOINTS /{id}/...* (ESPECÍFICOS COM SUBROTAS - VÃO ANTES DE /{id}) ==========
+
+    // 🔧 Obter reputação por ID
+    @GetMapping("/{id}/reputacao")
+    public ResponseEntity<?> obterReputacao(@PathVariable Long id) {
+        Optional<UsuarioDTO> usuario = usuarioService.buscarPorId(id);
+        if (usuario.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(USUARIO_NAO_ENCONTRADO);
+        }
+        Map<String, Object> resposta = new HashMap<>();
+        resposta.put("reputacao", usuario.get().getReputacao());
+        return ResponseEntity.ok(resposta);
+    }
+
+    // 🔧 Atualizar senha por ID
+    @PutMapping("/{id}/senha")
+    public ResponseEntity<?> atualizarSenha(
+            @PathVariable Long id,
+            @RequestBody Map<String, String> payload,
+            @RequestHeader("Authorization") String token) {
+        // ICP-05: Alteração de senha depende de autorização por identidade do token e validações de domínio.
         try {
             String email = jwtUtil.extrairEmail(token.replace("Bearer ", ""));
-            usuarioService.deletarPorEmail(email);
-            return ResponseEntity.ok("Conta excluída com sucesso.");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(TOKEN_INVALIDO);
+            Usuario usuario = usuarioService.buscarPorEmail(email);
+
+            if (usuario == null || !usuario.getId().equals(id)) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Usuário não autorizado.");
+            }
+
+            String senhaAtual = payload.get("senhaAtual");
+            String senhaNova = payload.get("senhaNova");
+
+            usuarioService.atualizarSenha(id, senhaAtual, senhaNova);
+
+            return ResponseEntity.ok("Senha atualizada com sucesso!");
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    // 🔧 Adicionar pontos por ID
+    @PostMapping("/{id}/points")
+    public ResponseEntity<String> addPoints(@PathVariable Long id, @RequestParam int points) {
+        // ICP-06: Publicação assíncrona desacopla request HTTP do processamento de pontuação.
+        // Publica mensagem no canal Redis — processada assincronamente pelo subscriber
+        publisher.publishEvent(id, points);
+        return ResponseEntity.ok("📤 Evento de pontos enviado via Redis para usuário " + id);
+    }
+
+    // ========== ENDPOINTS GENÉRICOS /{id} (VÃO POR ÚLTIMO) ==========
+
+    // 🔧 Buscar por ID
+    @GetMapping("/{id}")
+    public ResponseEntity<?> buscarPorId(@PathVariable Long id) {
+        Optional<UsuarioDTO> usuario = usuarioService.buscarPorId(id);
+        return usuario.<ResponseEntity<?>>map(ResponseEntity::ok)
+                      .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(USUARIO_NAO_ENCONTRADO));
+    }
+
+    // 🔧 Atualizar usuário
+    @PutMapping("/{id}")
+    public ResponseEntity<UsuarioDTO> atualizarUsuario(@PathVariable Long id, @RequestBody UsuarioDTO dto) {
+        UsuarioDTO atualizado = usuarioService.atualizarUsuario(id, dto);
+        return ResponseEntity.ok(atualizado);
+    }
+
+    // 🔧 Deletar usuário por ID (admin)
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<String> deletarUsuario(@PathVariable Long id) {
+        try {
+            Usuario usuario = usuarioService.buscarUsuarioPorId(id);
+            usuarioService.excluir(usuario);
+            return ResponseEntity.ok("Usuário excluído com sucesso.");
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(USUARIO_NAO_ENCONTRADO);
         }
     }
 
@@ -332,58 +393,6 @@ public class UsuarioController {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Allow", "GET,POST,PUT,PATCH,DELETE,HEAD,OPTIONS");
         return new ResponseEntity<>(headers, HttpStatus.OK);
-    }
-
-    // 🔧 Estatísticas
-    @GetMapping("/estatisticas")
-    public EstatisticasDTO getEstatisticas() {
-        int totalUsuarios = usuarioService.contarUsuarios();
-        double mediaReputacao = usuarioService.mediaReputacao();
-        return new EstatisticasDTO(totalUsuarios, mediaReputacao);
-    }
-
-@PutMapping("/{id}/senha")
-public ResponseEntity<?> atualizarSenha(
-        @PathVariable Long id,
-        @RequestBody Map<String, String> payload,
-        @RequestHeader("Authorization") String token) {
-    // ICP-05: Alteração de senha depende de autorização por identidade do token e validações de domínio.
-    try {
-        String email = jwtUtil.extrairEmail(token.replace("Bearer ", ""));
-        Usuario usuario = usuarioService.buscarPorEmail(email);
-
-        if (usuario == null || !usuario.getId().equals(id)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Usuário não autorizado.");
-        }
-
-        String senhaAtual = payload.get("senhaAtual");
-        String senhaNova = payload.get("senhaNova");
-
-        usuarioService.atualizarSenha(id, senhaAtual, senhaNova);
-
-        return ResponseEntity.ok("Senha atualizada com sucesso!");
-    } catch (RuntimeException e) {
-        return ResponseEntity.badRequest().body(e.getMessage());
-    }
-}
-
-    private final GamificationPublisher publisher;
-
-    @Autowired
-    public UsuarioController(GamificationPublisher publisher) {
-        this.publisher = publisher;
-    }
-
-    /**
-     * Publica evento de pontuação no Redis Pub/Sub.
-     * O GamificationSubscriber recebe e processa os pontos de forma assíncrona.
-     */
-    @PostMapping("/{id}/points")
-    public ResponseEntity<String> addPoints(@PathVariable Long userId, @RequestParam int points) {
-        // ICP-06: Publicação assíncrona desacopla request HTTP do processamento de pontuação.
-        // Publica mensagem no canal Redis — processada assincronamente pelo subscriber
-        publisher.publishEvent(userId, points);
-        return ResponseEntity.ok("📤 Evento de pontos enviado via Redis para usuário " + userId);
     }
 
 

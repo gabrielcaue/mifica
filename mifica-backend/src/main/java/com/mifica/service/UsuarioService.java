@@ -125,15 +125,30 @@ public class UsuarioService {
         // ICP-09: Atualização de reputação retorna falso quando o usuário não é encontrado.
         if (usuario == null) return false;
 
-        usuario.setReputacao(novaReputacao);
-        usuarioRepository.save(usuario);
+        aplicarRegrasDeReputacao(usuario, novaReputacao);
+        usuarioRepository.save(Objects.requireNonNull(usuario));
         return true;
     }
 
     public void atualizarReputacao(Usuario usuario, int novaReputacao) {
+        aplicarRegrasDeReputacao(usuario, novaReputacao);
+        usuarioRepository.save(Objects.requireNonNull(usuario));
+    }
+
+    private void aplicarRegrasDeReputacao(Usuario usuario, int novaReputacao) {
         usuario.setReputacao(novaReputacao);
-        usuario.atualizarNivel();
-        usuarioRepository.save(usuario);
+        usuario.setNivel(definirNivelPorReputacao(novaReputacao));
+        aplicarRecompensas(usuario);
+    }
+
+    private String definirNivelPorReputacao(int reputacao) {
+        if (reputacao >= 80) {
+            return "AVANCADO";
+        }
+        if (reputacao >= 40) {
+            return "INTERMEDIARIO";
+        }
+        return "INICIANTE";
     }
 
     public Usuario criarSolicitacao(BigDecimal valor, String descricao, LocalDate prazo, String email) {
@@ -172,6 +187,11 @@ public class UsuarioService {
         // ICP-12: Aplicação de recompensas encerra sem efeito quando o usuário não existe.
         if (usuario == null) return;
 
+        aplicarRecompensas(usuario);
+        usuarioRepository.save(usuario);
+    }
+
+    private void aplicarRecompensas(Usuario usuario) {
         // ICP-13: Estrutura de conquistas é inicializada apenas quando ainda não existe.
         if (usuario.getConquistas() == null) {
             usuario.setConquistas(new ArrayList<>());
@@ -186,44 +206,6 @@ public class UsuarioService {
         if (usuario.getReputacao() >= 5 && !usuario.getConquistas().contains("Reputação 5+")) {
             usuario.getConquistas().add("Reputação 5+");
         }
-
-        usuarioRepository.save(usuario);
-    }
-
-    public void aplicarRecompensasCertas(Usuario usuario) {
-        // ICP-16: Missão diária concluída incrementa a reputação do usuário.
-        boolean cumpriuMissao = verificarMissaoDiaria(usuario);
-        if (cumpriuMissao) {
-            usuario.setReputacao(usuario.getReputacao() + 1);
-        }
-
-        // ICP-17: Lista de conquistas é criada sob demanda para evitar null pointer.
-        if (usuario.getConquistas() == null) {
-            usuario.setConquistas(new ArrayList<>());
-        }
-
-        // ICP-18: Primeira solicitação só é registrada uma vez quando o usuário chega ao marco.
-        if (usuario.getSolicitacoes().size() == 1 && !usuario.getConquistas().contains("Primeira solicitação")) {
-            usuario.getConquistas().add("Primeira solicitação");
-        }
-
-        // ICP-19: Reputação 10+ gera conquista se ainda não existir no conjunto.
-        if (usuario.getReputacao() >= 10 && !usuario.getConquistas().contains("Reputação 10+")) {
-            usuario.getConquistas().add("Reputação 10+");
-        }
-
-        // ICP-20: Nível Expert é aplicado quando a reputação chega a 20 ou mais.
-        if (usuario.getReputacao() >= 20) {
-            usuario.setNivel("Expert");
-        // ICP-21: Nível Intermediário cobre o intervalo entre 10 e 19 de reputação.
-        } else if (usuario.getReputacao() >= 10) {
-            usuario.setNivel("Intermediário");
-        // ICP-22: A faixa restante mantém o usuário no nível inicial.
-        } else {
-            usuario.setNivel("Iniciante");
-        }
-
-        usuarioRepository.save(usuario);
     }
 
     public void salvar(Usuario usuario) {

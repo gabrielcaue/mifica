@@ -26,6 +26,9 @@ public class ReputacaoService {
     @Autowired
     private UsuarioRepository usuarioRepo;
 
+    @Autowired
+    private UsuarioService usuarioService;
+
     public boolean registrarAlteracao(String email, int novaReputacao) {
         // ICP-02: Fluxo condicional preserva atomicidade lógica entre auditoria e reputação atual.
         Optional<Usuario> usuarioOpt = usuarioRepo.findByEmail(email);
@@ -44,9 +47,7 @@ public class ReputacaoService {
 
         historicoRepo.save(historico);
 
-        usuario.setReputacao(novaReputacao);
-        usuarioRepo.save(usuario);
-        return true;
+        return usuarioService.atualizarReputacao(email, novaReputacao);
     }
 
     public List<HistoricoReputacaoDTO> listarHistorico(String email) {

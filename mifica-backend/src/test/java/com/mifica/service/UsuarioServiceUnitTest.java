@@ -4,11 +4,12 @@ import com.mifica.dto.UsuarioDTO;
 import com.mifica.entity.Usuario;
 import com.mifica.repository.UsuarioRepository;
 import com.mifica.testhelpers.TestDataFactory;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.InjectMocks;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.Optional;
@@ -26,10 +27,12 @@ import static org.mockito.Mockito.*;
  * - Regras de negócio
  * - Detecção de erros
  */
+@ExtendWith(MockitoExtension.class)
 @DisplayName("UsuarioService - Testes Unitários")
 @SuppressWarnings("null")
 class UsuarioServiceUnitTest {
 
+    @InjectMocks
     private UsuarioService usuarioService;
 
     @Mock
@@ -37,21 +40,6 @@ class UsuarioServiceUnitTest {
 
     @Mock
     private BCryptPasswordEncoder passwordEncoder;
-
-    @BeforeEach
-    void setUp() throws Exception {
-        MockitoAnnotations.openMocks(this);
-        usuarioService = new UsuarioService();
-        
-        // Use Reflection to set private fields
-        java.lang.reflect.Field usuarioRepoField = UsuarioService.class.getDeclaredField("usuarioRepository");
-        usuarioRepoField.setAccessible(true);
-        usuarioRepoField.set(usuarioService, usuarioRepository);
-        
-        java.lang.reflect.Field passwordEncoderField = UsuarioService.class.getDeclaredField("passwordEncoder");
-        passwordEncoderField.setAccessible(true);
-        passwordEncoderField.set(usuarioService, passwordEncoder);
-    }
 
     // ============ TESTES DE CRIAÇÃO ============
 

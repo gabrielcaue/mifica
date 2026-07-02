@@ -169,18 +169,6 @@ public class Usuario {
         this.conquistas = conquistas;
     }
 
-    // 🔥 Sistema de Níveis
-    public void atualizarNivel() {
-        // ICP-02: Nível é derivado por faixas de reputação com regras de domínio explícitas.
-        if (this.reputacao >= 80) {
-            this.nivel = "AVANCADO";
-        } else if (this.reputacao >= 40) {
-            this.nivel = "INTERMEDIARIO";
-        } else {
-            this.nivel = "INICIANTE";
-        }
-    }
-
     public boolean cumpriuMissaoHoje() {
         // ICP-03: Missão diária depende de consulta temporal sobre coleção de solicitações.
         return solicitacoes.stream()
