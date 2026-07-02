@@ -4,7 +4,7 @@ WORKDIR /app
 
 # Copia apenas o pom.xml primeiro para aproveitar cache das dependências
 COPY pom.xml .
-RUN mvn dependency:go-offline
+RUN mvn dependency:resolve dependency:resolve-plugins -q -Dmaven.wagon.http.retryHandler.count=3
 
 # Copia o código fonte e compila
 COPY src ./src
