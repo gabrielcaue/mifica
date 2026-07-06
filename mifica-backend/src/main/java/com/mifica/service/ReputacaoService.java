@@ -5,7 +5,6 @@ import com.mifica.entity.HistoricoReputacao;
 import com.mifica.entity.Usuario;
 import com.mifica.repository.HistoricoReputacaoRepository;
 import com.mifica.repository.UsuarioRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -20,14 +19,17 @@ public class ReputacaoService {
     // Serviço de reputação que registra alterações e consulta histórico com transformação DTO.
     // ICP-01: Serviço sincroniza histórico de reputação com atualização da entidade principal.
 
-    @Autowired
-    private HistoricoReputacaoRepository historicoRepo;
+    private final HistoricoReputacaoRepository historicoRepo;
+    private final UsuarioRepository usuarioRepo;
+    private final UsuarioService usuarioService;
 
-    @Autowired
-    private UsuarioRepository usuarioRepo;
-
-    @Autowired
-    private UsuarioService usuarioService;
+    public ReputacaoService(HistoricoReputacaoRepository historicoRepo,
+                            UsuarioRepository usuarioRepo,
+                            UsuarioService usuarioService) {
+        this.historicoRepo = historicoRepo;
+        this.usuarioRepo = usuarioRepo;
+        this.usuarioService = usuarioService;
+    }
 
     public boolean registrarAlteracao(String email, int novaReputacao) {
         // ICP-02: Fluxo condicional preserva atomicidade lógica entre auditoria e reputação atual.

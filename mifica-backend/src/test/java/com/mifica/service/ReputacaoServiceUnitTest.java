@@ -39,6 +39,9 @@ class ReputacaoServiceUnitTest {
     @Mock
     private UsuarioRepository usuarioRepository;
 
+    @Mock
+    private UsuarioService usuarioService;
+
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
@@ -58,16 +61,15 @@ class ReputacaoServiceUnitTest {
         when(usuarioRepository.findByEmail(email)).thenReturn(Optional.of(usuario));
         when(historicoReputacaoRepository.save(any(HistoricoReputacao.class)))
             .thenAnswer(invocation -> invocation.getArgument(0));
-        when(usuarioRepository.save(any(Usuario.class)))
-            .thenAnswer(invocation -> invocation.getArgument(0));
+        when(usuarioService.atualizarReputacao(email, novaReputacao)).thenReturn(true);
 
         // ACT
         reputacaoService.registrarAlteracao(email, novaReputacao);
 
         // ASSERT
         verify(historicoReputacaoRepository, times(1)).save(argThat((HistoricoReputacao historico) -> historico != null));
-        verify(usuarioRepository, times(1)).save(argThat((Usuario usuarioSalvo) -> usuarioSalvo != null));
-        assertThat(usuario.getReputacao()).isEqualTo(novaReputacao);
+        verify(usuarioService, times(1)).atualizarReputacao(email, novaReputacao);
+        verify(usuarioRepository, times(1)).findByEmail(email);
     }
 
     @Test
@@ -101,8 +103,7 @@ class ReputacaoServiceUnitTest {
         when(usuarioRepository.findByEmail(email)).thenReturn(Optional.of(usuario));
         when(historicoReputacaoRepository.save(any(HistoricoReputacao.class)))
             .thenAnswer(invocation -> invocation.getArgument(0));
-        when(usuarioRepository.save(any(Usuario.class)))
-            .thenAnswer(invocation -> invocation.getArgument(0));
+        when(usuarioService.atualizarReputacao(email, 100)).thenReturn(true);
 
         // ACT
         reputacaoService.registrarAlteracao(email, novaReputacao);
@@ -112,6 +113,7 @@ class ReputacaoServiceUnitTest {
             historico.getReputacaoAnterior() == reputacaoAnterior && 
             historico.getReputacaoNova() == novaReputacao
         ));
+        verify(usuarioService).atualizarReputacao(email, novaReputacao);
     }
 
     @Test
@@ -173,8 +175,9 @@ class ReputacaoServiceUnitTest {
         when(usuarioRepository.findByEmail(email)).thenReturn(Optional.of(usuario));
         when(historicoReputacaoRepository.save(any(HistoricoReputacao.class)))
             .thenAnswer(invocation -> invocation.getArgument(0));
-        when(usuarioRepository.save(any(Usuario.class)))
-            .thenAnswer(invocation -> invocation.getArgument(0));
+        when(usuarioService.atualizarReputacao(email, 100)).thenReturn(true);
+        when(usuarioService.atualizarReputacao(email, 200)).thenReturn(true);
+        when(usuarioService.atualizarReputacao(email, 300)).thenReturn(true);
 
         // ACT
         reputacaoService.registrarAlteracao(email, 100);
@@ -183,7 +186,8 @@ class ReputacaoServiceUnitTest {
 
         // ASSERT
         verify(historicoReputacaoRepository, times(3)).save(any(HistoricoReputacao.class));
-        verify(usuarioRepository, times(3)).save(argThat((Usuario usuarioSalvo) -> usuarioSalvo != null));
-        assertThat(usuario.getReputacao()).isEqualTo(300);
+        verify(usuarioService, times(1)).atualizarReputacao(email, 100);
+        verify(usuarioService, times(1)).atualizarReputacao(email, 200);
+        verify(usuarioService, times(1)).atualizarReputacao(email, 300);
     }
 }
