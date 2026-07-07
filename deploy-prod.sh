@@ -158,6 +158,10 @@ git add .
 echo "${BLUE}📝 Committing to master...${NC}"
 git commit -m "$COMMIT_MSG"
 
+# Sync with remote before pushing to avoid non-fast-forward failures
+echo "${BLUE}🔄 Syncing with remote master before push...${NC}"
+git pull --rebase origin master
+
 # Push to master
 echo "${BLUE}⬆️  Pushing to GitHub (master branch)...${NC}"
 git push origin master
