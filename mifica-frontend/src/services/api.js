@@ -1,7 +1,14 @@
 import axios from 'axios';
 
+const fallbackOrigin = typeof window !== 'undefined'
+  ? (window.location.hostname === 'localhost' ? 'http://localhost:8080' : window.location.origin)
+  : 'http://localhost:8080';
+
+const configuredApiUrl = (import.meta.env.VITE_API_URL || fallbackOrigin).trim();
+const normalizedApiUrl = configuredApiUrl.replace(/\/$/, '');
+
 const api = axios.create({
-  baseURL: `${import.meta.env.VITE_API_URL || 'http://localhost:8080'}/api`,
+  baseURL: `${normalizedApiUrl}/api`,
 });
 
 // Interceptor único para adicionar token e Content-Type
