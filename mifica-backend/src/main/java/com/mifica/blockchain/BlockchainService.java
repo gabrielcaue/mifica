@@ -1,13 +1,23 @@
 package com.mifica.blockchain;
 
 import com.mifica.dto.TransacaoBlockchainDTO;
+import com.mifica.dto.TxSubmissionDTO;
 import com.mifica.entity.Role;
 import com.mifica.entity.Usuario;
 import com.mifica.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.web3j.protocol.Web3j;
+import org.web3j.protocol.core.methods.response.EthBlock;
+import org.web3j.protocol.core.methods.response.EthGetTransactionReceipt;
+import org.web3j.protocol.core.methods.response.TransactionReceipt;
 
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -32,6 +42,18 @@ public class BlockchainService {
 
     @Autowired
     private UsuarioRepository usuarioRepository;
+
+    @Autowired
+    private Web3j web3j;
+
+    @Value("${POLYGON_CHAIN_ID:137}")
+    private Integer polygonChainId;
+
+    @Value("${CONFIRMATIONS_REQUIRED:3}")
+    private Integer confirmationsRequired;
+
+    @Value("${RPC_POLL_INTERVAL_MS:3000}")
+    private Long rpcPollIntervalMs;
 
     /** Registra uma nova transação blockchain com timestamp automático. */
     public TransacaoBlockchainDTO registrarTransacao(String emailRemetente, String roleRemetente, TransacaoBlockchainDTO dto) {
@@ -86,6 +108,86 @@ public class BlockchainService {
         transacao.setRemetente(remetente.getEmail());
         transacao.setDestinatario(destinatario.getEmail());
         transacao.setValor(dto.getValor());
+        transacao.setDataTransacao(LocalDateTime.now());
+
+        TransacaoBlockchain salva = transacaoRepo.save(transacao);
+        return toDTO(salva);
+    }
+
+    /**
+     * Registrar transação real recebida do frontend (após MetaMask enviar e retornar txHash).
+     * Faz polling do receipt até ter status=1 e número mínimo de confirmações antes de persistir.
+     */
+    public TransacaoBlockchainDTO registrarTransacaoPorTxHash(String emailRemetente, String roleRemetente, TxSubmissionDTO dto) throws RuntimeException {
+        if (dto == null) throw new IllegalArgumentException("Dados da transação são obrigatórios.");
+
+        if (dto.getChainId() == null || !dto.getChainId().equals(polygonChainId)) {
+            throw new IllegalArgumentException("ChainId inválido. Esperado: " + polygonChainId);
+        }
+
+        if (dto.getTxHash() == null || dto.getTxHash().isBlank()) {
+            throw new IllegalArgumentException("txHash é obrigatório.");
+        }
+
+        // Idempotência: não persistir tx duplicada
+        Optional<TransacaoBlockchain> existente = transacaoRepo.findByHashTransacao(dto.getTxHash());
+        if (existente.isPresent()) {
+            return toDTO(existente.get());
+        }
+
+        // Polling de receipt
+        TransactionReceipt receipt = null;
+        int attempts = 0;
+        int maxAttempts = 60; // safety cap (~3min at 3s interval)
+        try {
+            while (attempts < maxAttempts) {
+                EthGetTransactionReceipt ethReceipt = web3j.ethGetTransactionReceipt(dto.getTxHash()).send();
+                if (ethReceipt != null && ethReceipt.getTransactionReceipt().isPresent()) {
+                    receipt = ethReceipt.getTransactionReceipt().get();
+                    break;
+                }
+                attempts++;
+                Thread.sleep(rpcPollIntervalMs);
+            }
+        } catch (InterruptedException ie) {
+            Thread.currentThread().interrupt();
+        } catch (IOException ioe) {
+            throw new RuntimeException("Erro ao consultar RPC: " + ioe.getMessage(), ioe);
+        }
+
+        if (receipt == null) {
+            throw new RuntimeException("Receipt não encontrado para txHash: " + dto.getTxHash());
+        }
+
+        // Verificar status
+        if (receipt.getStatus() == null || !(receipt.getStatus().equals("0x1") || receipt.getStatus().equals("1"))) {
+            throw new RuntimeException("Transação falhou na chain (status != 1).");
+        }
+
+        // Esperar confirmações
+        try {
+            int confirmAttempts = 0;
+            while (confirmAttempts < maxAttempts) {
+                EthBlock latest = web3j.ethGetBlockByNumber(org.web3j.protocol.core.DefaultBlockParameterName.LATEST, false).send();
+                BigInteger latestNumber = latest.getBlock().getNumber();
+                BigInteger txBlock = receipt.getBlockNumber();
+                if (latestNumber.subtract(txBlock).compareTo(BigInteger.valueOf(confirmationsRequired)) >= 0) {
+                    break;
+                }
+                confirmAttempts++;
+                Thread.sleep(rpcPollIntervalMs);
+            }
+        } catch (IOException | InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+
+        // Build entity from submitted data and receipt
+        TransacaoBlockchain transacao = new TransacaoBlockchain();
+        transacao.setHashTransacao(dto.getTxHash());
+        transacao.setRemetente(dto.getFrom());
+        transacao.setDestinatario(dto.getTo());
+        // value is provided by frontend in ETH; keep double as before for compatibility
+        transacao.setValor(dto.getValue() != null ? dto.getValue() : 0.0);
         transacao.setDataTransacao(LocalDateTime.now());
 
         TransacaoBlockchain salva = transacaoRepo.save(transacao);

@@ -13,6 +13,7 @@ public class TransacaoBlockchain {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(unique = true, nullable = false)
     private String hashTransacao;
     private String remetente;
     private String destinatario;

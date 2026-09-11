@@ -28,11 +28,14 @@ services:
     depends_on:
       - mysql
       - redis
+    env_file:
+      - .env
     environment:
       JWT_SECRET: ${JWT_SECRET}
       ADMIN_PASSWORD: ${ADMIN_PASSWORD}
       ADMIN_REDIS_PASSWORD: ${ADMIN_REDIS_PASSWORD}
       CORS_ALLOWED_ORIGIN_PATTERNS: ${CORS_ALLOWED_ORIGIN_PATTERNS}
+      POLYGON_RPC_URL: ${POLYGON_RPC_URL}
       MYSQLHOST: mysql
       MYSQLPORT: 3306
       MYSQLDATABASE: mifica
