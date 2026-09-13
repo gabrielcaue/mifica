@@ -43,9 +43,9 @@ async function main() {
   const badge = await Badge.deploy();
   
   console.log('⏳ Waiting for transaction confirmation...');
-  await badge.deployed();
+  await badge.waitForDeployment();
   
-  console.log(`\n✅ SUCCESS! Badge contract deployed to: ${badge.address}`);
+  console.log(`\n✅ SUCCESS! Badge contract deployed to: ${badge.target}`);
   console.log(`\n📝 Save this address for reference (ABI available in artifacts/contracts/Badge.sol/Badge.json)`);
 }
 
