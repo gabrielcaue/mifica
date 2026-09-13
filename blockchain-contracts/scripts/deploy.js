@@ -30,7 +30,7 @@ async function main() {
   
   // Get account balance
   const balance = await ethers.provider.getBalance(deployerAddress);
-  const balanceInEth = ethers.utils.formatEther(balance);
+  const balanceInEth = ethers.formatEther(balance);
   console.log(`💰 Account balance: ${balanceInEth} MATIC`);
   
   if (balance.isZero()) {
