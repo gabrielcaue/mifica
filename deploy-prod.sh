@@ -12,8 +12,9 @@ NC='\033[0m' # No Color
 echo "${BLUE}🚀 Mifica Production Deploy${NC}"
 echo ""
 
-# Check if there are uncommitted changes
-if git diff-index --quiet HEAD --; then
+# Check if there are uncommitted changes (including untracked files)
+# Use git status --porcelain which lists staged, unstaged and untracked files.
+if [ -z "$(git status --porcelain)" ]; then
   echo "${YELLOW}⚠️  No changes to commit.${NC}"
   exit 0
 fi
