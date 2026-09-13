@@ -1,40 +1,52 @@
-require('dotenv').config();
-
 async function main() {
+  const hre = require('hardhat');
+  const { ethers } = hre;
+  
+  console.log('Starting Badge contract deployment...');
+  console.log('Network:', hre.network.name);
+  
+  // Check for required env vars
+  const deployerKey = process.env.DEPLOYER_PRIVATE_KEY;
   const rpcUrl = process.env.POLYGON_RPC_URL || process.env.MUMBAI_RPC_URL;
-  if (!rpcUrl) {
-    console.error('Missing RPC URL. Set POLYGON_RPC_URL or MUMBAI_RPC_URL in env.');
+  
+  if (!deployerKey) {
+    console.error('❌ ERROR: DEPLOYER_PRIVATE_KEY not set in environment.');
     process.exit(1);
   }
-
-  // Provider (Hardhat exposes a provider when running via npx hardhat)
-  let provider = ethers.provider;
-  if (!provider) {
-    provider = new ethers.providers.JsonRpcProvider(rpcUrl);
+  
+  if (!rpcUrl) {
+    console.error('❌ ERROR: POLYGON_RPC_URL or MUMBAI_RPC_URL not set in environment.');
+    process.exit(1);
   }
-
-  let deployerSigner;
-  if (process.env.DEPLOYER_PRIVATE_KEY) {
-    deployerSigner = new ethers.Wallet(process.env.DEPLOYER_PRIVATE_KEY, provider);
-    console.log('Using deployer from DEPLOYER_PRIVATE_KEY:', await deployerSigner.getAddress());
-  } else {
-    const signers = await ethers.getSigners();
-    if (signers && signers.length > 0) {
-      deployerSigner = signers[0];
-      console.log('Using first Hardhat signer:', await deployerSigner.getAddress());
-    } else {
-      console.error('No deployer available: set DEPLOYER_PRIVATE_KEY or run with a Hardhat network that provides signers.');
-      process.exit(1);
-    }
+  
+  console.log(`✓ RPC URL configured: ${rpcUrl.substring(0, 30)}...`);
+  console.log(`✓ Deployer key found (length: ${deployerKey.length})`);
+  
+  // Get signer from key
+  const deployer = new ethers.Wallet(deployerKey, ethers.provider);
+  const deployerAddress = await deployer.getAddress();
+  
+  console.log(`\n📍 Deploying from: ${deployerAddress}`);
+  
+  // Get account balance
+  const balance = await ethers.provider.getBalance(deployerAddress);
+  const balanceInEth = ethers.utils.formatEther(balance);
+  console.log(`💰 Account balance: ${balanceInEth} MATIC`);
+  
+  if (balance.isZero()) {
+    console.warn('⚠️  WARNING: Account has 0 balance. Deployment may fail.');
   }
-
-  console.log('Deploying contracts on network with RPC:', rpcUrl);
-
-  const Badge = await ethers.getContractFactory('Badge', deployerSigner);
+  
+  // Deploy contract
+  console.log('\n🚀 Deploying Badge contract...');
+  const Badge = await ethers.getContractFactory('Badge', deployer);
   const badge = await Badge.deploy();
+  
+  console.log('⏳ Waiting for transaction confirmation...');
   await badge.deployed();
-
-  console.log('Badge deployed to:', badge.address);
+  
+  console.log(`\n✅ SUCCESS! Badge contract deployed to: ${badge.address}`);
+  console.log(`\n📝 Save this address for reference (ABI available in artifacts/contracts/Badge.sol/Badge.json)`);
 }
 
 main()
