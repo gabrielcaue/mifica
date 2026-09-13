@@ -2,6 +2,7 @@ package com.mifica.controller;
 
 import com.mifica.dto.TransacaoBlockchainDTO;
 import com.mifica.dto.TxSubmissionDTO;
+import com.mifica.dto.CreateBadgeDTO;
 import com.mifica.blockchain.BlockchainService;
 import com.mifica.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,5 +49,29 @@ public class BlockchainController {
     @GetMapping("/transacoes")
     public ResponseEntity<List<TransacaoBlockchainDTO>> listar() {
         return ResponseEntity.ok(blockchainService.listarTransacoes());
+    }
+
+    /**
+     * Cria um badge via contrato inteligente no Polygon.
+     * Endpoint aguarda que o frontend envie o txHash já assinado.
+     * 
+     * Fluxo:
+     * 1. Frontend prepara createBadge(toAddress, metadata) via ContractFactory
+     * 2. MetaMask assina e envia transação
+     * 3. Frontend aguarda txHash
+     * 4. Frontend POST CreateBadgeDTO com txHash, toAddress, metadata, chainId
+     * 5. Backend polling no RPC até confirmação
+     * 6. Backend persiste badge no banco
+     */
+    @PostMapping("/badges")
+    public ResponseEntity<?> criarBadge(@Valid @RequestBody CreateBadgeDTO dto) {
+        try {
+            TransacaoBlockchainDTO registrada = blockchainService.registrarBadge(dto);
+            return ResponseEntity.status(HttpStatus.CREATED).body(registrada);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao registrar badge: " + e.getMessage());
+        }
     }
 }

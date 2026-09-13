@@ -2,6 +2,7 @@ package com.mifica.blockchain;
 
 import com.mifica.dto.TransacaoBlockchainDTO;
 import com.mifica.dto.TxSubmissionDTO;
+import com.mifica.dto.CreateBadgeDTO;
 import com.mifica.entity.Role;
 import com.mifica.entity.Usuario;
 import com.mifica.repository.UsuarioRepository;
@@ -14,7 +15,6 @@ import org.web3j.protocol.core.methods.response.EthGetTransactionReceipt;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -198,6 +198,72 @@ public class BlockchainService {
         return transacaoRepo.findAll().stream()
                 .map(this::toDTO)
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * Registra um badge criado via contrato inteligente.
+     * Valida a transação, aguarda confirmações e persiste no banco de dados.
+     * 
+     * @param dto com txHash, toAddress, metadata, chainId
+     * @return DTO com hash e status
+     * @throws IllegalArgumentException se validação falhar
+     */
+    public TransacaoBlockchainDTO registrarBadge(CreateBadgeDTO dto) {
+        // Validar chain ID
+        if (!dto.getChainId().equals(137L)) {
+            throw new IllegalArgumentException("Badge contrato está em Polygon (chainId=137). Recebido: " + dto.getChainId());
+        }
+
+        String txHash = dto.getTxHash();
+        String toAddress = dto.getToAddress();
+
+        // Checar idempotência
+        Optional<TransacaoBlockchain> existente = transacaoRepo.findByHashTransacao(txHash);
+        if (existente.isPresent()) {
+            return toDTO(existente.get());
+        }
+
+        // Aguardar confirmações
+        try {
+            Optional<TransactionReceipt> receiptOpt = Optional.empty();
+            int maxAttempts = 60;  // 60 tentativas = ~5 minutos com 5s de delay
+            for (int i = 0; i < maxAttempts; i++) {
+                EthGetTransactionReceipt receipt = web3j.ethGetTransactionReceipt(txHash).send();
+                if (receipt.getTransactionReceipt().isPresent()) {
+                    receiptOpt = receipt.getTransactionReceipt();
+                    break;
+                }
+                Thread.sleep(5000);  // Aguardar 5 segundos
+            }
+
+            if (receiptOpt.isEmpty()) {
+                throw new IOException("Transação não confirmada dentro do tempo limite");
+            }
+
+            TransactionReceipt receipt = receiptOpt.get();
+
+            // Validar status
+            if (!receipt.isStatusOK()) {
+                throw new IOException("Transação falhou na blockchain (status=0)");
+            }
+
+            // Registrar no banco
+            TransacaoBlockchain transacao = new TransacaoBlockchain();
+            transacao.setHashTransacao(txHash);
+            transacao.setRemetente(receipt.getFrom());
+            transacao.setDestinatario(toAddress);
+            transacao.setValor(0.0);  // Badges não têm valor, apenas evento
+            transacao.setDataTransacao(LocalDateTime.now());
+
+            TransacaoBlockchain salva = transacaoRepo.save(transacao);
+            return toDTO(salva);
+
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException("Interrupção ao registrar badge: " + e.getMessage(), e);
+        } catch (IOException e) {
+            throw new RuntimeException("Erro ao registrar badge: " + e.getMessage(), e);
+        }
     }
 
     private TransacaoBlockchainDTO toDTO(TransacaoBlockchain transacao) {

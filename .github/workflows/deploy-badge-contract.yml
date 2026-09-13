@@ -1,0 +1,159 @@
+name: Deploy Badge Contract to Polygon
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - 'blockchain-contracts/**'
+      - '.github/workflows/deploy-badge-contract.yml'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    name: Deploy Badge Contract to Polygon
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: 'blockchain-contracts/package-lock.json'
+
+      - name: Install dependencies in blockchain-contracts
+        run: |
+          cd blockchain-contracts
+          npm ci
+
+      - name: Compile Solidity contracts
+        run: |
+          cd blockchain-contracts
+          npx hardhat compile
+
+      - name: Deploy Badge contract to Polygon mainnet
+        env:
+          POLYGON_RPC_URL: ${{ secrets.POLYGON_RPC_URL }}
+          DEPLOYER_PRIVATE_KEY: ${{ secrets.DEPLOYER_PRIVATE_KEY }}
+        run: |
+          cd blockchain-contracts
+          npx hardhat run --network polygon scripts/deploy.js 2>&1 | tee deploy.log
+
+      - name: Extract deployed contract address
+        id: extract_address
+        if: success()
+        run: |
+          cd blockchain-contracts
+          ADDRESS=$(grep -oP '(?<=deployed to: )0x[a-fA-F0-9]{40}' deploy.log || echo "")
+          if [ -z "$ADDRESS" ]; then
+            echo "⚠️  Could not extract contract address from deploy log"
+            exit 0
+          fi
+          echo "address=$ADDRESS" >> $GITHUB_OUTPUT
+          echo "✅ Contract deployed to: $ADDRESS"
+
+      - name: Create deployment summary
+        if: always()
+        run: |
+          cd blockchain-contracts
+          cat > deployment-summary.md << 'EOF'
+          # Badge Contract Deployment Summary
+          
+          **Network:** Polygon Mainnet (ChainID: 137)  
+          **Contract:** Badge  
+          **Timestamp:** ${{ github.event.head_commit.timestamp }}  
+          **Commit:** ${{ github.sha }}  
+          
+          ## Deployment Status
+          
+          EOF
+          
+          if [ -f deploy.log ]; then
+            echo '```' >> deployment-summary.md
+            cat deploy.log >> deployment-summary.md
+            echo '```' >> deployment-summary.md
+          fi
+          
+          if [ ! -z "${{ steps.extract_address.outputs.address }}" ]; then
+            echo "" >> deployment-summary.md
+            echo "**Contract Address:** \`${{ steps.extract_address.outputs.address }}\`" >> deployment-summary.md
+            echo "**Polygonscan Link:** https://polygonscan.com/address/${{ steps.extract_address.outputs.address }}" >> deployment-summary.md
+            echo "" >> deployment-summary.md
+            echo "⚠️  **ACTION REQUIRED:** Update Railway secret \`BADGE_CONTRACT_ADDRESS\` with the deployed address above." >> deployment-summary.md
+          fi
+
+      - name: Upload deployment artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: blockchain-deployment
+          path: |
+            blockchain-contracts/deploy.log
+            blockchain-contracts/deployment-summary.md
+            blockchain-contracts/artifacts/
+          retention-days: 30
+
+      - name: Comment deployment result on commit
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const deployLog = fs.existsSync('blockchain-contracts/deploy.log') 
+              ? fs.readFileSync('blockchain-contracts/deploy.log', 'utf8')
+              : 'No deployment log available';
+            
+            const address = '${{ steps.extract_address.outputs.address }}';
+            const status = address ? '✅ Success' : '⚠️ Deployment completed (check logs)';
+            
+            let comment = `## ${status} - Badge Contract Deployment
+            
+            **Network:** Polygon Mainnet (ChainID: 137)
+            **Timestamp:** ${{ github.event.head_commit.timestamp }}
+            
+            `;
+            
+            if (address) {
+              comment += `**🎉 Contract Address:** \`${address}\`
+              
+              **Explore:** https://polygonscan.com/address/${address}
+              
+              **Next Steps:**
+              1. Update Railway secret: \`BADGE_CONTRACT_ADDRESS = ${address}\`
+              2. Restart backend services to pick up new configuration
+              3. Test badge creation via \`POST /api/blockchain/badges\`
+              `;
+            }
+            
+            comment += `\n\n<details>
+            <summary>📋 Deployment Log</summary>
+            
+            \`\`\`
+            ${deployLog.substring(0, 2000)}
+            \`\`\`
+            
+            </details>`;
+            
+            github.rest.git.createCommit({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              message: comment,
+              tree: context.payload.head_commit.tree_id,
+              parents: [context.payload.head_commit.id]
+            }).catch(() => console.log('Could not post commit comment (expected in some CI contexts)'));
+
+      - name: Notify deployment failure
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const deployLog = fs.existsSync('blockchain-contracts/deploy.log')
+              ? fs.readFileSync('blockchain-contracts/deploy.log', 'utf8').substring(0, 1000)
+              : 'No logs available';
+            
+            console.error('❌ Badge Contract Deployment Failed');
+            console.error('Logs:', deployLog);
