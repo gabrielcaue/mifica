@@ -33,7 +33,7 @@ async function main() {
   const balanceInEth = ethers.formatEther(balance);
   console.log(`💰 Account balance: ${balanceInEth} MATIC`);
   
-  if (balance.isZero()) {
+  if (balance === 0n) {
     console.warn('⚠️  WARNING: Account has 0 balance. Deployment may fail.');
   }
   
