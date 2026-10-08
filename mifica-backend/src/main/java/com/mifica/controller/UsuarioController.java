@@ -353,7 +353,7 @@ public class UsuarioController {
     // ========== ENDPOINTS GENÉRICOS /{id} (VÃO POR ÚLTIMO) ==========
 
     // 🔧 Buscar por ID
-    @GetMapping("/{id}")
+    @GetMapping("/{id:\\d+}")
     public ResponseEntity<?> buscarPorId(@PathVariable Long id) {
         Optional<UsuarioDTO> usuario = usuarioService.buscarPorId(id);
         return usuario.<ResponseEntity<?>>map(ResponseEntity::ok)
@@ -361,14 +361,14 @@ public class UsuarioController {
     }
 
     // 🔧 Atualizar usuário
-    @PutMapping("/{id}")
+    @PutMapping("/{id:\\d+}")
     public ResponseEntity<UsuarioDTO> atualizarUsuario(@PathVariable Long id, @RequestBody UsuarioDTO dto) {
         UsuarioDTO atualizado = usuarioService.atualizarUsuario(id, dto);
         return ResponseEntity.ok(atualizado);
     }
 
     // 🔧 Deletar usuário por ID (admin)
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/{id:\\d+}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<String> deletarUsuario(@PathVariable Long id) {
         try {
@@ -381,7 +381,7 @@ public class UsuarioController {
     }
 
     // 🔧 HEAD para verificar existência
-    @RequestMapping(value = "/{id}", method = RequestMethod.HEAD)
+    @RequestMapping(value = "/{id:\\d+}", method = RequestMethod.HEAD)
     public ResponseEntity<Void> verificarExistencia(@PathVariable Long id) {
         boolean existe = usuarioService.existePorId(id);
         return existe ? ResponseEntity.ok().build() : ResponseEntity.notFound().build();
