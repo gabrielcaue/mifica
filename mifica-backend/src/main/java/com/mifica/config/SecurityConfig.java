@@ -11,7 +11,6 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.http.HttpMethod;
@@ -21,7 +20,6 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import com.mifica.filter.SecurityAuditFilter;
 import com.mifica.util.JwtFiltro;
-import com.mifica.filter.JwtAuthenticationFilter;
 
 /**
  * Configuração central de segurança da aplicação.
@@ -45,9 +43,6 @@ public class SecurityConfig {
     private JwtFiltro jwtFiltro;
 
     @Autowired
-    private JwtAuthenticationFilter jwtAuthenticationFilter;
-
-    @Autowired
     private SecurityAuditFilter securityAuditFilter;
 
     @Value("${app.cors.allowed-origin-patterns:*}")
@@ -67,7 +62,7 @@ public class SecurityConfig {
             // Configura CORS para permitir requisições do frontend (GitHub Pages)
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             // Desabilita CSRF — desnecessário em APIs REST stateless com JWT
-            .csrf(AbstractHttpConfigurer::disable)
+            .csrf(csrf -> csrf.disable())
             // ✅ Permite Streamlit em iframe de qualquer origem (cross-domain)
             .headers(headers -> headers
                 .frameOptions(frameOptions -> frameOptions.disable())
@@ -86,7 +81,6 @@ public class SecurityConfig {
                 .anyRequest().authenticated()
             )
 
-            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
             .addFilterBefore(jwtFiltro, UsernamePasswordAuthenticationFilter.class)
             .addFilterAfter(securityAuditFilter, JwtFiltro.class);
 
@@ -110,7 +104,7 @@ public class SecurityConfig {
         // Lê origins da variável de ambiente, separados por vírgula
         configuration.setAllowedOriginPatterns(
             Arrays.stream(allowedOriginPatterns.split(","))
-                .map(String::trim)
+                .map(origin -> origin == null ? "" : origin.trim())
                 .filter(origin -> !origin.isBlank())
                 .toList()
         );
