@@ -56,7 +56,7 @@ SPRING_PROFILES_ACTIVE=prod
 
 ## Endpoints da API (Backend)
 
-> **Base:** definida por `VITE_API_URL` no frontend e `PUBLIC_BACKEND_URL` no backend
+> **Base:** definida por `VITE_API_URL` no frontend e por `BACKEND_PUBLIC_URL` (ou `PUBLIC_BACKEND_URL`, para compatibilidade) no backend em produção
 
 | Método | Rota | Descrição | Acesso |
 |---|---|---|---|

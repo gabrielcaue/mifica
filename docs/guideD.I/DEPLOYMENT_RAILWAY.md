@@ -41,6 +41,9 @@ Configure estas variáveis no serviço do backend:
 - `REDIS_SSL`
 - `BACKEND_PUBLIC_URL`
 
+> No Railway, `BACKEND_PUBLIC_URL` deve apontar para a URL pública do serviço do backend, por exemplo `https://mifica-production.up.railway.app`.
+> Essa variável fica no serviço do backend do Railway. No frontend, a URL consumida no build continua sendo `VITE_API_URL`.
+
 Para o Grafana, defina também:
 
 - `GF_SECURITY_ADMIN_USER=admin`
