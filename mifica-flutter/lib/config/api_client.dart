@@ -1,27 +1,40 @@
 // lib/config/api_client.dart
 // Cliente HTTP para consumir a API Java do Backend Mifica
 
-import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'dart:io';
+
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:http/http.dart' as http;
 
 class ApiClient {
-  // ICP-TOTAL: 3
-  // ICP-01: Cliente centraliza autenticação por token e tratamento padrão de erros HTTP.
-  // Altere para seu URL de produção
-  final String baseUrl = const String.fromEnvironment(
-    'API_URL',
-    defaultValue: 'http://localhost:8080',
-  );
-
-  final storage = const FlutterSecureStorage();
+  final FlutterSecureStorage storage = const FlutterSecureStorage();
   static const String _tokenKey = 'jwt_token';
+
+  String get baseUrl {
+    if (Platform.isAndroid) {
+      return const String.fromEnvironment(
+        'API_URL',
+        defaultValue: 'http://10.0.2.2:8080',
+      );
+    }
+
+    return const String.fromEnvironment(
+      'API_URL',
+      defaultValue: 'http://localhost:8080',
+    );
+  }
+
+  Uri _uri(String endpoint) {
+    final normalizedEndpoint = endpoint.startsWith('/') ? endpoint : '/$endpoint';
+    final base = baseUrl.trim().replaceAll(RegExp(r'/+$'), '');
+    return Uri.parse('$base/api$normalizedEndpoint');
+  }
 
   Future<Map<String, dynamic>> post(
     String endpoint,
     Map<String, dynamic> data,
   ) async {
-    // ICP-02: Fluxo de POST agrega injeção condicional de JWT, serialização e política de recuperação para 401.
     try {
       final token = await storage.read(key: _tokenKey);
       final headers = {
@@ -30,28 +43,30 @@ class ApiClient {
       };
 
       final response = await http.post(
-        Uri.parse('$baseUrl$endpoint'),
+        _uri(endpoint),
         headers: headers,
         body: jsonEncode(data),
       );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        return jsonDecode(response.body) as Map<String, dynamic>;
-      } else if (response.statusCode == 401) {
-        await storage.delete(key: _tokenKey);
-        throw Exception('Não autenticado. Faça login novamente.');
-      } else {
-        throw Exception(
-          'Erro ${response.statusCode}: ${response.body}',
-        );
+        final decoded = jsonDecode(response.body);
+        return decoded is Map<String, dynamic>
+            ? decoded
+            : {'data': decoded};
       }
+
+      if (response.statusCode == 401) {
+        await clearToken();
+        throw Exception('Não autenticado. Faça login novamente.');
+      }
+
+      throw Exception('Erro ${response.statusCode}: ${response.body}');
     } catch (e) {
       rethrow;
     }
   }
 
   Future<Map<String, dynamic>> get(String endpoint) async {
-    // ICP-03: GET reutiliza estratégia de autenticação e normaliza retorno de erro para chamadas consumidoras.
     try {
       final token = await storage.read(key: _tokenKey);
       final headers = {
@@ -60,18 +75,50 @@ class ApiClient {
       };
 
       final response = await http.get(
-        Uri.parse('$baseUrl$endpoint'),
+        _uri(endpoint),
         headers: headers,
       );
 
       if (response.statusCode == 200) {
-        return jsonDecode(response.body) as Map<String, dynamic>;
-      } else {
-        throw Exception('Erro ${response.statusCode}: ${response.body}');
+        final decoded = jsonDecode(response.body);
+        return decoded is Map<String, dynamic>
+            ? decoded
+            : {'data': decoded};
       }
+
+      if (response.statusCode == 401) {
+        await clearToken();
+        throw Exception('Não autenticado. Faça login novamente.');
+      }
+
+      throw Exception('Erro ${response.statusCode}: ${response.body}');
     } catch (e) {
       rethrow;
     }
+  }
+
+  Future<Map<String, dynamic>> login(String email, String senha) async {
+    final response = await post('/usuarios/login', {
+      'email': email.trim(),
+      'senha': senha.trim(),
+    });
+
+    final token = response['token']?.toString();
+    if (token != null && token.isNotEmpty) {
+      await saveToken(token);
+    }
+
+    return response;
+  }
+
+  Future<Map<String, dynamic>> cadastro(String nome, String email, String senha) async {
+    final response = await post('/usuarios/cadastro', {
+      'nome': nome.trim(),
+      'email': email.trim(),
+      'senha': senha.trim(),
+    });
+
+    return response;
   }
 
   Future<void> saveToken(String token) async {
