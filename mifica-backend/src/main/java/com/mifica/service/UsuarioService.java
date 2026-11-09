@@ -78,6 +78,23 @@ public class UsuarioService {
         return true;
     }
 
+    public boolean senhaCorreta(Usuario usuario, String senhaDigitada) {
+        if (usuario == null || senhaDigitada == null) {
+            return false;
+        }
+
+        String senhaArmazenada = usuario.getSenha();
+        if (senhaArmazenada == null || senhaArmazenada.isBlank()) {
+            return false;
+        }
+
+        try {
+            return passwordEncoder.matches(senhaDigitada, senhaArmazenada);
+        } catch (IllegalArgumentException e) {
+            return false;
+        }
+    }
+
     private Role formatarPapel(String role) {
         // ICP-04: Normalização do papel aceita valor nulo ou em branco e cai no papel padrão.
         if (role == null || role.isBlank()) {
@@ -223,10 +240,6 @@ public class UsuarioService {
         usuarioRepository.delete(usuario);
     }
 
-    public boolean senhaCorreta(String senhaDigitada, String senhaArmazenada) {
-        return passwordEncoder.matches(senhaDigitada, senhaArmazenada);
-    }
-
     private String criptografarSenha(String senha) {
         return passwordEncoder.encode(senha);
     }
@@ -279,77 +292,74 @@ public class UsuarioService {
         return Optional.of(converterParaDTO(usuario));
     }
 
-public UsuarioDTO atualizarUsuario(Long id, UsuarioDTO dto) {
-    Usuario usuario = usuarioRepository.findById(Objects.requireNonNull(id))
-        .orElseThrow(() -> new RuntimeException("Usuário não encontrado."));
+    public UsuarioDTO atualizarUsuario(Long id, UsuarioDTO dto) {
+        Usuario usuario = usuarioRepository.findById(Objects.requireNonNull(id))
+            .orElseThrow(() -> new RuntimeException("Usuário não encontrado."));
 
-    usuario.setNome(dto.getNome());
-    usuario.setEmail(dto.getEmail());
+        usuario.setNome(dto.getNome());
+        usuario.setEmail(dto.getEmail());
 
-    // ICP-28: Nova senha só é aplicada quando veio preenchida e diferente de vazio.
-    if (dto.getSenha() != null && !dto.getSenha().isBlank()) {
-        usuario.setSenha(criptografarSenha(dto.getSenha()));
-    }
+        // ICP-28: Nova senha só é aplicada quando veio preenchida e diferente de vazio.
+        if (dto.getSenha() != null && !dto.getSenha().isBlank()) {
+            usuario.setSenha(criptografarSenha(dto.getSenha()));
+        }
 
-    // ICP-28b: Reputação só é atualizada quando veio preenchida no DTO.
-    if (dto.getReputacao() != null) {
-        usuario.setReputacao(dto.getReputacao());
-    }
+        // ICP-28b: Reputação só é atualizada quando veio preenchida no DTO.
+        if (dto.getReputacao() != null) {
+            usuario.setReputacao(dto.getReputacao());
+        }
 
-    usuario.setNivel(dto.getNivel());
+        usuario.setNivel(dto.getNivel());
 
-    // ICP-29: Role só é convertida quando o payload envia valor explícito.
-    if (dto.getRole() != null) {
-        usuario.setRole(formatarPapel(dto.getRole()));
-    }
+        // ICP-29: Role só é convertida quando o payload envia valor explícito.
+        if (dto.getRole() != null) {
+            usuario.setRole(formatarPapel(dto.getRole()));
+        }
 
-    Usuario atualizado = usuarioRepository.save(usuario);
-    return converterParaDTO(atualizado);
+        Usuario atualizado = usuarioRepository.save(usuario);
+        return converterParaDTO(atualizado);
     }
 
     public boolean existePorId(Long id) {
-    return usuarioRepository.existsById(Objects.requireNonNull(id));
+        return usuarioRepository.existsById(Objects.requireNonNull(id));
     }
 
     public Usuario buscarUsuarioPorId(Long id) {
-    return usuarioRepository.findById(Objects.requireNonNull(id))
-        .orElseThrow(() -> new RuntimeException("Usuário não encontrado."));
+        return usuarioRepository.findById(Objects.requireNonNull(id))
+            .orElseThrow(() -> new RuntimeException("Usuário não encontrado."));
     }
 
     public int contarUsuarios() {
-    return Math.toIntExact(usuarioRepository.count());
+        return Math.toIntExact(usuarioRepository.count());
     }
 
     public double mediaReputacao() {
-    List<Usuario> usuarios = usuarioRepository.findAll();
-    // ICP-30: Média retorna 0.0 quando não há usuários para evitar divisão por zero.
-    if (usuarios.isEmpty()) return 0.0;
-    double soma = usuarios.stream()
-                          .mapToDouble(Usuario::getReputacao)
-                          .sum();
-    return soma / usuarios.size();
+        List<Usuario> usuarios = usuarioRepository.findAll();
+        if (usuarios.isEmpty()) return 0.0;
+        double soma = usuarios.stream()
+            .filter(Objects::nonNull)
+            .mapToDouble(usuario -> usuario != null ? usuario.getReputacao() : 0)
+            .sum();
+        return soma / usuarios.size();
     }
 
     public void alterarPapel(Long id, Role novoPapel) {
-    Usuario usuario = usuarioRepository.findById(Objects.requireNonNull(id))
-        .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
-    usuario.setRole(novoPapel);
-    usuarioRepository.save(usuario);
+        Usuario usuario = usuarioRepository.findById(Objects.requireNonNull(id))
+            .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+        usuario.setRole(novoPapel);
+        usuarioRepository.save(usuario);
     }
 
-        // 🔧 Novo método para atualizar senha
-public boolean atualizarSenha(Long id, String senhaAtual, String senhaNova) {
-    // Fluxo de troca de senha valida a senha antiga antes de gravar o novo hash.
-    Usuario usuario = usuarioRepository.findById(Objects.requireNonNull(id))
-        .orElseThrow(() -> new RuntimeException("Usuário não encontrado."));
+    public boolean atualizarSenha(Long id, String senhaAtual, String senhaNova) {
+        Usuario usuario = usuarioRepository.findById(Objects.requireNonNull(id))
+            .orElseThrow(() -> new RuntimeException("Usuário não encontrado."));
 
-    // ICP-31: Troca de senha exige confirmação da senha antiga antes de gravar o novo hash.
-    if (!passwordEncoder.matches(senhaAtual, usuario.getSenha())) {
-        throw new RuntimeException("Senha atual incorreta.");
-    }
+        if (!senhaCorreta(usuario, senhaAtual)) {
+            throw new RuntimeException("Senha atual incorreta.");
+        }
 
-    usuario.setSenha(passwordEncoder.encode(senhaNova));
-    usuarioRepository.save(usuario);
-    return true;
+        usuario.setSenha(passwordEncoder.encode(senhaNova));
+        usuarioRepository.save(usuario);
+        return true;
     }
 }

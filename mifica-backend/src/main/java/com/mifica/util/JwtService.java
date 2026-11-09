@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.mifica.entity.Usuario;
+import com.mifica.entity.Role;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -54,7 +55,7 @@ public class JwtService {
                 .setSubject(usuario.getEmail())   // Subject = email (identificador principal)
                 .claim("id", usuario.getId())      // ID para lookup rápido no frontend
                 .claim("nome", usuario.getNome())  // Nome para exibição no frontend
-                .claim("role", usuario.getRole())  // Role para controle de acesso (USER/ADMIN)
+                .claim("role", usuario.getRole() != null ? usuario.getRole().name() : Role.ROLE_USER.name())  // Role para controle de acesso (USER/ADMIN)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + expiracaoMillis))
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)
