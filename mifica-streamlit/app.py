@@ -22,21 +22,28 @@ def validar_token_jwt():
     try:
         query_params = st.query_params
         token = query_params.get("token", None)
-        
+
         if not token:
             st.error("❌ Token JWT não fornecido!")
             return None
-        
+
         # Decodificar JWT (sem validação de assinatura em dev)
-        # Em produção, você validaria a assinatura
         decoded = jwt.decode(token, options={"verify_signature": False})
-        
-        # Verificar se tem role de admin
-        roles = decoded.get("authorities", [])
-        if "ROLE_ADMIN" not in roles:
+
+        role = decoded.get("role")
+        if not role:
+            st.error("❌ Token não contém a role do usuário.")
+            return None
+
+        # Normaliza role para o formato esperado pela aplicação
+        role_normalizada = str(role).upper()
+        if not role_normalizada.startswith("ROLE_"):
+            role_normalizada = f"ROLE_{role_normalizada}"
+
+        if role_normalizada != "ROLE_ADMIN":
             st.error("❌ Acesso negado! Você precisa ser admin.")
             return None
-        
+
         return decoded
     except jwt.ExpiredSignatureError:
         st.error("❌ Token JWT expirado!")

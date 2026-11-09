@@ -16,6 +16,8 @@ public final class PublicPaths {
             "/api/usuarios/cadastro",
             "/api/usuarios/cadastro-admin",
             "/api/usuarios/validar-acesso-admin",
+            "/streamlit",
+            "/streamlit/**",
             "/api/blockchain/**",
             "/swagger-ui/**",
             "/v3/api-docs/**",
@@ -35,6 +37,7 @@ public final class PublicPaths {
                 || path.startsWith("/api/usuarios/cadastro")
                 || path.startsWith("/api/usuarios/cadastro-admin")
                 || path.startsWith("/api/usuarios/validar-acesso-admin")
+                || path.startsWith("/streamlit")
                 || path.startsWith("/api/blockchain")
                 || path.startsWith("/swagger-ui")
                 || path.startsWith("/v3/api-docs")
