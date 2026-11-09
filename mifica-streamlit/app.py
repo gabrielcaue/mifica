@@ -9,6 +9,8 @@ from utils.charts import grafico_reputacao
 from services.blockchain_api import listar_transacoes
 from streamlit_autorefresh import st_autorefresh
 
+BACKEND_API_URL = os.getenv("BACKEND_API_URL", "https://mifica-production.up.railway.app").rstrip("/")
+
 st.set_page_config(
     page_title="Mifica Dashboard",
     page_icon="🧠",
@@ -68,15 +70,14 @@ st.write(f"📌 Usuário autenticado: {usuario_autenticado.get('sub', 'desconhec
 # ✅ Carregar dados dos usuários
 def carregar_usuarios_api():
     try:
-        api_url = "http://mifica-backend:8080/api/usuarios"
-        response = requests.get(api_url, timeout=5)
+        response = requests.get(f"{BACKEND_API_URL}/api/usuarios", timeout=15)
         if response.status_code == 200:
             return response.json()
         else:
             st.warning(f"⚠️ API retornou status {response.status_code}")
             return []
     except Exception as e:
-        st.info(f"ℹ️ Backend indisponível em dev (normal): {str(e)}")
+        st.info(f"ℹ️ Backend indisponível: {str(e)}")
         return []
 
 usuarios = carregar_usuarios_api()
@@ -183,7 +184,20 @@ def registrar_transacao_dashboard(valor_disponivel_usuario):
 
         payload = {"destinatario": destinatario, "valor": valor}
         headers = {"Authorization": f"Bearer {token}"}
-    resposta = requests.post("http://mifica-backend:8080/api/transacoes", json=payload, headers=headers)
+
+        try:
+            response = requests.post(
+                f"{BACKEND_API_URL}/api/transacoes",
+                json=payload,
+                headers=headers,
+                timeout=20,
+            )
+            if response.status_code in (200, 201):
+                st.success("✅ Transação registrada com sucesso.")
+            else:
+                st.error(f"❌ Erro ao registrar transação: {response.status_code}")
+        except Exception as e:
+            st.error(f"❌ Falha ao chamar a API do backend: {str(e)}")
 
 # Conteúdo condicional
 if opcao == "Dashboard":

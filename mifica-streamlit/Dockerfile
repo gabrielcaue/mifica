@@ -11,6 +11,10 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copia o restante do código, incluindo configuração do Streamlit
 COPY . .
 
+ENV PYTHONUNBUFFERED=1
+ENV STREAMLIT_SERVER_HEADLESS=true
+ENV PORT=8501
+
 # Expõe a porta padrão do Streamlit
 EXPOSE 8501
 

@@ -14,20 +14,21 @@ import RotaAdmin from './components/RotaAdmin.jsx';
 
 // Novo componente para embutir Streamlit
 function AdminPanel() {
-  const apiBaseUrl = import.meta.env.VITE_API_URL || '';
-  const backendBaseUrl = apiBaseUrl.replace(/\/api\/?$/, '');
-  
-  // Obter token do localStorage ou sessionStorage
+  const apiBaseUrl = (import.meta.env.VITE_API_URL || 'https://mifica-production.up.railway.app').replace(/\/api\/?$/, '');
   const token = localStorage.getItem('token') || sessionStorage.getItem('token') || '';
 
-  let streamlitUrl = import.meta.env.VITE_STREAMLIT_URL
-    || (import.meta.env.DEV
-      ? 'http://localhost:8501'
-      : (backendBaseUrl ? `${backendBaseUrl}/streamlit` : `${window.location.origin}/streamlit`));
+  // Importante: quando VITE_STREAMLIT_URL não estiver configurado, não cair no backend.
+  // Isso evita requests como https://mifica-production.up.railway.app/streamlit?token=...
+  const streamlitBaseUrl = (
+    import.meta.env.VITE_STREAMLIT_URL ||
+    'https://streamlit-production-12a3.up.railway.app/streamlit'
+  ).replace(/\/+$/, '');
 
-  // ✅ NOVO: Passar token JWT como query parameter
+  let streamlitUrl = streamlitBaseUrl;
+
   if (token) {
-    streamlitUrl += `?token=${encodeURIComponent(token)}`;
+    const separator = streamlitUrl.includes('?') ? '&' : '?';
+    streamlitUrl += `${separator}token=${encodeURIComponent(token)}`;
   }
 
   return (
