@@ -73,8 +73,9 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 // Endpoints públicos — acessíveis sem autenticação
                 .requestMatchers(PublicPaths.PERMIT_ALL).permitAll()
+                // ✅ Streamlit em iframe: público + com token opcional, sem exigir ROLE_ADMIN no backend
+                .requestMatchers("/streamlit", "/streamlit/**").permitAll()
                 // Endpoints com autenticação (requer JWT)
-                .requestMatchers("/streamlit/**").hasRole("ADMIN")  // ✅ Streamlit: ADMIN only
                 .requestMatchers("/api/transacoes/**").hasAnyRole("USER", "ADMIN")
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
                 // Qualquer outra rota requer autenticação
