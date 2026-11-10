@@ -17,11 +17,28 @@ function AdminPanel() {
   const apiBaseUrl = (import.meta.env.VITE_API_URL || 'https://mifica-production.up.railway.app').replace(/\/api\/?$/, '');
   const token = localStorage.getItem('token') || sessionStorage.getItem('token') || '';
 
-  // Importante: quando VITE_STREAMLIT_URL não estiver configurado, não cair no backend.
-  // Isso evita requests como https://mifica-production.up.railway.app/streamlit?token=...
+  const defaultStreamlitUrl = 'https://streamlit-production-12a3.up.railway.app/streamlit';
+  const configuredStreamlitUrl = (import.meta.env.VITE_STREAMLIT_URL || '').trim();
+
+  const safeParse = (value) => {
+    try {
+      return new URL(value);
+    } catch {
+      return null;
+    }
+  };
+
+  const apiUrlParsed = safeParse(apiBaseUrl);
+  const configuredStreamlitParsed = safeParse(configuredStreamlitUrl);
+
+  // Proteção: se VITE_STREAMLIT_URL estiver apontando para o backend, usa o domínio do Streamlit.
+  const isUsingBackendAsStreamlit =
+    !!(apiUrlParsed && configuredStreamlitParsed && apiUrlParsed.origin === configuredStreamlitParsed.origin);
+
   const streamlitBaseUrl = (
-    import.meta.env.VITE_STREAMLIT_URL ||
-    'https://streamlit-production-12a3.up.railway.app/streamlit'
+    configuredStreamlitUrl && !isUsingBackendAsStreamlit
+      ? configuredStreamlitUrl
+      : defaultStreamlitUrl
   ).replace(/\/+$/, '');
 
   let streamlitUrl = streamlitBaseUrl;

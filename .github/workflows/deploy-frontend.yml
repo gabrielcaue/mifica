@@ -22,7 +22,7 @@ concurrency:
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
   VITE_API_URL: https://mifica-production.up.railway.app
-  VITE_STREAMLIT_URL: https://mifica-production.up.railway.app/streamlit
+  VITE_STREAMLIT_URL: https://streamlit-production-12a3.up.railway.app/streamlit
   VITE_SENHA_ADMIN: SenhaAdmin2026!
 
 jobs:
