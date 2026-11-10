@@ -39,13 +39,39 @@ function AdminPanel() {
     configuredStreamlitUrl && !isUsingBackendAsStreamlit
       ? configuredStreamlitUrl
       : defaultStreamlitUrl
-  ).replace(/\/+$/, '');
+  );
 
-  let streamlitUrl = streamlitBaseUrl;
+  const normalizeStreamlitUrl = (rawUrl) => {
+    let url = (rawUrl || '').trim();
+
+    if (!/^https?:\/\//i.test(url)) {
+      url = `https://${url}`;
+    }
+
+    // GitHub Pages roda em HTTPS: nunca permitir HTTP no iframe
+    url = url.replace(/^http:\/\//i, 'https://');
+
+    const parsed = safeParse(url);
+    if (!parsed) {
+      return `${defaultStreamlitUrl}/`;
+    }
+
+    // Evita redirect de /streamlit para /streamlit/ (que pode sair com http atrás de proxy)
+    parsed.pathname = `${parsed.pathname.replace(/\/+$/, '')}/`;
+    parsed.search = '';
+    parsed.hash = '';
+
+    return parsed.toString();
+  };
+
+  let streamlitUrl = normalizeStreamlitUrl(streamlitBaseUrl);
 
   if (token) {
-    const separator = streamlitUrl.includes('?') ? '&' : '?';
-    streamlitUrl += `${separator}token=${encodeURIComponent(token)}`;
+    const urlComToken = safeParse(streamlitUrl);
+    if (urlComToken) {
+      urlComToken.searchParams.set('token', token);
+      streamlitUrl = urlComToken.toString();
+    }
   }
 
   return (
