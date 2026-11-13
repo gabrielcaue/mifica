@@ -1,3 +1,4 @@
+import { ethers } from 'ethers';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
@@ -6,17 +7,33 @@ import api from '../services/api';
 // Componentes
 import Topo from '../components/Topo';
 import TransacoesList from '../components/TransacoesList';
-// Função para formatar valores em Real com as regras especificadas
+
 const formatarReal = (valor) => {
   if (valor === null || valor === undefined || isNaN(valor)) return 'R$ 0';
-  
-  // Converter para inteiro (ignorar centavos)
+
   const valorInteiro = Math.floor(valor);
-  
-  // Formatar com ponto a partir de 1000
   const valorFormatado = valorInteiro.toLocaleString('pt-BR');
-  
+
   return `R$ ${valorFormatado}`;
+};
+
+const formatarEndereco = (endereco) => {
+  if (!endereco) return '—';
+  return `${endereco.slice(0, 6)}...${endereco.slice(-4)}`;
+};
+
+const formatarSaldoMatic = (saldo) => {
+  if (!saldo) return '0.00';
+
+  try {
+    const valor = Number(ethers.formatEther(saldo));
+    return valor.toLocaleString('pt-BR', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 4,
+    });
+  } catch (error) {
+    return '0.00';
+  }
 };
 
 const calcularEntradaSaidaDoUsuario = (lista, emailUsuario) => {
@@ -39,10 +56,9 @@ const calcularEntradaSaidaDoUsuario = (lista, emailUsuario) => {
   return {
     entrada,
     saida,
-    total: entrada + saida
+    total: entrada + saida,
   };
 };
-
 
 export default function Dashboard() {
   const { usuario } = useAuth();
@@ -57,34 +73,135 @@ export default function Dashboard() {
   const [refreshTransacoes, setRefreshTransacoes] = useState(0);
   const [erroTransacao, setErroTransacao] = useState('');
   const [sucessoTransacao, setSucessoTransacao] = useState('');
+  const [walletModalOpen, setWalletModalOpen] = useState(false);
+  const [walletConnected, setWalletConnected] = useState(false);
+  const [walletAddress, setWalletAddress] = useState('');
+  const [walletBalance, setWalletBalance] = useState('0.00');
+  const [walletNetwork, setWalletNetwork] = useState('Polygon');
+  const [walletError, setWalletError] = useState('');
+  const [isConnectingWallet, setIsConnectingWallet] = useState(false);
 
   useEffect(() => {
     api.get('/blockchain/transacoes')
-      .then(response => {
+      .then((response) => {
         const lista = response.data;
         setTransacoes(lista);
 
         const { entrada, saida } = calcularEntradaSaidaDoUsuario(lista, usuario?.email);
         const ehAdmin = usuario?.role === 'ROLE_ADMIN';
 
-        // Valor total = saldo disponível
         if (ehAdmin) {
-          // Admin: 1M - quanto já gastou
           setSaldoDisponivel(Math.max(0, 1_000_000 - saida));
         } else {
-          // Comum: quanto recebeu - quanto gastou
           setSaldoDisponivel(Math.max(0, entrada - saida));
         }
 
-        // Total movimentado = apenas quanto ele gastou (saida)
         setTotalMovimentado(saida);
 
         if (lista.length > 0) {
           setUltimaTransacao(lista[lista.length - 1]);
         }
       })
-      .catch(error => console.error('Erro ao buscar transações:', error));
+      .catch((error) => console.error('Erro ao buscar transações:', error));
   }, [usuario?.email]);
+
+  const syncWalletState = async () => {
+    if (!window.ethereum) {
+      setWalletConnected(false);
+      setWalletAddress('');
+      setWalletBalance('0.00');
+      setWalletNetwork('MetaMask não disponível');
+      return;
+    }
+
+    try {
+      const provider = new ethers.BrowserProvider(window.ethereum);
+      const accounts = await provider.listAccounts();
+
+      if (!accounts.length) {
+        setWalletConnected(false);
+        setWalletAddress('');
+        setWalletBalance('0.00');
+        setWalletNetwork('Polygon');
+        return;
+      }
+
+      const signer = await provider.getSigner();
+      const address = await signer.getAddress();
+      const network = await provider.getNetwork();
+      const balance = await provider.getBalance(address);
+      const chainId = Number(network.chainId);
+
+      setWalletAddress(address);
+      setWalletBalance(formatarSaldoMatic(balance));
+      setWalletNetwork(chainId === 137 ? 'Polygon' : `Rede ${chainId}`);
+      setWalletConnected(true);
+      setWalletError('');
+    } catch (error) {
+      console.error('Erro ao sincronizar carteira:', error);
+      setWalletConnected(false);
+      setWalletAddress('');
+      setWalletBalance('0.00');
+      setWalletNetwork('Polygon');
+    }
+  };
+
+  const connectWallet = async () => {
+    setWalletError('');
+
+    if (!window.ethereum) {
+      setWalletError('MetaMask não encontrada. Instale a extensão para continuar.');
+      return;
+    }
+
+    setIsConnectingWallet(true);
+
+    try {
+      const provider = new ethers.BrowserProvider(window.ethereum);
+      const accounts = await provider.send('eth_requestAccounts', []);
+
+      if (!accounts || !accounts.length) {
+        throw new Error('Nenhuma conta foi selecionada na MetaMask.');
+      }
+
+      const [account] = accounts;
+      const network = await provider.getNetwork();
+      const balance = await provider.getBalance(account);
+      const chainId = Number(network.chainId);
+
+      setWalletAddress(account);
+      setWalletBalance(formatarSaldoMatic(balance));
+      setWalletNetwork(chainId === 137 ? 'Polygon' : `Rede ${chainId}`);
+      setWalletConnected(true);
+      setWalletModalOpen(false);
+
+      if (chainId !== 137) {
+        setWalletError('A carteira está em outra rede. Troque para Polygon para continuar.');
+      }
+    } catch (error) {
+      console.error('Erro ao conectar carteira:', error);
+      setWalletError(error?.message || 'Não foi possível conectar com a MetaMask.');
+    } finally {
+      setIsConnectingWallet(false);
+    }
+  };
+
+  useEffect(() => {
+    syncWalletState();
+
+    if (!window.ethereum) return undefined;
+
+    const handleAccountsChanged = () => syncWalletState();
+    const handleChainChanged = () => syncWalletState();
+
+    window.ethereum.on('accountsChanged', handleAccountsChanged);
+    window.ethereum.on('chainChanged', handleChainChanged);
+
+    return () => {
+      window.ethereum.removeListener('accountsChanged', handleAccountsChanged);
+      window.ethereum.removeListener('chainChanged', handleChainChanged);
+    };
+  }, []);
 
   const handleRegistrarTransacao = async (e) => {
     e.preventDefault();
@@ -99,18 +216,18 @@ export default function Dashboard() {
     try {
       await api.post('/transacoes', {
         destinatario,
-        valor: Number(valor)
+        valor: Number(valor),
       });
 
       setSucessoTransacao('Transação registrada com sucesso!');
       setDestinatario('');
       setValor('');
-      setRefreshTransacoes(prev => prev + 1);
+      setRefreshTransacoes((prev) => prev + 1);
 
       const response = await api.get('/blockchain/transacoes');
       const lista = response.data;
       setTransacoes(lista);
-      
+
       const { entrada, saida } = calcularEntradaSaidaDoUsuario(lista, usuario?.email);
       const ehAdmin = usuario?.role === 'ROLE_ADMIN';
 
@@ -149,14 +266,52 @@ export default function Dashboard() {
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white">
       <Topo />
 
+      {walletModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4">
+          <div className="w-full max-w-md rounded-2xl border border-blue-500/50 bg-slate-900 p-6 shadow-2xl">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-2xl font-semibold text-blue-300">Conectar carteira</h3>
+              <button
+                type="button"
+                onClick={() => setWalletModalOpen(false)}
+                className="text-gray-400 hover:text-white"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              <p className="text-sm text-gray-300">
+                Conecte sua MetaMask para ver saldo, rede e status da carteira com segurança.
+              </p>
+
+              <div className="rounded-xl border border-dashed border-blue-500/60 bg-blue-500/5 p-4 text-sm text-blue-100">
+                <p className="font-semibold mb-2">Informações importantes</p>
+                <ul className="space-y-1 text-xs text-blue-100/90">
+                  <li>• Conectar a carteira não cobra gás.</li>
+                  <li>• Assinar ou enviar transação pode cobrar gás.</li>
+                  <li>• A rede ideal para este app é Polygon.</li>
+                </ul>
+              </div>
+
+              <button
+                type="button"
+                onClick={connectWallet}
+                disabled={isConnectingWallet}
+                className="w-full rounded-lg bg-blue-600 px-4 py-3 font-semibold text-white transition hover:bg-blue-500 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {isConnectingWallet ? 'Conectando...' : 'Conectar MetaMask'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="max-w-6xl mx-auto px-4 md:px-6 py-6 md:py-10">
-        {/* Boas-vindas */}
         <h1 className="text-2xl md:text-4xl font-bold text-blue-400 mb-2">Bem-vindo ao Mifica</h1>
         <p className="text-sm md:text-lg text-gray-300 mb-6 md:mb-8">Construa sua reputação digital</p>
 
-        {/* Perfil + Indicadores */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Perfil do Usuário */}
           <div className="bg-white/10 backdrop-blur-md rounded-xl p-4 md:p-6 shadow-lg border border-blue-500">
             <h2 className="text-xl md:text-2xl font-semibold text-blue-300 mb-4">Perfil do Usuário</h2>
             <p><strong>Nome:</strong> {usuario.nome}</p>
@@ -174,7 +329,6 @@ export default function Dashboard() {
               </ul>
             </div>
 
-            {/* Botão exclusivo para admins */}
             {usuario.role === 'ROLE_ADMIN' && (
               <button
                 onClick={() => {
@@ -188,20 +342,79 @@ export default function Dashboard() {
             )}
           </div>
 
-          {/* Indicadores Blockchain */}
           <div className="bg-white/10 backdrop-blur-md rounded-xl p-4 md:p-6 shadow-lg border border-indigo-500">
-            <h2 className="text-xl md:text-2xl font-semibold text-indigo-300 mb-4">Indicadores Blockchain</h2>
-            <p><strong>Valor total:</strong> {formatarReal(saldoDisponivel)}</p>
-            <p><strong>Total movimentado:</strong> {formatarReal(totalMovimentado)}</p>
+            <div className="flex items-center justify-between gap-3 mb-4">
+              <h2 className="text-xl md:text-2xl font-semibold text-indigo-300">Carteira e saldo</h2>
+              <span
+                className={`rounded-full px-2 py-1 text-xs font-medium ${
+                  walletConnected ? 'bg-green-500/20 text-green-300' : 'bg-gray-500/20 text-gray-300'
+                }`}
+              >
+                {walletConnected ? 'Conectada' : 'Não conectada'}
+              </span>
+            </div>
+
+            {!walletConnected ? (
+              <div className="space-y-4">
+                <div className="rounded-xl border border-dashed border-indigo-500/60 bg-indigo-500/5 p-4">
+                  <p className="text-sm text-gray-300">Conecte sua carteira para visualizar o saldo, rede e movimentações em tempo real.</p>
+                  <button
+                    type="button"
+                    onClick={() => setWalletModalOpen(true)}
+                    className="mt-4 w-full rounded-lg bg-indigo-600 px-4 py-3 font-semibold text-white transition hover:bg-indigo-500"
+                  >
+                    Conectar MetaMask
+                  </button>
+                </div>
+
+                <div className="grid grid-cols-1 gap-2 text-sm">
+                  <p><strong>Valor total:</strong> {formatarReal(saldoDisponivel)}</p>
+                  <p><strong>Total movimentado:</strong> {formatarReal(totalMovimentado)}</p>
+                  <p><strong>Gas:</strong> gratuito para conectar. Cobrança apenas em transações na rede.</p>
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                <div className="rounded-2xl border border-emerald-500/50 bg-emerald-500/5 p-4">
+                  <div className="flex items-center justify-between text-xs text-emerald-200">
+                    <span>Carteira</span>
+                    <span>{walletNetwork}</span>
+                  </div>
+                  <p className="mt-2 text-xl font-semibold text-white">{formatarEndereco(walletAddress)}</p>
+                  <p className="mt-3 text-3xl font-bold text-emerald-300">{walletBalance} MATIC</p>
+                </div>
+
+                <div className="grid grid-cols-1 gap-2 text-sm">
+                  <p><strong>Valor total:</strong> {formatarReal(saldoDisponivel)}</p>
+                  <p><strong>Total movimentado:</strong> {formatarReal(totalMovimentado)}</p>
+                  <p><strong>Saldo da carteira:</strong> {walletBalance} MATIC</p>
+                  <p><strong>Rede:</strong> {walletNetwork}</p>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => setWalletModalOpen(true)}
+                  className="w-full rounded-lg border border-emerald-500/60 bg-emerald-500/10 px-4 py-2 text-sm font-semibold text-emerald-200 hover:bg-emerald-500/20"
+                >
+                  Atualizar carteira
+                </button>
+              </div>
+            )}
+
+            {walletError && (
+              <div className="mt-4 rounded-lg border border-amber-500/60 bg-amber-500/10 p-3 text-sm text-amber-200">
+                {walletError}
+              </div>
+            )}
+
             {ultimaTransacao && (
-              <p className="mt-2">
+              <p className="mt-4 text-sm text-gray-300">
                 <strong>Última transação:</strong> {ultimaTransacao.destinatario} | {formatarReal(ultimaTransacao.valor)}
               </p>
             )}
           </div>
         </div>
 
-        {/* Transações Blockchain - apenas admin */}
         {usuario.role === 'ROLE_ADMIN' && (
           <div className="bg-white/10 backdrop-blur-md rounded-xl p-4 md:p-6 shadow-lg border border-gray-500 mt-8 md:mt-10">
             <h2 className="text-xl md:text-2xl font-semibold text-gray-300 mb-4">Transações Blockchain</h2>
@@ -246,7 +459,6 @@ export default function Dashboard() {
               </div>
             </form>
 
-            {/* Lista de transações */}
             <div className="mt-8">
               <TransacoesList refreshKey={refreshTransacoes} />
             </div>
