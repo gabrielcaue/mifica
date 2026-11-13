@@ -1,14 +1,22 @@
 import axios from 'axios';
 
-const fallbackOrigin = typeof window !== 'undefined'
-  ? (window.location.hostname === 'localhost' ? 'http://localhost:8080' : window.location.origin)
-  : 'http://localhost:8080';
+const resolveApiBaseUrl = () => {
+  const envUrl = (import.meta.env.VITE_API_URL || '').trim();
 
-const configuredApiUrl = (import.meta.env.VITE_API_URL || fallbackOrigin).trim();
-const normalizedApiUrl = configuredApiUrl.replace(/\/$/, '');
+  if (envUrl) {
+    return envUrl.replace(/\/$/, '');
+  }
+
+  if (typeof window !== 'undefined') {
+    const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    return isLocalhost ? 'http://localhost:8080' : window.location.origin;
+  }
+
+  return 'http://localhost:8080';
+};
 
 const api = axios.create({
-  baseURL: `${normalizedApiUrl}/api`,
+  baseURL: `${resolveApiBaseUrl()}/api`,
 });
 
 // Interceptor único para adicionar token e Content-Type
